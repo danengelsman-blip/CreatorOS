@@ -1,0 +1,85 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Core user account information and status.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string", "format": "uri" },
+        "avatarType": { "type": "string", "enum": ["uploaded", "ai_generated"] },
+        "activeAvatarId": { "type": "string" },
+        "accountProvider": { "type": "string", "enum": ["google", "password"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "lastLogin": { "type": "string", "format": "date-time" },
+        "subscriptionTier": { "type": "string", "enum": ["free", "pro", "elite"] },
+        "accountStatus": { "type": "string", "enum": ["active", "suspended"] }
+      },
+      "required": ["email", "createdAt"]
+    },
+    "Avatar": {
+      "title": "AI Avatar",
+      "description": "Metadata for a generated or uploaded avatar.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "prompt": { "type": "string" },
+        "generationType": { "type": "string", "enum": ["text", "photo_transform"] },
+        "styleType": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "isActive": { "type": "boolean" }
+      },
+      "required": ["userId", "url", "createdAt"]
+    },
+    "UserPreferences": {
+      "title": "User Preferences",
+      "description": "UI and application settings for the user.",
+      "type": "object",
+      "properties": {
+        "theme": { "type": "string", "enum": ["light", "dark", "system"] },
+        "language": { "type": "string" },
+        "notifications": {
+          "type": "object",
+          "properties": {
+            "email": { "type": "boolean" },
+            "push": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "Project": {
+      "title": "Creator Project",
+      "description": "A project containing generated content, brand kits, or workflows.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Owner of the project" },
+        "name": { "type": "string" },
+        "type": { "type": "string", "enum": ["brand_kit", "content", "tutorial", "workflow"] },
+        "data": { "type": "object", "description": "The actual project payload (JSON)" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "name", "type", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile documents"
+    },
+    "/preferences/{userId}": {
+      "schema": "UserPreferences",
+      "description": "User specific settings"
+    },
+    "/avatars/{avatarId}": {
+      "schema": "Avatar",
+      "description": "User avatars (AI generated or uploaded)"
+    },
+    "/projects/{projectId}": {
+      "schema": "Project",
+      "description": "User projects and assets"
+    }
+  }
+}

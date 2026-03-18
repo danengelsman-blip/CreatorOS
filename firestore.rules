@@ -1,0 +1,146 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: {userId}
+    // Fields:
+    //   - email: string (required, email)
+    //   - displayName: string
+    //   - photoURL: string (url)
+    //   - accountProvider: string (google|password)
+    //   - createdAt: timestamp (required)
+    //   - lastLogin: timestamp
+    //   - subscriptionTier: string (free|pro|elite)
+    //   - accountStatus: string (active|suspended)
+    //
+    // Collection: preferences
+    // Document ID: {userId}
+    // Fields:
+    //   - theme: string
+    //   - language: string
+    //   - notifications: map
+    //
+    // Collection: projects
+    // Document ID: {projectId}
+    // Fields:
+    //   - userId: string (required, owner)
+    //   - name: string (required)
+    //   - type: string (required)
+    //   - data: map
+    //   - createdAt: timestamp (required)
+    //   - updatedAt: timestamp
+    //
+    // Collection: avatars
+    // Document ID: {avatarId}
+    // Fields:
+    //   - userId: string (required, owner)
+    //   - url: string (required, url)
+    //   - prompt: string
+    //   - generationType: string (text|photo_transform)
+    //   - styleType: string
+    //   - createdAt: timestamp (required)
+    //   - isActive: bool
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (request.auth.token.email == "danengelsman@gmail.com");
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidUrl(url) {
+      return url is string && (url.matches("^https://.*") || url.matches("^http://.*") || url.matches("^data:image/.*"));
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['email', 'createdAt']) &&
+             isValidEmail(data.email) &&
+             data.createdAt is timestamp &&
+             (data.photoURL == null || isValidUrl(data.photoURL)) &&
+             (data.avatarType == null || data.avatarType in ['uploaded', 'ai_generated']);
+    }
+
+    function isValidProject(data) {
+      return data.keys().hasAll(['userId', 'name', 'type', 'createdAt']) &&
+             data.userId == request.auth.uid &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.type in ['brand_kit', 'content', 'tutorial', 'workflow'] &&
+             data.createdAt is timestamp;
+    }
+
+    function isValidAvatar(data) {
+      return data.keys().hasAll(['userId', 'url', 'createdAt']) &&
+             data.userId == request.auth.uid &&
+             isValidUrl(data.url) &&
+             data.createdAt is timestamp &&
+             (data.generationType == null || data.generationType in ['text', 'photo_transform']);
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /test/{docId} {
+      allow read: if true;
+    }
+
+    match /users/{userId} {
+      // PII Protection: Only owner or admin can read
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /preferences/{userId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+    }
+
+    match /projects/{projectId} {
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    match /avatars/{avatarId} {
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
