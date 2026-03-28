@@ -109,8 +109,12 @@ export default function AppleCard({
       >
         {/* Front Face */}
         <div 
-          className="absolute inset-0 w-full h-full backface-hidden rounded-[32px] overflow-hidden bg-white border border-black/[0.03]"
-          style={{ backfaceVisibility: "hidden" }}
+          className="absolute inset-0 w-full h-full rounded-[32px] overflow-hidden bg-premium-surface border border-premium-border"
+          style={{ 
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
+            transformStyle: "preserve-3d"
+          }}
         >
           {children}
           
@@ -126,13 +130,15 @@ export default function AppleCard({
 
         {/* Back Face */}
         <div 
-          className="absolute inset-0 w-full h-full backface-hidden rounded-[32px] overflow-hidden bg-premium-ink text-white p-8"
+          className="absolute inset-0 w-full h-full rounded-[32px] overflow-hidden bg-premium-ink text-white p-8"
           style={{ 
             backfaceVisibility: "hidden",
-            transform: "rotateY(180deg)"
+            WebkitBackfaceVisibility: "hidden",
+            transform: "rotateY(180deg)",
+            transformStyle: "preserve-3d"
           }}
         >
-          <div className="h-full flex flex-col">
+          <div className="h-full flex flex-col" style={{ transform: "translateZ(1px)" }}>
             {backContent || (
               <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
                 <h4 className="text-xl font-bold">Details</h4>

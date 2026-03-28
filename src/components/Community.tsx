@@ -7,13 +7,13 @@ import {
   Search,
   ArrowUpRight,
   Globe,
-  Sparkles,
   ChevronRight,
-  TrendingUp,
-  MessageSquare
+  LineChart,
+  MessageCircleMore
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import AppleCardStack from './ui/AppleCardStack';
+import BrandIcon from './BrandIcon';
 
 const LEADERBOARD = [
   { name: 'Alex Rivera', niche: 'Tech Productivity', streak: 42, score: 98, avatar: 'https://picsum.photos/seed/alex/100/100' },
@@ -24,11 +24,11 @@ const LEADERBOARD = [
 
 export default function Community({ user, setActiveTab }: { user: any, setActiveTab: (tab: string) => void }) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
       {/* Feed */}
-      <div className="lg:col-span-8 space-y-10">
-        <div className="premium-card p-6 bg-white flex items-center gap-4 border border-black/[0.03]">
-          <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center border border-black/[0.03] overflow-hidden">
+      <div className="md:col-span-8 space-y-10">
+        <div className="premium-card p-6 bg-premium-surface flex items-center gap-4 border border-premium-border">
+          <div className="w-12 h-12 rounded-2xl bg-premium-bg flex items-center justify-center border border-premium-border overflow-hidden">
             {user?.photoURL ? (
               <img src={user.photoURL} alt={user.displayName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
             ) : (
@@ -38,7 +38,7 @@ export default function Community({ user, setActiveTab }: { user: any, setActive
           <input 
             type="text" 
             placeholder={`What's on your mind, ${user?.displayName?.split(' ')[0] || 'Creator'}?`} 
-            className="flex-1 bg-transparent outline-none font-medium text-lg placeholder:text-gray-300"
+            className="flex-1 bg-transparent outline-none font-medium text-lg placeholder:text-premium-muted"
           />
         </div>
 
@@ -56,36 +56,36 @@ export default function Community({ user, setActiveTab }: { user: any, setActive
         { name: 'Marcus Thorne', platform: 'Twitter/X', score: 88, content: "The branding engine just gave me a tagline that actually feels like me. Finally moving past the 'blank page' phase.", boosts: 8, comments: 5, color: 'from-emerald-500 to-teal-500' },
         { name: 'Elena Rodriguez', platform: 'Instagram', score: 95, content: "Hit 1,000 followers today! The content scoring system is basically a cheat code for growth.", boosts: 24, comments: 12, color: 'from-orange-500 to-pink-500' }
       ].map((item, i) => (
-        <div key={i} className="premium-card p-6 lg:p-8 bg-white hover:shadow-2xl hover:shadow-black/[0.03] transition-all duration-500 group border border-black/[0.02]">
+        <div key={i} className="premium-card p-6 md:p-8 bg-premium-surface hover:shadow-2xl hover:shadow-black/[0.03] transition-all duration-500 group border border-premium-border">
           <div className="flex items-center gap-4 mb-6">
-            <div className={cn("w-10 h-10 lg:w-12 lg:h-12 rounded-2xl bg-gradient-to-br flex-shrink-0 shadow-inner", item.color)} />
+            <div className={cn("w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-gradient-to-br flex-shrink-0 shadow-inner", item.color)} />
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
-                <h4 className="font-bold text-base lg:text-lg tracking-tight truncate text-premium-ink">{item.name}</h4>
-                <div className="flex items-center gap-1.5 px-2 py-0.5 lg:px-2.5 lg:py-1 bg-accent-emerald/5 text-accent-emerald rounded-lg border border-accent-emerald/10 flex-shrink-0">
-                  <Sparkles className="w-3 h-3" />
-                  <span className="text-[10px] lg:text-[11px] font-bold tabular-nums leading-none">{item.score}</span>
+                <h4 className="font-bold text-base md:text-lg tracking-tight truncate text-premium-ink">{item.name}</h4>
+                <div className="flex items-center gap-1.5 px-2 py-0.5 md:px-2.5 md:py-1 bg-accent-emerald/5 text-accent-emerald rounded-lg border border-accent-emerald/10 flex-shrink-0">
+                  <BrandIcon size={12} />
+                  <span className="text-[10px] md:text-[11px] font-bold tabular-nums leading-none">{item.score}</span>
                 </div>
               </div>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-[10px] lg:text-[12px] text-premium-muted font-bold uppercase tracking-widest">{item.platform}</span>
-                <span className="w-1 h-1 rounded-full bg-gray-200" />
-                <span className="text-[10px] lg:text-[12px] text-premium-muted font-medium">2m ago</span>
+                <span className="text-[10px] md:text-[12px] text-premium-muted font-bold uppercase tracking-widest">{item.platform}</span>
+                <span className="w-1 h-1 rounded-full bg-premium-muted" />
+                <span className="text-[10px] md:text-[12px] text-premium-muted font-medium">2m ago</span>
               </div>
             </div>
           </div>
           
-          <div className="pl-0 sm:pl-14 lg:pl-16">
-            <p className="text-base lg:text-lg leading-relaxed text-premium-ink mb-6 lg:mb-8 font-medium italic font-serif">
+          <div className="pl-0 sm:pl-14 md:pl-16">
+            <p className="text-base md:text-lg leading-relaxed text-premium-ink mb-6 md:mb-8 font-medium italic font-serif">
               "{item.content}"
             </p>
             
-            <div className="flex items-center gap-6 lg:gap-8 pt-6 border-t border-premium-border">
-              <button className="flex items-center gap-2 text-[12px] lg:text-[13px] font-bold text-premium-muted hover:text-accent-violet transition-colors group/btn">
+            <div className="flex items-center gap-6 md:gap-8 pt-6 border-t border-premium-border">
+              <button className="flex items-center gap-2 text-[12px] md:text-[13px] font-bold text-premium-muted hover:text-accent-violet transition-colors group/btn">
                 <Zap className="w-4 h-4 group-hover/btn:fill-accent-violet transition-all" />
                 <span className="tabular-nums">{item.boosts}</span>
               </button>
-              <button className="flex items-center gap-2 text-[12px] lg:text-[13px] font-bold text-premium-muted hover:text-accent-violet transition-colors group/btn">
+              <button className="flex items-center gap-2 text-[12px] md:text-[13px] font-bold text-premium-muted hover:text-accent-violet transition-colors group/btn">
                 <MessageCircle className="w-4 h-4 group-hover/btn:fill-accent-violet transition-all" />
                 <span className="tabular-nums">{item.comments}</span>
               </button>
@@ -97,12 +97,12 @@ export default function Community({ user, setActiveTab }: { user: any, setActive
       </div>
 
       {/* Sidebar */}
-      <div className="lg:col-span-4 space-y-10">
-        <div className="premium-card p-10 bg-white">
+      <div className="md:col-span-4 space-y-10">
+        <div className="premium-card p-10 bg-premium-surface">
           <div className="flex items-center justify-between mb-10">
             <h3 className="font-bold text-lg tracking-tight">Daily Inspiration</h3>
             <div className="w-10 h-10 bg-accent-violet/10 rounded-xl flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-accent-violet" />
+              <BrandIcon size={20} />
             </div>
           </div>
           
@@ -112,7 +112,7 @@ export default function Community({ user, setActiveTab }: { user: any, setActive
                 id: 1,
                 content: (
                   <div className="p-8 flex flex-col h-full bg-gradient-to-br from-accent-violet/5 to-transparent">
-                    <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-6">
+                    <div className="w-12 h-12 rounded-2xl bg-premium-surface border border-premium-border shadow-sm flex items-center justify-center mb-6">
                       <Zap className="w-6 h-6 text-accent-violet" />
                     </div>
                     <h4 className="text-xl font-bold mb-2">Morning Hook</h4>
@@ -137,7 +137,7 @@ export default function Community({ user, setActiveTab }: { user: any, setActive
                 id: 2,
                 content: (
                   <div className="p-8 flex flex-col h-full bg-gradient-to-br from-accent-emerald/5 to-transparent">
-                    <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-6">
+                    <div className="w-12 h-12 rounded-2xl bg-premium-surface border border-premium-border shadow-sm flex items-center justify-center mb-6">
                       <Globe className="w-6 h-6 text-accent-emerald" />
                     </div>
                     <h4 className="text-xl font-bold mb-2">Visual Style</h4>
@@ -162,7 +162,7 @@ export default function Community({ user, setActiveTab }: { user: any, setActive
           />
         </div>
 
-        <div className="premium-card p-10 bg-white">
+        <div className="premium-card p-10 bg-premium-surface">
           <div className="flex items-center justify-between mb-10">
             <h3 className="font-bold text-lg tracking-tight">Elite Creators</h3>
             <div className="w-10 h-10 bg-accent-gold/10 rounded-xl flex items-center justify-center">
@@ -196,7 +196,7 @@ export default function Community({ user, setActiveTab }: { user: any, setActive
               </div>
             ))}
           </div>
-          <button className="w-full mt-10 py-5 bg-gray-50 border border-black/[0.03] rounded-[20px] text-[13px] font-bold text-premium-ink hover:bg-premium-ink hover:text-white transition-all shadow-sm">
+          <button className="w-full mt-10 py-5 bg-premium-bg border border-premium-border rounded-[20px] text-[13px] font-bold text-premium-ink hover:bg-premium-ink hover:text-premium-bg transition-all shadow-sm">
             View Global Rankings
           </button>
         </div>
@@ -212,7 +212,7 @@ export default function Community({ user, setActiveTab }: { user: any, setActive
             </p>
             <button 
               onClick={() => setActiveTab('profile')}
-              className="w-full py-5 bg-white text-premium-ink rounded-[20px] font-bold text-[14px] flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl"
+              className="w-full py-5 bg-premium-surface border border-premium-border text-premium-ink rounded-[20px] font-bold text-[14px] flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl"
             >
               View My Page
               <ArrowUpRight className="w-4 h-4" />

@@ -60,21 +60,21 @@ export default function Roadmap({ brand, user }: { brand: any, user: any }) {
   const completedDays = [1];
 
   return (
-    <div className="space-y-8 lg:space-y-12">
-      <div className="premium-card p-8 lg:p-12 bg-premium-ink text-white relative overflow-hidden shadow-2xl shadow-black/20">
-        <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-10">
-          <div className="space-y-6 max-w-2xl text-center lg:text-left">
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-white/10 rounded-full text-[10px] lg:text-[11px] font-bold uppercase tracking-[0.15em] border border-white/10 backdrop-blur-md">
+    <div className="space-y-8 md:space-y-12">
+      <div className="p-8 md:p-12 bg-premium-ink text-white rounded-[32px] md:rounded-[40px] relative overflow-hidden shadow-2xl shadow-black/20">
+        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-10">
+          <div className="space-y-6 max-w-2xl text-center md:text-left">
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-white/10 rounded-full text-[10px] md:text-[11px] font-bold uppercase tracking-[0.15em] border border-white/10 backdrop-blur-md">
               <Map className="w-4 h-4 text-accent-violet" />
               30-Day Creator Challenge
             </div>
-            <h2 className="text-3xl lg:text-5xl font-extrabold tracking-tight leading-tight">Your path to <span className="text-accent-emerald italic font-serif font-normal">monetization</span>.</h2>
-            <p className="text-lg lg:text-xl text-white/50 leading-relaxed font-medium">
+            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight text-white">Your path to <span className="text-accent-violet italic font-serif font-normal">monetization</span>.</h2>
+            <p className="text-lg md:text-xl text-white/50 leading-relaxed font-medium">
               A structured, high-performance roadmap designed to take you from zero to your first dollar in 30 days.
             </p>
           </div>
-          <div className="lg:block">
-            <div className="relative w-40 h-40 lg:w-56 lg:h-56 flex items-center justify-center">
+          <div className="md:block">
+            <div className="relative w-40 h-40 md:w-56 md:h-56 flex items-center justify-center">
               <svg className="w-full h-full -rotate-90">
                 <circle
                   cx="50%"
@@ -99,8 +99,8 @@ export default function Roadmap({ brand, user }: { brand: any, user: any }) {
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-3xl lg:text-5xl font-extrabold tracking-tighter">1/30</span>
-                <span className="text-[9px] lg:text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mt-1">Days Active</span>
+                <span className="text-3xl md:text-5xl font-extrabold tracking-tighter">1/30</span>
+                <span className="text-[9px] md:text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mt-1">Days Active</span>
               </div>
             </div>
           </div>
@@ -113,7 +113,7 @@ export default function Roadmap({ brand, user }: { brand: any, user: any }) {
 
       <div className="space-y-10 relative">
         {/* Vertical line connector */}
-        <div className="absolute left-12 top-10 bottom-10 w-0.5 bg-premium-border hidden lg:block" />
+        <div className="absolute left-12 top-10 bottom-10 w-0.5 bg-premium-border hidden md:block" />
 
         {STAGES.map((stage, idx) => {
           const isUnlocked = idx === 0;
@@ -123,28 +123,28 @@ export default function Roadmap({ brand, user }: { brand: any, user: any }) {
             <div 
               key={stage.id}
               className={cn(
-                "relative premium-card p-6 lg:p-10 bg-white transition-all duration-500 group",
+                "relative premium-card p-6 md:p-10 bg-premium-surface transition-all duration-500 group",
                 !isUnlocked && "opacity-50 grayscale pointer-events-none"
               )}
             >
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 lg:gap-10">
-                <div className="flex flex-col sm:flex-row items-start gap-6 lg:gap-8">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 md:gap-10">
+                <div className="flex flex-col sm:flex-row items-start gap-6 md:gap-8">
                   <div className={cn(
-                    "w-14 h-14 lg:w-16 lg:h-16 rounded-2xl text-white shadow-2xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110", 
+                    "w-14 h-14 md:w-16 md:h-16 rounded-2xl text-white shadow-2xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110", 
                     stage.color
                   )}>
-                    <stage.icon className="w-7 h-7 lg:w-8 lg:h-8" />
+                    <stage.icon className="w-7 h-7 md:w-8 md:h-8" />
                   </div>
                   <div>
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-xl lg:text-2xl font-extrabold tracking-tight">{stage.title}</h3>
+                      <h3 className="text-xl md:text-2xl font-extrabold tracking-tight">{stage.title}</h3>
                       {!isUnlocked && <Lock className="w-4 h-4 text-premium-muted" />}
                     </div>
-                    <p className="text-[14px] lg:text-base text-premium-muted font-medium leading-relaxed max-w-md">{stage.desc}</p>
+                    <p className="text-[14px] md:text-base text-premium-muted font-medium leading-relaxed max-w-md">{stage.desc}</p>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap gap-2 lg:gap-3">
+                <div className="flex flex-wrap gap-2 md:gap-3">
                   {stage.days.map(day => {
                     const isDayCompleted = completedDays.includes(day);
                     const isCurrentDay = day === currentDay;
@@ -153,21 +153,21 @@ export default function Roadmap({ brand, user }: { brand: any, user: any }) {
                       <div 
                         key={day}
                         className={cn(
-                          "w-10 h-10 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl flex items-center justify-center font-bold text-[13px] lg:text-[15px] border transition-all duration-300",
+                          "w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center font-bold text-[13px] md:text-[15px] border transition-all duration-300",
                           isDayCompleted ? "bg-accent-emerald border-accent-emerald text-white shadow-lg shadow-accent-emerald/20" :
                           isCurrentDay ? "bg-premium-ink border-premium-ink text-white scale-110 shadow-2xl shadow-black/20" :
-                          "bg-gray-50 border-black/[0.03] text-premium-muted hover:bg-gray-100"
+                          "bg-premium-bg border-premium-border text-premium-muted hover:bg-white/10"
                         )}
                       >
-                        {isDayCompleted ? <CheckCircle2 className="w-5 h-5 lg:w-6 lg:h-6" /> : day}
+                        {isDayCompleted ? <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6" /> : day}
                       </div>
                     );
                   })}
                 </div>
 
                 <button className={cn(
-                  "w-full lg:w-auto px-6 lg:px-8 py-3 lg:py-4 rounded-[16px] lg:rounded-[20px] font-bold text-[13px] lg:text-[14px] flex items-center justify-center gap-2 transition-all shadow-xl",
-                  isUnlocked ? "bg-premium-ink text-white hover:scale-[1.02] active:scale-[0.98] shadow-black/10" : "bg-gray-100 text-premium-muted cursor-not-allowed shadow-none"
+                  "w-full md:w-auto px-6 md:px-8 py-3 md:py-4 rounded-[16px] md:rounded-[20px] font-bold text-[13px] md:text-[14px] flex items-center justify-center gap-2 transition-all shadow-xl",
+                  isUnlocked ? "bg-premium-ink text-premium-bg hover:scale-[1.02] active:scale-[0.98] shadow-black/10" : "bg-premium-bg text-premium-muted cursor-not-allowed shadow-none"
                 )}>
                   {isUnlocked ? 'Continue Journey' : 'Locked Stage'}
                   <ChevronRight className="w-4 h-4" />

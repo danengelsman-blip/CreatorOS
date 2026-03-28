@@ -43,7 +43,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
       return (
         <div className="min-h-screen bg-premium-bg flex items-center justify-center p-6">
-          <div className="max-w-md w-full premium-card p-10 bg-white text-center space-y-8">
+          <div className="max-w-md w-full premium-card p-10 bg-premium-surface text-center space-y-8">
             <div className="w-20 h-20 bg-red-50 text-red-500 rounded-[32px] flex items-center justify-center mx-auto border border-red-100">
               <AlertCircle className="w-10 h-10" />
             </div>
@@ -52,7 +52,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
               <p className="text-premium-muted leading-relaxed">
                 {isFirebaseError ? "We encountered a permission or data issue with our cloud services." : "Something went wrong while rendering this view."}
               </p>
-              <div className="mt-6 p-4 bg-gray-50 rounded-2xl text-left overflow-hidden">
+              <div className="mt-6 p-4 bg-premium-bg rounded-2xl text-left overflow-hidden">
                 <p className="text-[11px] font-bold text-premium-muted uppercase tracking-widest mb-2">Error Details</p>
                 <p className="text-xs font-mono text-red-600 break-words">{errorMessage}</p>
               </div>

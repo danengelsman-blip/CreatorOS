@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 import { 
-  Sparkles, 
   ImageIcon, 
   Upload, 
   RefreshCw, 
@@ -17,8 +16,9 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { GoogleGenAI } from "@google/genai";
 import { cn } from '../lib/utils';
-import { auth, db, updateProfile, handleFirestoreError, OperationType } from '../firebase';
+import { auth, db, updateProfile, handleFirestoreError, OperationType, compressBase64Image } from '../firebase';
 import { collection, addDoc, query, where, getDocs, deleteDoc, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import BrandIcon from './BrandIcon';
 
 const AVATAR_STYLES = [
   { id: 'futuristic', name: 'Futuristic AI', prompt: 'futuristic AI aesthetic, glowing circuits, sleek white and blue lighting' },
@@ -95,7 +95,7 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
         config: {
           imageConfig: {
             aspectRatio: "1:1",
-            imageSize: "1K"
+            imageSize: "512px"
           }
         }
       });
@@ -103,7 +103,9 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
       let imageUrl = '';
       for (const part of response.candidates[0].content.parts) {
         if (part.inlineData) {
-          imageUrl = `data:image/png;base64,${part.inlineData.data}`;
+          // Compress image before saving to Firestore to stay under 1MB limit
+          const rawBase64 = `data:image/png;base64,${part.inlineData.data}`;
+          imageUrl = await compressBase64Image(rawBase64);
           break;
         }
       }
@@ -120,7 +122,10 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
           isActive: false
         };
 
-        const docRef = await addDoc(collection(db, 'avatars'), avatarData);
+        const docRef = await addDoc(collection(db, 'avatars'), avatarData).catch(err => {
+          handleFirestoreError(err, OperationType.CREATE, 'avatars');
+          throw err;
+        });
         const newAvatar = { 
           id: docRef.id, 
           ...avatarData, 
@@ -203,13 +208,13 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
       <motion.div 
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
-        className="bg-white w-full max-w-5xl h-[85vh] rounded-[32px] overflow-hidden flex flex-col shadow-2xl"
+        className="bg-premium-surface w-full max-w-5xl h-[85vh] rounded-[32px] overflow-hidden flex flex-col shadow-2xl"
       >
         {/* Header */}
-        <div className="p-8 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
+        <div className="p-8 border-b border-premium-border flex items-center justify-between bg-premium-surface sticky top-0 z-10">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-accent-violet/10 rounded-2xl flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-accent-violet" />
+              <BrandIcon size={24} />
             </div>
             <div>
               <h2 className="text-2xl font-extrabold tracking-tight">AI Avatar Generator</h2>
@@ -218,23 +223,23 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
           </div>
           <button 
             onClick={onClose}
-            className="p-3 hover:bg-gray-100 rounded-2xl transition-colors"
+            className="p-3 hover:bg-white/10 rounded-2xl transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
         </div>
 
-        <div className="flex-1 overflow-hidden flex flex-col lg:flex-row">
+        <div className="flex-1 overflow-hidden flex flex-col md:flex-row">
           {/* Controls Panel */}
-          <div className="w-full lg:w-[400px] border-r border-gray-100 p-8 overflow-y-auto bg-gray-50/50">
+          <div className="w-full md:w-[400px] border-r border-premium-border p-8 overflow-y-auto bg-premium-bg">
             <div className="space-y-8">
               {/* Tabs */}
-              <div className="flex p-1 bg-gray-200/50 rounded-2xl">
+              <div className="flex p-1 bg-premium-bg rounded-2xl border border-premium-border">
                 <button 
                   onClick={() => setActiveTab('prompt')}
                   className={cn(
                     "flex-1 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2",
-                    activeTab === 'prompt' ? "bg-white text-premium-ink shadow-sm" : "text-premium-muted hover:text-premium-ink"
+                    activeTab === 'prompt' ? "bg-premium-surface text-premium-ink shadow-sm border border-premium-border" : "text-premium-muted hover:text-premium-ink"
                   )}
                 >
                   <Type className="w-4 h-4" />
@@ -244,7 +249,7 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
                   onClick={() => setActiveTab('photo')}
                   className={cn(
                     "flex-1 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2",
-                    activeTab === 'photo' ? "bg-white text-premium-ink shadow-sm" : "text-premium-muted hover:text-premium-ink"
+                    activeTab === 'photo' ? "bg-premium-surface text-premium-ink shadow-sm border border-premium-border" : "text-premium-muted hover:text-premium-ink"
                   )}
                 >
                   <Camera className="w-4 h-4" />
@@ -257,7 +262,7 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
                   <label className="text-[11px] font-bold text-premium-muted uppercase tracking-widest">Reference Photo</label>
                   <div 
                     onClick={() => fileInputRef.current?.click()}
-                    className="aspect-square rounded-3xl border-2 border-dashed border-gray-300 bg-white flex flex-col items-center justify-center cursor-pointer hover:border-accent-violet transition-colors overflow-hidden relative group"
+                    className="aspect-square rounded-3xl border-2 border-dashed border-premium-border bg-premium-surface flex flex-col items-center justify-center cursor-pointer hover:border-accent-violet transition-colors overflow-hidden relative group"
                   >
                     {referenceImage ? (
                       <>
@@ -268,8 +273,8 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
                       </>
                     ) : (
                       <>
-                        <Upload className="w-8 h-8 text-gray-300 mb-2" />
-                        <p className="text-xs font-bold text-gray-400">Upload Photo</p>
+                        <Upload className="w-8 h-8 text-premium-muted mb-2" />
+                        <p className="text-xs font-bold text-premium-muted">Upload Photo</p>
                       </>
                     )}
                   </div>
@@ -293,8 +298,8 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
                       className={cn(
                         "p-4 rounded-2xl border text-left transition-all",
                         selectedStyle.id === style.id 
-                          ? "bg-white border-accent-violet shadow-sm ring-1 ring-accent-violet" 
-                          : "bg-white border-gray-200 hover:border-gray-300"
+                          ? "bg-premium-surface border-accent-violet shadow-sm ring-1 ring-accent-violet" 
+                          : "bg-premium-surface border-premium-border hover:border-premium-muted"
                       )}
                     >
                       <p className={cn(
@@ -314,7 +319,7 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   placeholder="e.g. wearing a black hoodie, holding a coffee cup..."
-                  className="w-full h-32 p-4 bg-white border border-gray-200 rounded-2xl outline-none focus:ring-2 focus:ring-accent-violet/20 focus:border-accent-violet transition-all text-sm resize-none"
+                  className="w-full h-32 p-4 bg-premium-surface border border-premium-border rounded-2xl outline-none focus:ring-2 focus:ring-accent-violet/20 focus:border-accent-violet transition-all text-sm resize-none"
                 />
               </div>
 
@@ -339,7 +344,7 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
           </div>
 
           {/* Preview Panel */}
-          <div className="flex-1 p-8 overflow-y-auto bg-white">
+          <div className="flex-1 p-8 overflow-y-auto bg-premium-surface">
             <div className="space-y-8">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-bold">Your AI Avatars</h3>
@@ -348,8 +353,8 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
 
               {generatedAvatars.length === 0 && !isGenerating ? (
                 <div className="h-[400px] flex flex-col items-center justify-center text-center space-y-4">
-                  <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center">
-                    <Palette className="w-10 h-10 text-gray-200" />
+                  <div className="w-20 h-20 bg-premium-bg rounded-full flex items-center justify-center border border-premium-border">
+                    <Palette className="w-10 h-10 text-premium-muted" />
                   </div>
                   <div>
                     <p className="font-bold text-premium-ink">No avatars yet</p>
@@ -357,9 +362,9 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                   {isGenerating && (
-                    <div className="aspect-square rounded-[32px] bg-gray-50 border-2 border-dashed border-accent-violet/20 flex flex-col items-center justify-center space-y-4 animate-pulse">
+                    <div className="aspect-square rounded-[32px] bg-premium-bg border-2 border-dashed border-accent-violet/20 flex flex-col items-center justify-center space-y-4 animate-pulse">
                       <Loader2 className="w-10 h-10 text-accent-violet animate-spin" />
                       <p className="text-xs font-bold text-accent-violet uppercase tracking-widest">Generating...</p>
                     </div>
@@ -371,7 +376,7 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
                       layout
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="group relative aspect-square rounded-[32px] overflow-hidden bg-gray-100 shadow-sm hover:shadow-xl transition-all"
+                      className="group relative aspect-square rounded-[32px] overflow-hidden bg-premium-bg shadow-sm hover:shadow-xl transition-all border border-premium-border"
                     >
                       <img src={avatar.url} alt="AI Avatar" className="w-full h-full object-cover" />
                       
@@ -403,7 +408,7 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
                         {!avatar.isActive && (
                           <button 
                             onClick={() => handleSetAsActive(avatar)}
-                            className="w-full py-3 bg-white text-premium-ink rounded-xl font-bold text-xs hover:scale-[1.05] transition-transform"
+                            className="w-full py-3 bg-premium-surface border border-premium-border text-premium-ink rounded-xl font-bold text-xs hover:scale-[1.05] transition-transform"
                           >
                             Set as Profile
                           </button>

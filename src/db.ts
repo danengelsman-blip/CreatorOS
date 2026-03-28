@@ -66,6 +66,17 @@ db.exec(`
     completed_days TEXT, -- JSON array of completed day numbers
     FOREIGN KEY(user_id) REFERENCES users(id)
   );
+
+  CREATE TABLE IF NOT EXISTS user_accounts (
+    user_id TEXT,
+    platform TEXT, -- 'youtube', 'tiktok', etc.
+    access_token TEXT,
+    refresh_token TEXT,
+    expiry_date INTEGER,
+    profile_data TEXT, -- JSON string
+    PRIMARY KEY (user_id, platform),
+    FOREIGN KEY(user_id) REFERENCES users(id)
+  );
 `);
 
 export default db;
