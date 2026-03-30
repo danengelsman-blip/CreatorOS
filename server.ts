@@ -325,24 +325,33 @@ async function startServer() {
     `);
   });
 
-  // Production build only
-  let distPath = path.join(__dirname, 'dist');
-  
-  if (!fs.existsSync(path.join(distPath, 'index.html')) || !fs.existsSync(path.join(distPath, 'assets'))) {
-    // If dist/index.html or dist/assets doesn't exist, we might already be in the dist directory
-    if (fs.existsSync(path.join(__dirname, 'index.html')) && fs.existsSync(path.join(__dirname, 'assets'))) {
-      distPath = __dirname;
-    } else if (fs.existsSync(path.join(process.cwd(), 'dist', 'index.html')) && fs.existsSync(path.join(process.cwd(), 'dist', 'assets'))) {
-      distPath = path.join(process.cwd(), 'dist');
-    } else if (fs.existsSync(path.join(process.cwd(), 'index.html')) && fs.existsSync(path.join(process.cwd(), 'assets'))) {
-      distPath = process.cwd();
+  // Vite middleware for development
+  if (process.env.NODE_ENV !== "production") {
+    const vite = await createViteServer({
+      server: { middlewareMode: true },
+      appType: "spa",
+    });
+    app.use(vite.middlewares);
+  } else {
+    // Production build only
+    let distPath = path.join(__dirname, 'dist');
+    
+    if (!fs.existsSync(path.join(distPath, 'index.html')) || !fs.existsSync(path.join(distPath, 'assets'))) {
+      // If dist/index.html or dist/assets doesn't exist, we might already be in the dist directory
+      if (fs.existsSync(path.join(__dirname, 'index.html')) && fs.existsSync(path.join(__dirname, 'assets'))) {
+        distPath = __dirname;
+      } else if (fs.existsSync(path.join(process.cwd(), 'dist', 'index.html')) && fs.existsSync(path.join(process.cwd(), 'dist', 'assets'))) {
+        distPath = path.join(process.cwd(), 'dist');
+      } else if (fs.existsSync(path.join(process.cwd(), 'index.html')) && fs.existsSync(path.join(process.cwd(), 'assets'))) {
+        distPath = process.cwd();
+      }
     }
+    
+    app.use(express.static(distPath));
+    app.get('*', (req, res) => {
+      res.sendFile(path.join(distPath, 'index.html'));
+    });
   }
-  
-  app.use(express.static(distPath));
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(distPath, 'index.html'));
-  });
 
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://localhost:${PORT}`);
