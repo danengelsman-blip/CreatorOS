@@ -1,10 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
-  PenTool, 
   Send, 
   CheckCircle2, 
   RefreshCw,
-  Layout,
   Type,
   Hash,
   Image as ImageIcon,
@@ -20,6 +18,7 @@ import {
   Save,
   AlertCircle
 } from 'lucide-react';
+import { StudioIcon, IntelligenceIcon, HubIcon } from './IdentityIcons';
 import { motion, AnimatePresence } from 'motion/react';
 import { scoreContent, quickPolish, generateSpeech, transcribeAudio, generateVideo, getOperationStatus } from '../services/gemini';
 import { cn } from '../lib/utils';
@@ -52,6 +51,62 @@ export default function ContentStudio({ brand, setActiveTab, user }: { brand: an
   const [isScoring, setIsScoring] = useState(false);
   const [scoreData, setScoreData] = useState<any>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [lastAutosaved, setLastAutosaved] = useState<Date | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  // Load autosaved content on mount
+  useEffect(() => {
+    const savedTitle = localStorage.getItem('creatoros_draft_title');
+    const savedBody = localStorage.getItem('creatoros_draft_body');
+    const savedPlatform = localStorage.getItem('creatoros_draft_platform');
+
+    if (savedTitle) setTitle(savedTitle);
+    if (savedBody) setBody(savedBody);
+    if (savedPlatform) setPlatform(savedPlatform);
+  }, []);
+
+  // Autosave to localStorage
+  useEffect(() => {
+    if (!hasUnsavedChanges) return;
+
+    const timer = setTimeout(() => {
+      localStorage.setItem('creatoros_draft_title', title);
+      localStorage.setItem('creatoros_draft_body', body);
+      localStorage.setItem('creatoros_draft_platform', platform);
+      setLastAutosaved(new Date());
+      setHasUnsavedChanges(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [title, body, platform, hasUnsavedChanges]);
+
+  // Periodic Cloud Autosave (every 60 seconds)
+  useEffect(() => {
+    if (!user || !body || !hasUnsavedChanges) return;
+
+    const cloudTimer = setInterval(async () => {
+      try {
+        const draftRef = doc(db, 'projects', `draft_${user.uid}`);
+        await setDoc(draftRef, {
+          userId: user.uid,
+          name: title || 'Untitled Draft',
+          type: 'draft',
+          data: { title, body, platform },
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+        console.log('Cloud draft autosaved');
+      } catch (error) {
+        console.error('Cloud autosave failed:', error);
+      }
+    }, 60000);
+
+    return () => clearInterval(cloudTimer);
+  }, [user, title, body, platform, hasUnsavedChanges]);
+
+  // Track changes
+  useEffect(() => {
+    setHasUnsavedChanges(true);
+  }, [title, body, platform]);
 
   // AI Feature States
   const [isPolishing, setIsPolishing] = useState(false);
@@ -285,6 +340,12 @@ export default function ContentStudio({ brand, setActiveTab, user }: { brand: an
       }).catch(err => handleFirestoreError(err, OperationType.CREATE, 'projects'));
       
       alert('Content saved to CreatorOS Cloud and optimized for ' + platform);
+      
+      // Clear autosave on successful manual save
+      localStorage.removeItem('creatoros_draft_title');
+      localStorage.removeItem('creatoros_draft_body');
+      localStorage.removeItem('creatoros_draft_platform');
+      setHasUnsavedChanges(false);
     } catch (error) {
       console.error(error);
     } finally {
@@ -299,12 +360,12 @@ export default function ContentStudio({ brand, setActiveTab, user }: { brand: an
           <AlertCircle className="w-10 h-10" />
         </div>
         <div className="max-w-md">
-          <h2 className="text-3xl font-extrabold tracking-tight mb-3">Identity Required</h2>
+          <h2 className="text-3xl font-serif font-bold tracking-tight mb-3 text-premium-ink">Identity Required</h2>
           <p className="text-premium-muted text-lg leading-relaxed">You need to architect your brand kit before you can start creating world-class content with AI scoring.</p>
         </div>
         <button 
           onClick={() => setActiveTab('brand')}
-          className="px-10 py-5 bg-premium-ink text-white rounded-[24px] font-bold text-lg shadow-2xl shadow-black/10 hover:scale-[1.02] active:scale-[0.98] transition-all"
+          className="px-10 py-5 bg-accent-gold text-premium-bg rounded-[24px] font-bold text-lg shadow-2xl shadow-accent-gold/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
         >
           Go to Branding Engine
         </button>
@@ -318,22 +379,30 @@ export default function ContentStudio({ brand, setActiveTab, user }: { brand: an
       <div className="md:col-span-8 space-y-6 md:space-y-10">
         <div className="premium-card p-6 md:p-10 bg-premium-surface">
           <div className="flex items-center justify-between mb-8 md:mb-10 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-hide">
-            <div className="flex gap-2 p-1 bg-premium-bg rounded-2xl border border-premium-border min-w-max">
-              {PLATFORMS.map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => setPlatform(p.id)}
-                  className={cn(
-                    "px-4 md:px-5 py-2 md:py-2.5 rounded-xl text-[12px] md:text-[13px] font-bold transition-all whitespace-nowrap",
-                    platform === p.id 
-                      ? "bg-premium-surface text-premium-ink shadow-sm border border-premium-border" 
-                      : "text-premium-muted hover:text-premium-ink"
-                  )}
-                >
-                  <span className="mr-2">{p.icon}</span>
-                  {p.label}
-                </button>
-              ))}
+            <div className="flex items-center gap-4">
+              <div className="flex gap-2 p-1 bg-premium-bg rounded-2xl border border-premium-border min-w-max">
+                {PLATFORMS.map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => setPlatform(p.id)}
+                    className={cn(
+                      "px-4 md:px-5 py-2 md:py-2.5 rounded-xl text-[12px] md:text-[13px] font-bold transition-all whitespace-nowrap",
+                      platform === p.id 
+                        ? "bg-premium-surface text-premium-ink shadow-sm border border-premium-border" 
+                        : "text-premium-muted hover:text-premium-ink"
+                    )}
+                  >
+                    <span className="mr-2">{p.icon}</span>
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+              {lastAutosaved && (
+                <div className="hidden lg:flex items-center gap-2 text-[10px] font-bold text-accent-emerald/60 uppercase tracking-widest">
+                  <div className="w-1 h-1 rounded-full bg-accent-emerald animate-pulse" />
+                  Autosaved {lastAutosaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </div>
+              )}
             </div>
           </div>
 
@@ -343,13 +412,13 @@ export default function ContentStudio({ brand, setActiveTab, user }: { brand: an
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Post Title or Hook Idea..."
-              className="w-full text-2xl md:text-4xl font-extrabold tracking-tight mb-6 md:mb-8 outline-none placeholder:text-premium-muted bg-transparent"
+              className="w-full text-2xl md:text-4xl font-serif font-bold tracking-tight mb-6 md:mb-8 outline-none placeholder:text-premium-muted bg-transparent text-premium-ink"
             />
             <div className="absolute right-0 top-0 md:top-1 flex gap-2">
               <button 
                 onClick={handleQuickPolish}
                 disabled={isPolishing || !body}
-                className="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center bg-accent-violet/5 text-accent-violet rounded-xl hover:bg-accent-violet/10 transition-colors disabled:opacity-50"
+                className="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center bg-accent-gold/5 text-accent-gold rounded-xl hover:bg-accent-gold/10 transition-colors disabled:opacity-50 border border-accent-gold/10"
                 title="Fast AI Polish"
               >
                 {isPolishing ? <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" /> : <Bolt className="w-4 h-4 md:w-5 md:h-5" />}
@@ -362,14 +431,14 @@ export default function ContentStudio({ brand, setActiveTab, user }: { brand: an
               value={body}
               onChange={(e) => setBody(e.target.value)}
               placeholder="Write your content here... The AI will score it based on your brand voice."
-              className="w-full h-[300px] md:h-[400px] text-lg md:text-xl leading-relaxed outline-none resize-none placeholder:text-premium-muted bg-transparent font-medium"
+              className="w-full h-[300px] md:h-[400px] text-lg md:text-xl leading-relaxed outline-none resize-none placeholder:text-premium-muted bg-transparent font-medium text-premium-ink"
             />
             <div className="absolute bottom-2 md:bottom-4 right-0 flex flex-col gap-2 md:gap-3">
               <button 
                 onClick={isRecording ? stopRecording : startRecording}
                 className={cn(
                   "w-12 h-12 md:w-14 md:h-14 rounded-2xl shadow-2xl flex items-center justify-center transition-all",
-                  isRecording ? "bg-red-500 text-white animate-pulse" : "bg-premium-ink text-white hover:scale-110"
+                  isRecording ? "bg-red-500 text-white animate-pulse" : "bg-premium-ink text-premium-bg hover:scale-110"
                 )}
                 title={isRecording ? "Stop Recording" : "Transcribe Voice"}
               >
@@ -404,7 +473,7 @@ export default function ContentStudio({ brand, setActiveTab, user }: { brand: an
               <button 
                 onClick={handlePublish}
                 disabled={isSaving || !body}
-                className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 bg-premium-ink text-white rounded-[16px] md:rounded-[20px] font-bold text-[13px] md:text-[14px] flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-black/10 disabled:opacity-50"
+                className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 bg-premium-ink text-premium-bg rounded-[16px] md:rounded-[20px] font-bold text-[13px] md:text-[14px] flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-black/10 disabled:opacity-50"
               >
                 {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 Optimize & Save
@@ -414,14 +483,14 @@ export default function ContentStudio({ brand, setActiveTab, user }: { brand: an
         </div>
 
         {/* Video Generation Section */}
-        <div className="premium-card p-6 md:p-10 bg-premium-surface">
+        <div className="premium-card p-6 md:p-10 bg-premium-surface border border-accent-gold/5">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-accent-violet/5 rounded-2xl flex items-center justify-center">
-                <VideoIcon className="w-5 h-5 md:w-6 md:h-6 text-accent-violet" />
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-accent-gold/5 rounded-2xl flex items-center justify-center border border-accent-gold/10">
+                <VideoIcon className="w-5 h-5 md:w-6 md:h-6 text-accent-gold" />
               </div>
               <div>
-                <h3 className="font-bold text-base md:text-lg tracking-tight">Veo 3 Video Studio</h3>
+                <h3 className="font-serif font-bold text-base md:text-lg tracking-tight text-premium-ink">Veo 3 Video Studio</h3>
                 <p className="text-[12px] md:text-[13px] text-premium-muted">Generate high-fidelity video from text prompts</p>
               </div>
             </div>
@@ -442,7 +511,7 @@ export default function ContentStudio({ brand, setActiveTab, user }: { brand: an
                 onClick={() => setVideoAspectRatio('9:16')}
                 className={cn(
                   "px-4 py-2 rounded-xl text-[11px] font-bold transition-all",
-                  videoAspectRatio === '9:16' ? "bg-accent-violet text-white" : "bg-premium-bg text-premium-muted hover:text-premium-ink"
+                  videoAspectRatio === '9:16' ? "bg-accent-gold text-premium-bg" : "bg-premium-bg text-premium-muted hover:text-premium-ink"
                 )}
               >
                 9:16 (Portrait)
@@ -451,7 +520,7 @@ export default function ContentStudio({ brand, setActiveTab, user }: { brand: an
                 onClick={() => setVideoAspectRatio('16:9')}
                 className={cn(
                   "px-4 py-2 rounded-xl text-[11px] font-bold transition-all",
-                  videoAspectRatio === '16:9' ? "bg-accent-violet text-white" : "bg-premium-bg text-premium-muted hover:text-premium-ink"
+                  videoAspectRatio === '16:9' ? "bg-accent-gold text-premium-bg" : "bg-premium-bg text-premium-muted hover:text-premium-ink"
                 )}
               >
                 16:9 (Landscape)
@@ -463,19 +532,19 @@ export default function ContentStudio({ brand, setActiveTab, user }: { brand: an
                 value={videoPrompt}
                 onChange={(e) => setVideoPrompt(e.target.value)}
                 placeholder="Describe the video you want to generate..."
-                className="w-full h-32 p-5 md:p-6 bg-premium-bg rounded-[20px] md:rounded-[24px] border-none focus:ring-2 focus:ring-accent-violet/20 outline-none text-[14px] md:text-[15px] resize-none font-medium placeholder:text-premium-muted transition-all"
+                className="w-full h-32 p-5 md:p-6 bg-premium-bg rounded-[20px] md:rounded-[24px] border border-premium-border focus:ring-2 focus:ring-accent-gold/20 outline-none text-[14px] md:text-[15px] resize-none font-medium placeholder:text-premium-muted transition-all text-premium-ink"
               />
               <button 
                 onClick={handleGenerateVideo}
                 disabled={isGeneratingVideo || !videoPrompt}
-                className="absolute bottom-3 right-3 md:bottom-4 md:right-4 w-10 h-10 md:w-12 md:h-12 bg-accent-violet text-white rounded-xl shadow-xl shadow-accent-violet/20 flex items-center justify-center hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+                className="absolute bottom-3 right-3 md:bottom-4 md:right-4 w-10 h-10 md:w-12 md:h-12 bg-accent-gold text-premium-bg rounded-xl shadow-xl shadow-accent-gold/20 flex items-center justify-center hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
               >
                 {isGeneratingVideo ? <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" /> : <Play className="w-4 h-4 md:w-5 md:h-5" />}
               </button>
             </div>
 
             {videoStatus && (
-              <div className="p-5 bg-accent-violet/[0.03] text-accent-violet rounded-2xl text-[13px] font-bold flex items-center gap-3 border border-accent-violet/10">
+              <div className="p-5 bg-accent-gold/[0.03] text-accent-gold rounded-2xl text-[13px] font-bold flex items-center gap-3 border border-accent-gold/10">
                 {isGeneratingVideo && <Loader2 className="w-4 h-4 animate-spin" />}
                 {videoStatus}
               </div>
@@ -515,7 +584,7 @@ export default function ContentStudio({ brand, setActiveTab, user }: { brand: an
                   ) : (
                     <button 
                       onClick={handleConnectYouTube}
-                      className="flex items-center justify-center gap-2 py-4 bg-premium-ink text-white rounded-2xl font-bold text-sm hover:scale-[1.02] transition-all shadow-xl shadow-black/10"
+                      className="flex items-center justify-center gap-2 py-4 bg-premium-ink text-premium-bg rounded-2xl font-bold text-sm hover:scale-[1.02] transition-all shadow-xl shadow-black/10"
                     >
                       <BrandIcon size={16} className="text-accent-gold" />
                       Connect YouTube to Post
@@ -605,7 +674,7 @@ export default function ContentStudio({ brand, setActiveTab, user }: { brand: an
             ) : (
               <div className="flex flex-col items-center justify-center py-20 text-center">
                 <div className="w-16 h-16 bg-premium-bg rounded-2xl flex items-center justify-center mb-6 border border-premium-border">
-                  <PenTool className="w-8 h-8 text-premium-muted" />
+                  <StudioIcon size={32} className="text-premium-muted" />
                 </div>
                 <p className="text-[14px] text-premium-muted font-medium max-w-[200px] leading-relaxed">Write something and click "Score Content" to get AI feedback.</p>
               </div>
@@ -614,22 +683,22 @@ export default function ContentStudio({ brand, setActiveTab, user }: { brand: an
         </div>
 
         {/* Platform Formatter */}
-        <div className="p-10 bg-premium-ink text-white shadow-2xl shadow-black/20 border border-premium-border rounded-[24px] transition-all duration-300">
-          <h3 className="font-bold text-lg mb-8 flex items-center gap-3">
-            <Layout className="w-5 h-5 text-accent-violet" />
+        <div className="p-10 bg-premium-ink text-premium-bg shadow-2xl shadow-black/20 border border-premium-border rounded-[24px] transition-all duration-300">
+          <h3 className="font-serif font-bold text-lg mb-8 flex items-center gap-3">
+            <HubIcon size={24} className="text-accent-gold" />
             Auto-Formatter
           </h3>
-          <p className="text-[14px] text-white/50 mb-8 leading-relaxed">
+          <p className="text-[14px] text-premium-bg/50 mb-8 leading-relaxed">
             We'll automatically adjust your {platform} post for other platforms when you publish.
           </p>
           <div className="space-y-3">
             {PLATFORMS.filter(p => p.id !== platform).slice(0, 3).map(p => (
-              <div key={p.id} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group">
+              <div key={p.id} className="flex items-center justify-between p-4 bg-premium-bg/5 rounded-2xl border border-premium-bg/10 hover:bg-premium-bg/10 transition-colors cursor-pointer group">
                 <div className="flex items-center gap-4">
                   <span className="text-xl">{p.icon}</span>
                   <span className="text-[14px] font-bold tracking-tight">{p.label}</span>
                 </div>
-                <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-white transition-colors" />
+                <ChevronRight className="w-4 h-4 text-premium-bg/20 group-hover:text-premium-bg transition-colors" />
               </div>
             ))}
           </div>

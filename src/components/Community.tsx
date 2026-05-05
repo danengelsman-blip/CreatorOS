@@ -32,19 +32,19 @@ export default function Community({ user, setActiveTab }: { user: any, setActive
             {user?.photoURL ? (
               <img src={user.photoURL} alt={user.displayName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
             ) : (
-              <Search className="w-5 h-5 text-premium-muted" />
+              <Search className="w-5 h-5 text-white/40" />
             )}
           </div>
           <input 
             type="text" 
             placeholder={`What's on your mind, ${user?.displayName?.split(' ')[0] || 'Creator'}?`} 
-            className="flex-1 bg-transparent outline-none font-medium text-lg placeholder:text-premium-muted"
+            className="flex-1 bg-transparent outline-none font-medium text-lg placeholder:text-white/30"
           />
         </div>
 
         <div className="space-y-6">
           <div className="flex items-center justify-between px-2">
-            <h3 className="text-[11px] font-bold text-premium-muted uppercase tracking-[0.2em]">Live Momentum</h3>
+            <h3 className="text-[11px] font-bold text-white/40 uppercase tracking-[0.2em]">Live Momentum</h3>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 bg-accent-emerald rounded-full animate-pulse" />
               <span className="text-[11px] font-bold text-accent-emerald uppercase tracking-widest">1,204 Online</span>
@@ -68,25 +68,24 @@ export default function Community({ user, setActiveTab }: { user: any, setActive
                 </div>
               </div>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-[10px] md:text-[12px] text-premium-muted font-bold uppercase tracking-widest">{item.platform}</span>
-                <span className="w-1 h-1 rounded-full bg-premium-muted" />
-                <span className="text-[10px] md:text-[12px] text-premium-muted font-medium">2m ago</span>
+                <span className="text-[10px] md:text-[12px] text-white/40 font-bold uppercase tracking-widest">{item.platform}</span>
+                <span className="w-1 h-1 rounded-full bg-white/20" />
+                <span className="text-[10px] md:text-[12px] text-white/40 font-medium">2m ago</span>
               </div>
             </div>
           </div>
-          
-          <div className="pl-0 sm:pl-14 md:pl-16">
+                    <div className="pl-0 sm:pl-14 md:pl-16">
             <p className="text-base md:text-lg leading-relaxed text-premium-ink mb-6 md:mb-8 font-medium italic font-serif">
               "{item.content}"
             </p>
             
             <div className="flex items-center gap-6 md:gap-8 pt-6 border-t border-premium-border">
-              <button className="flex items-center gap-2 text-[12px] md:text-[13px] font-bold text-premium-muted hover:text-accent-violet transition-colors group/btn">
-                <Zap className="w-4 h-4 group-hover/btn:fill-accent-violet transition-all" />
+              <button className="flex items-center gap-2 text-[12px] md:text-[13px] font-bold text-white/40 hover:text-accent-gold transition-colors group/btn">
+                <Zap className="w-4 h-4 group-hover/btn:fill-accent-gold transition-all" />
                 <span className="tabular-nums">{item.boosts}</span>
               </button>
-              <button className="flex items-center gap-2 text-[12px] md:text-[13px] font-bold text-premium-muted hover:text-accent-violet transition-colors group/btn">
-                <MessageCircle className="w-4 h-4 group-hover/btn:fill-accent-violet transition-all" />
+              <button className="flex items-center gap-2 text-[12px] md:text-[13px] font-bold text-white/40 hover:text-accent-gold transition-colors group/btn">
+                <MessageCircle className="w-4 h-4 group-hover/btn:fill-accent-gold transition-all" />
                 <span className="tabular-nums">{item.comments}</span>
               </button>
             </div>
@@ -100,8 +99,8 @@ export default function Community({ user, setActiveTab }: { user: any, setActive
       <div className="md:col-span-4 space-y-10">
         <div className="premium-card p-10 bg-premium-surface">
           <div className="flex items-center justify-between mb-10">
-            <h3 className="font-bold text-lg tracking-tight">Daily Inspiration</h3>
-            <div className="w-10 h-10 bg-accent-violet/10 rounded-xl flex items-center justify-center">
+            <h3 className="font-serif font-bold text-lg tracking-tight text-premium-ink">Daily Inspiration</h3>
+            <div className="w-10 h-10 bg-accent-gold/10 rounded-xl flex items-center justify-center">
               <BrandIcon size={20} />
             </div>
           </div>
@@ -111,23 +110,23 @@ export default function Community({ user, setActiveTab }: { user: any, setActive
               {
                 id: 1,
                 content: (
-                  <div className="p-8 flex flex-col h-full bg-gradient-to-br from-accent-violet/5 to-transparent">
+                  <div className="p-8 flex flex-col h-full bg-gradient-to-br from-accent-gold/5 to-transparent">
                     <div className="w-12 h-12 rounded-2xl bg-premium-surface border border-premium-border shadow-sm flex items-center justify-center mb-6">
-                      <Zap className="w-6 h-6 text-accent-violet" />
+                      <Zap className="w-6 h-6 text-accent-gold" />
                     </div>
-                    <h4 className="text-xl font-bold mb-2">Morning Hook</h4>
-                    <p className="text-premium-muted text-sm leading-relaxed">
+                    <h4 className="text-xl font-serif font-bold mb-2 text-premium-ink">Morning Hook</h4>
+                    <p className="text-white/60 text-sm leading-relaxed">
                       "I spent 100 hours researching X so you don't have to. Here are the 3 things that actually matter..."
                     </p>
-                    <div className="mt-auto flex items-center gap-2 text-[11px] font-bold text-accent-violet uppercase tracking-widest">
+                    <div className="mt-auto flex items-center gap-2 text-[11px] font-bold text-accent-gold uppercase tracking-widest">
                       Fling to skip <ChevronRight className="w-3 h-3" />
                     </div>
                   </div>
                 ),
                 backContent: (
                   <div className="p-8 flex flex-col h-full">
-                    <h4 className="text-xl font-bold mb-4">Why it works</h4>
-                    <p className="text-white/70 text-sm leading-relaxed">
+                    <h4 className="text-xl font-serif font-bold mb-4 text-premium-ink">Why it works</h4>
+                    <p className="text-white/60 text-sm leading-relaxed">
                       This hook leverages the "Curiosity Gap" and "Time Saved" value propositions. It positions you as an authority who has done the hard work.
                     </p>
                   </div>
@@ -140,8 +139,8 @@ export default function Community({ user, setActiveTab }: { user: any, setActive
                     <div className="w-12 h-12 rounded-2xl bg-premium-surface border border-premium-border shadow-sm flex items-center justify-center mb-6">
                       <Globe className="w-6 h-6 text-accent-emerald" />
                     </div>
-                    <h4 className="text-xl font-bold mb-2">Visual Style</h4>
-                    <p className="text-premium-muted text-sm leading-relaxed">
+                    <h4 className="text-xl font-serif font-bold mb-2 text-premium-ink">Visual Style</h4>
+                    <p className="text-white/60 text-sm leading-relaxed">
                       Use high-contrast, minimalist thumbnails with a single focal point to increase CTR by up to 40%.
                     </p>
                     <div className="mt-auto flex items-center gap-2 text-[11px] font-bold text-accent-emerald uppercase tracking-widest">
@@ -151,8 +150,8 @@ export default function Community({ user, setActiveTab }: { user: any, setActive
                 ),
                 backContent: (
                   <div className="p-8 flex flex-col h-full">
-                    <h4 className="text-xl font-bold mb-4">Pro Tip</h4>
-                    <p className="text-white/70 text-sm leading-relaxed">
+                    <h4 className="text-xl font-serif font-bold mb-4 text-premium-ink">Pro Tip</h4>
+                    <p className="text-white/60 text-sm leading-relaxed">
                       Avoid cluttered backgrounds. The human eye gravitates towards simplicity in a busy feed.
                     </p>
                   </div>
@@ -186,12 +185,12 @@ export default function Community({ user, setActiveTab }: { user: any, setActive
                   </div>
                   <div>
                     <p className="font-bold text-[15px] text-premium-ink">{user.name}</p>
-                    <p className="text-[12px] text-premium-muted font-medium">{user.niche}</p>
+                    <p className="text-[12px] text-white/40 font-medium">{user.niche}</p>
                   </div>
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-[15px] text-premium-ink">{user.streak}d</p>
-                  <p className="text-[10px] text-premium-muted uppercase font-bold tracking-widest">Streak</p>
+                  <p className="text-[10px] text-white/40 uppercase font-bold tracking-widest">Streak</p>
                 </div>
               </div>
             ))}
@@ -201,18 +200,18 @@ export default function Community({ user, setActiveTab }: { user: any, setActive
           </button>
         </div>
 
-        <div className="bg-premium-ink p-10 rounded-[24px] text-white shadow-2xl shadow-black/20 relative overflow-hidden group">
+        <div className="bg-premium-ink p-10 rounded-[24px] text-premium-bg shadow-2xl shadow-black/20 relative overflow-hidden group">
           <div className="relative z-10">
-            <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-md border border-white/10">
-              <Globe className="w-6 h-6 text-accent-cobalt" />
+            <div className="w-12 h-12 bg-black/10 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-md border border-black/10">
+              <Globe className="w-6 h-6 text-accent-gold" />
             </div>
-            <h3 className="text-2xl font-extrabold tracking-tight mb-3">Creator Journey</h3>
-            <p className="text-[14px] text-white/50 mb-8 leading-relaxed font-medium">
+            <h3 className="text-2xl font-serif font-bold tracking-tight mb-3">Creator Journey</h3>
+            <p className="text-[14px] text-black/50 mb-8 leading-relaxed font-medium">
               Your public portfolio updates in real-time as you build. Share your momentum with the world.
             </p>
             <button 
               onClick={() => setActiveTab('profile')}
-              className="w-full py-5 bg-premium-surface border border-premium-border text-premium-ink rounded-[20px] font-bold text-[14px] flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl"
+              className="w-full py-5 bg-accent-gold border border-accent-gold text-premium-bg rounded-[20px] font-bold text-[14px] flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-accent-gold/20"
             >
               View My Page
               <ArrowUpRight className="w-4 h-4" />
@@ -220,8 +219,8 @@ export default function Community({ user, setActiveTab }: { user: any, setActive
           </div>
           
           {/* Abstract background shapes */}
-          <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-accent-cobalt/20 rounded-full blur-[80px] group-hover:scale-125 transition-transform duration-1000" />
-          <div className="absolute -top-20 -left-20 w-64 h-64 bg-accent-violet/10 rounded-full blur-[80px]" />
+          <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-accent-emerald/20 rounded-full blur-[80px] group-hover:scale-125 transition-transform duration-1000" />
+          <div className="absolute -top-20 -left-20 w-64 h-64 bg-accent-gold/10 rounded-full blur-[80px]" />
         </div>
       </div>
     </div>

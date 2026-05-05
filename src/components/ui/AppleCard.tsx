@@ -130,7 +130,7 @@ export default function AppleCard({
 
         {/* Back Face */}
         <div 
-          className="absolute inset-0 w-full h-full rounded-[32px] overflow-hidden bg-premium-ink text-white p-8"
+          className="absolute inset-0 w-full h-full rounded-[32px] overflow-hidden bg-premium-ink text-premium-bg p-8"
           style={{ 
             backfaceVisibility: "hidden",
             WebkitBackfaceVisibility: "hidden",
@@ -142,7 +142,7 @@ export default function AppleCard({
             {backContent || (
               <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
                 <h4 className="text-xl font-bold">Details</h4>
-                <p className="text-white/60 text-sm">Tap to flip back</p>
+                <p className="text-premium-bg/60 text-sm">Tap to flip back</p>
               </div>
             )}
           </div>

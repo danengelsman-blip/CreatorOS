@@ -212,18 +212,18 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
       >
         {/* Header */}
         <div className="p-8 border-b border-premium-border flex items-center justify-between bg-premium-surface sticky top-0 z-10">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-accent-violet/10 rounded-2xl flex items-center justify-center">
+          <div className="flex items-center gap-4 text-premium-ink">
+            <div className="w-12 h-12 bg-accent-gold/10 rounded-2xl flex items-center justify-center">
               <BrandIcon size={24} />
             </div>
             <div>
-              <h2 className="text-2xl font-extrabold tracking-tight">AI Avatar Generator</h2>
+              <h2 className="text-2xl font-serif font-bold tracking-tight">AI Avatar Generator</h2>
               <p className="text-sm text-premium-muted">Design your digital identity with CreatorOS AI</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-3 hover:bg-white/10 rounded-2xl transition-colors"
+            className="p-3 hover:bg-white/10 rounded-2xl transition-colors text-premium-muted hover:text-premium-ink"
           >
             <X className="w-6 h-6" />
           </button>
@@ -262,7 +262,7 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
                   <label className="text-[11px] font-bold text-premium-muted uppercase tracking-widest">Reference Photo</label>
                   <div 
                     onClick={() => fileInputRef.current?.click()}
-                    className="aspect-square rounded-3xl border-2 border-dashed border-premium-border bg-premium-surface flex flex-col items-center justify-center cursor-pointer hover:border-accent-violet transition-colors overflow-hidden relative group"
+                    className="aspect-square rounded-3xl border-2 border-dashed border-premium-border bg-premium-surface flex flex-col items-center justify-center cursor-pointer hover:border-accent-gold transition-colors overflow-hidden relative group"
                   >
                     {referenceImage ? (
                       <>
@@ -298,13 +298,13 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
                       className={cn(
                         "p-4 rounded-2xl border text-left transition-all",
                         selectedStyle.id === style.id 
-                          ? "bg-premium-surface border-accent-violet shadow-sm ring-1 ring-accent-violet" 
+                          ? "bg-premium-surface border-accent-gold shadow-sm ring-1 ring-accent-gold" 
                           : "bg-premium-surface border-premium-border hover:border-premium-muted"
                       )}
                     >
                       <p className={cn(
                         "text-xs font-bold",
-                        selectedStyle.id === style.id ? "text-accent-violet" : "text-premium-ink"
+                        selectedStyle.id === style.id ? "text-accent-gold" : "text-premium-ink"
                       )}>
                         {style.name}
                       </p>
@@ -319,14 +319,14 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   placeholder="e.g. wearing a black hoodie, holding a coffee cup..."
-                  className="w-full h-32 p-4 bg-premium-surface border border-premium-border rounded-2xl outline-none focus:ring-2 focus:ring-accent-violet/20 focus:border-accent-violet transition-all text-sm resize-none"
+                  className="w-full h-32 p-4 bg-premium-surface border border-premium-border rounded-2xl outline-none focus:ring-2 focus:ring-accent-gold/20 focus:border-accent-gold transition-all text-sm resize-none text-premium-ink"
                 />
               </div>
 
               <button 
                 onClick={handleGenerate}
                 disabled={isGenerating || (activeTab === 'photo' && !referenceImage)}
-                className="w-full py-5 bg-premium-ink text-white rounded-2xl font-bold text-sm flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl disabled:opacity-50 disabled:scale-100"
+                className="w-full py-5 bg-accent-gold text-premium-bg rounded-2xl font-bold text-sm flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-accent-gold/20 disabled:opacity-50 disabled:scale-100"
               >
                 {isGenerating ? (
                   <>
@@ -335,7 +335,7 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
                   </>
                 ) : (
                   <>
-                    <Zap className="w-5 h-5 text-accent-gold" />
+                    <Zap className="w-5 h-5 text-premium-bg" />
                     Generate Avatar
                   </>
                 )}
@@ -357,16 +357,16 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
                     <Palette className="w-10 h-10 text-premium-muted" />
                   </div>
                   <div>
-                    <p className="font-bold text-premium-ink">No avatars yet</p>
+                    <p className="font-serif font-bold text-premium-ink">No avatars yet</p>
                     <p className="text-sm text-premium-muted">Generate your first AI avatar to see it here.</p>
                   </div>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                   {isGenerating && (
-                    <div className="aspect-square rounded-[32px] bg-premium-bg border-2 border-dashed border-accent-violet/20 flex flex-col items-center justify-center space-y-4 animate-pulse">
-                      <Loader2 className="w-10 h-10 text-accent-violet animate-spin" />
-                      <p className="text-xs font-bold text-accent-violet uppercase tracking-widest">Generating...</p>
+                    <div className="aspect-square rounded-[32px] bg-premium-bg border-2 border-dashed border-accent-gold/20 flex flex-col items-center justify-center space-y-4 animate-pulse">
+                      <Loader2 className="w-10 h-10 text-accent-gold animate-spin" />
+                      <p className="text-xs font-bold text-accent-gold uppercase tracking-widest">Generating...</p>
                     </div>
                   )}
                   

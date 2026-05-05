@@ -26,6 +26,7 @@ import {
 import { motion } from 'motion/react';
 import AppleCard from './ui/AppleCard';
 import BrandIcon from './BrandIcon';
+import { IntelligenceIcon, HubIcon, StudioIcon, RoadmapIcon } from './IdentityIcons';
 import { cn } from '../lib/utils';
 
 const MOCK_DATA = [
@@ -47,49 +48,49 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
     <div className="space-y-12 pb-20">
       {/* Hero Section */}
       <section className="grid grid-cols-1 md:grid-cols-12 gap-8">
-        <div className="md:col-span-8 premium-card p-6 md:p-10 bg-gradient-to-br from-premium-surface via-premium-surface to-accent-violet/10 relative overflow-hidden group">
+        <div className="md:col-span-8 premium-card p-6 md:p-10 bg-gradient-to-br from-premium-surface via-premium-surface to-accent-gold/10 relative overflow-hidden group border-accent-gold/5">
           <div className="relative z-10 flex flex-col h-full">
             <div className="flex items-center gap-2 mb-6 md:mb-8">
-              <div className="px-3 py-1 bg-accent-violet/10 text-accent-violet rounded-full text-[11px] font-bold uppercase tracking-wider">
+              <div className="px-3 py-1 bg-accent-gold/10 text-accent-gold rounded-full text-[11px] font-bold uppercase tracking-wider">
                 Momentum
               </div>
-              <span className="text-[11px] text-premium-muted font-medium">Welcome back, {user?.displayName?.split(' ')[0] || 'Creator'}</span>
+              <span className="text-[11px] text-white/40 font-medium">Welcome back, {user?.displayName?.split(' ')[0] || 'Creator'}</span>
             </div>
             
             <div className="mb-8 md:mb-10">
-              <h2 className="text-2xl md:text-4xl font-extrabold tracking-tight mb-4 text-balance leading-[1.1]">
-                Your audience is growing <span className="text-accent-violet italic font-serif font-normal">24% faster</span> than last week.
+              <h2 className="text-2xl md:text-4xl font-serif font-bold tracking-tight mb-4 text-balance leading-[1.1]">
+                Your audience is growing <span className="text-accent-gold italic font-normal">24% faster</span> than last week.
               </h2>
-              <p className="text-premium-muted max-w-md text-sm md:text-base text-balance leading-relaxed">
+              <p className="text-white/60 max-w-md text-sm md:text-base text-balance leading-relaxed">
                 You're on track to hit your 5,000 follower milestone by the end of the month. Keep up the consistency.
               </p>
             </div>
 
-            <div className="mt-auto grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 pt-8 border-t border-premium-border">
+            <div className="mt-auto grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 pt-8 border-t border-white/10">
               <div>
-                <p className="text-[10px] md:text-[11px] font-bold text-premium-muted uppercase tracking-widest mb-1">Weekly Growth</p>
-                <p className="text-xl md:text-2xl font-bold">+1,240</p>
+                <p className="text-[10px] md:text-[11px] font-bold text-white/60 uppercase tracking-widest mb-1">Weekly Growth</p>
+                <p className="text-xl md:text-2xl font-bold text-white">+1,240</p>
               </div>
               <div>
-                <p className="text-[10px] md:text-[11px] font-bold text-premium-muted uppercase tracking-widest mb-1">Engagement Rate</p>
-                <p className="text-xl md:text-2xl font-bold">4.82%</p>
+                <p className="text-[10px] md:text-[11px] font-bold text-white/60 uppercase tracking-widest mb-1">Engagement Rate</p>
+                <p className="text-xl md:text-2xl font-bold text-white">4.82%</p>
               </div>
               <div>
-                <p className="text-[10px] md:text-[11px] font-bold text-premium-muted uppercase tracking-widest mb-1">Top Platform</p>
-                <p className="text-xl md:text-2xl font-bold">TikTok</p>
+                <p className="text-[10px] md:text-[11px] font-bold text-white/60 uppercase tracking-widest mb-1">Top Platform</p>
+                <p className="text-xl md:text-2xl font-bold text-white">TikTok</p>
               </div>
             </div>
           </div>
           
           {/* Abstract background elements */}
-          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-accent-violet/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/4" />
+          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-accent-gold/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/4" />
           <div className="absolute bottom-0 right-0 p-10 opacity-10 group-hover:opacity-20 transition-opacity hidden md:block">
             <LineChart className="w-64 h-64 -rotate-12" />
           </div>
         </div>
 
         <div className="md:col-span-4 space-y-8">
-          <div className="p-6 md:p-8 bg-premium-ink text-white rounded-[32px] relative overflow-hidden h-full flex flex-col">
+          <div className="p-6 md:p-8 bg-premium-ink text-premium-bg rounded-[32px] relative overflow-hidden h-full flex flex-col">
             <div className="relative z-10">
               <div className="flex items-center justify-between mb-8">
                 <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
@@ -136,7 +137,7 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
             <h3 className="text-lg font-bold tracking-tight">Recent Content</h3>
             <button 
               onClick={() => setActiveTab('create')}
-              className="text-accent-violet text-xs font-bold flex items-center gap-2 hover:underline"
+              className="text-accent-gold text-xs font-bold flex items-center gap-2 hover:underline"
             >
               Create New <ArrowRight className="w-3 h-3" />
             </button>
@@ -146,10 +147,10 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
               <div key={project.id} className="premium-card p-6 bg-premium-surface hover:shadow-xl transition-all group">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-accent-violet/5 text-accent-violet rounded-lg flex items-center justify-center">
+                    <div className="w-8 h-8 bg-accent-gold/5 text-accent-gold rounded-lg flex items-center justify-center">
                       <PenTool className="w-4 h-4" />
                     </div>
-                    <span className="text-[11px] font-bold text-premium-muted uppercase tracking-widest">
+                    <span className="text-[11px] font-bold text-white/40 uppercase tracking-widest">
                       {project.data?.platform || 'Content'}
                     </span>
                   </div>
@@ -160,20 +161,20 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
                     </div>
                   )}
                 </div>
-                <h4 className="font-bold text-lg mb-2 truncate group-hover:text-accent-violet transition-colors">
+                <h4 className="font-bold text-lg mb-2 truncate group-hover:text-accent-gold transition-colors">
                   {project.name}
                 </h4>
-                <p className="text-sm text-premium-muted line-clamp-2 mb-4 leading-relaxed">
+                <p className="text-sm text-white/60 line-clamp-2 mb-4 leading-relaxed">
                   {project.data?.body}
                 </p>
                 <div className="flex items-center justify-between pt-4 border-t border-premium-border">
-                  <div className="flex items-center gap-2 text-[10px] text-premium-muted font-bold uppercase tracking-widest">
+                  <div className="flex items-center gap-2 text-[10px] text-white/40 font-bold uppercase tracking-widest">
                     <Clock className="w-3 h-3" />
                     {project.createdAt?.toDate ? project.createdAt.toDate().toLocaleDateString() : 'Just now'}
                   </div>
                   <button 
                     onClick={() => setActiveTab('create')}
-                    className="text-accent-violet text-[11px] font-bold uppercase tracking-widest hover:underline"
+                    className="text-accent-gold text-[11px] font-bold uppercase tracking-widest hover:underline"
                   >
                     Edit
                   </button>
@@ -190,7 +191,7 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
           <h3 className="text-lg font-bold tracking-tight">Key Performance Indicators</h3>
           <div className="flex gap-2">
             <button className="px-4 py-2 bg-premium-surface border border-premium-border rounded-xl text-xs font-bold shadow-sm hover:bg-white/5 transition-colors">7 Days</button>
-            <button className="px-4 py-2 text-premium-muted text-xs font-bold hover:text-premium-ink transition-colors">30 Days</button>
+            <button className="px-4 py-2 text-white/40 text-xs font-bold hover:text-premium-ink transition-colors">30 Days</button>
           </div>
         </div>
         
@@ -201,7 +202,7 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
             change="+12.4%" 
             trend="up"
             data={SPARKLINE_DATA}
-            color="violet"
+            color="gold"
             details="Your audience grew by 1,240 new followers this week, primarily from TikTok and LinkedIn cross-promotion."
           />
           <AnalyticsCard 
@@ -210,7 +211,7 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
             change="+8.2%" 
             trend="up"
             data={SPARKLINE_DATA.map(d => ({ value: d.value * 0.8 }))}
-            color="cobalt"
+            color="emerald"
             details="Total reach increased across all platforms. Video content is driving 70% of your current impressions."
           />
           <AnalyticsCard 
@@ -240,12 +241,12 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
           <div className="flex items-center justify-between mb-8">
             <div>
               <h3 className="text-lg font-bold">Growth Velocity</h3>
-              <p className="text-xs text-premium-muted">Audience acquisition rate over time</p>
+              <p className="text-xs text-white/60">Audience acquisition rate over time</p>
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-accent-violet" />
-                <span className="text-[11px] font-bold text-premium-muted uppercase tracking-wider">Followers</span>
+                <div className="w-2 h-2 rounded-full bg-accent-gold" />
+                <span className="text-[11px] font-bold text-white/40 uppercase tracking-wider">Followers</span>
               </div>
             </div>
           </div>
@@ -255,8 +256,8 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
               <AreaChart data={MOCK_DATA}>
                 <defs>
                   <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#D97706" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#D97706" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <XAxis 
@@ -283,7 +284,7 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
                 <Area 
                   type="monotone" 
                   dataKey="followers" 
-                  stroke="#8B5CF6" 
+                  stroke="#D97706" 
                   strokeWidth={2}
                   fillOpacity={1} 
                   fill="url(#chartGradient)" 
@@ -295,10 +296,10 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
         </div>
 
         <div className="md:col-span-5 space-y-8">
-          <div className="premium-card p-8 bg-premium-surface border-accent-violet/10">
+          <div className="premium-card p-8 bg-premium-surface border-accent-gold/10">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 bg-accent-violet/10 rounded-lg flex items-center justify-center">
-                <BrandIcon size={16} className="text-accent-violet" />
+              <div className="w-8 h-8 bg-accent-gold/10 rounded-lg flex items-center justify-center">
+                <IntelligenceIcon size={16} className="text-accent-gold" />
               </div>
               <h3 className="font-bold">AI Growth Insights</h3>
             </div>
@@ -323,7 +324,7 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
             
             <button 
               onClick={() => setActiveTab('reports')}
-              className="w-full mt-6 py-3 text-accent-violet text-xs font-bold flex items-center justify-center gap-2 hover:bg-accent-violet/5 rounded-xl transition-colors"
+              className="w-full mt-6 py-3 text-accent-gold text-xs font-bold flex items-center justify-center gap-2 hover:bg-accent-gold/5 rounded-xl transition-colors"
             >
               View All Insights
               <ChevronRight className="w-4 h-4" />
@@ -335,14 +336,16 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
               <h3 className="font-bold">Next Best Action</h3>
               <div className="w-2 h-2 rounded-full bg-accent-emerald" />
             </div>
-            <p className="text-sm text-premium-muted mb-6 leading-relaxed">
-              Complete your <span className="text-premium-ink font-bold">Media Kit</span> to start attracting high-ticket brand sponsorships.
+            <p className="text-sm text-white/50 mb-6 leading-relaxed">
+              {projects.length === 0 
+                ? "Architect your first piece of content to unlock the Creator Hub command center."
+                : "Schedule your latest draft in the Creator Hub to maintain momentum."}
             </p>
             <button 
-              onClick={() => setActiveTab('brand')}
-              className="w-full py-3 bg-premium-ink text-white rounded-xl font-bold text-xs hover:bg-black transition-colors"
+              onClick={() => setActiveTab(projects.length === 0 ? 'create' : 'hub')}
+              className="w-full py-3 bg-premium-bg text-premium-ink rounded-xl font-bold text-xs hover:bg-black transition-colors"
             >
-              Build Media Kit
+              {projects.length === 0 ? "Start Creating" : "Go to Creator Hub"}
             </button>
           </div>
         </div>
@@ -353,8 +356,6 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
 
 function AnalyticsCard({ title, value, change, trend, data, color, details }: any) {
   const accentColors: any = {
-    violet: "text-accent-violet",
-    cobalt: "text-accent-cobalt",
     emerald: "text-accent-emerald",
     gold: "text-accent-gold",
   };
@@ -381,7 +382,7 @@ function AnalyticsCard({ title, value, change, trend, data, color, details }: an
     >
       <div className="p-6 flex flex-col h-full">
         <div className="flex items-center justify-between mb-6">
-          <span className="text-[11px] font-bold text-premium-muted uppercase tracking-widest">{title}</span>
+          <span className="text-[11px] font-bold text-white/40 uppercase tracking-widest">{title}</span>
           <div className={cn(
             "flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full",
             trend === 'up' ? "bg-accent-emerald/10 text-accent-emerald" : "bg-red-50 text-red-500"
@@ -437,16 +438,16 @@ function InsightItem({ title, description, icon: Icon }: any) {
         {/* Front */}
         <div className="absolute inset-0 backface-hidden flex gap-4 bg-premium-surface p-4 rounded-2xl border border-premium-border">
           <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center flex-shrink-0">
-            <Icon className="w-4 h-4 text-premium-muted" />
+            <Icon className="w-4 h-4 text-white/40" />
           </div>
           <div>
             <h4 className="text-[13px] font-bold mb-0.5">{title}</h4>
-            <p className="text-[12px] text-premium-muted leading-relaxed line-clamp-2">{description}</p>
+            <p className="text-[12px] text-white/60 leading-relaxed line-clamp-2">{description}</p>
           </div>
         </div>
         
         {/* Back */}
-        <div className="absolute inset-0 backface-hidden rotate-y-180 flex items-center justify-center bg-accent-violet text-white p-4 rounded-2xl shadow-xl shadow-accent-violet/20 translate-z-[1px]">
+        <div className="absolute inset-0 backface-hidden rotate-y-180 flex items-center justify-center bg-accent-gold text-premium-bg p-4 rounded-2xl shadow-xl shadow-accent-gold/20 translate-z-[1px]">
           <div className="text-center">
             <Sparkles className="w-5 h-5 mx-auto mb-2 opacity-80" />
             <span className="text-[12px] font-bold tracking-wide">Take Action</span>

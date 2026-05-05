@@ -65,10 +65,10 @@ export default function Roadmap({ brand, user }: { brand: any, user: any }) {
         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-10">
           <div className="space-y-6 max-w-2xl text-center md:text-left">
             <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-white/10 rounded-full text-[10px] md:text-[11px] font-bold uppercase tracking-[0.15em] border border-white/10 backdrop-blur-md">
-              <Map className="w-4 h-4 text-accent-violet" />
+              <Map className="w-4 h-4 text-accent-gold" />
               30-Day Creator Challenge
             </div>
-            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight text-white">Your path to <span className="text-accent-violet italic font-serif font-normal">monetization</span>.</h2>
+            <h2 className="text-3xl md:text-5xl font-serif font-bold tracking-tight leading-tight text-white text-balance">Your path to <span className="text-accent-gold italic font-normal">monetization</span>.</h2>
             <p className="text-lg md:text-xl text-white/50 leading-relaxed font-medium">
               A structured, high-performance roadmap designed to take you from zero to your first dollar in 30 days.
             </p>
@@ -107,7 +107,7 @@ export default function Roadmap({ brand, user }: { brand: any, user: any }) {
         </div>
         
         {/* Abstract background shapes */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent-violet/10 rounded-full blur-[120px] -mr-40 -mt-40" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent-gold/10 rounded-full blur-[120px] -mr-40 -mt-40" />
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-accent-emerald/10 rounded-full blur-[120px] -ml-40 -mb-40" />
       </div>
 
@@ -130,14 +130,14 @@ export default function Roadmap({ brand, user }: { brand: any, user: any }) {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 md:gap-10">
                 <div className="flex flex-col sm:flex-row items-start gap-6 md:gap-8">
                   <div className={cn(
-                    "w-14 h-14 md:w-16 md:h-16 rounded-2xl text-white shadow-2xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110", 
-                    stage.color
+                    "w-14 h-14 md:w-16 md:h-16 rounded-2xl text-premium-bg shadow-2xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110", 
+                    stage.color === 'bg-indigo-500' ? 'bg-accent-gold' : stage.color === 'bg-purple-500' ? 'bg-accent-gold' : stage.color
                   )}>
                     <stage.icon className="w-7 h-7 md:w-8 md:h-8" />
                   </div>
                   <div>
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-xl md:text-2xl font-extrabold tracking-tight">{stage.title}</h3>
+                      <h3 className="text-xl md:text-2xl font-serif font-bold tracking-tight text-premium-ink">{stage.title}</h3>
                       {!isUnlocked && <Lock className="w-4 h-4 text-premium-muted" />}
                     </div>
                     <p className="text-[14px] md:text-base text-premium-muted font-medium leading-relaxed max-w-md">{stage.desc}</p>
@@ -154,8 +154,8 @@ export default function Roadmap({ brand, user }: { brand: any, user: any }) {
                         key={day}
                         className={cn(
                           "w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center font-bold text-[13px] md:text-[15px] border transition-all duration-300",
-                          isDayCompleted ? "bg-accent-emerald border-accent-emerald text-white shadow-lg shadow-accent-emerald/20" :
-                          isCurrentDay ? "bg-premium-ink border-premium-ink text-white scale-110 shadow-2xl shadow-black/20" :
+                          isDayCompleted ? "bg-accent-emerald border-accent-emerald text-premium-bg shadow-lg shadow-accent-emerald/20" :
+                          isCurrentDay ? "bg-accent-gold border-accent-gold text-premium-bg scale-110 shadow-2xl shadow-accent-gold/20" :
                           "bg-premium-bg border-premium-border text-premium-muted hover:bg-white/10"
                         )}
                       >
@@ -167,7 +167,7 @@ export default function Roadmap({ brand, user }: { brand: any, user: any }) {
 
                 <button className={cn(
                   "w-full md:w-auto px-6 md:px-8 py-3 md:py-4 rounded-[16px] md:rounded-[20px] font-bold text-[13px] md:text-[14px] flex items-center justify-center gap-2 transition-all shadow-xl",
-                  isUnlocked ? "bg-premium-ink text-premium-bg hover:scale-[1.02] active:scale-[0.98] shadow-black/10" : "bg-premium-bg text-premium-muted cursor-not-allowed shadow-none"
+                  isUnlocked ? "bg-accent-gold text-premium-bg hover:scale-[1.02] active:scale-[0.98] shadow-accent-gold/20" : "bg-premium-bg text-premium-muted cursor-not-allowed shadow-none"
                 )}>
                   {isUnlocked ? 'Continue Journey' : 'Locked Stage'}
                   <ChevronRight className="w-4 h-4" />

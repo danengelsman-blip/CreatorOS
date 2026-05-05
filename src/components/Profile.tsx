@@ -120,19 +120,19 @@ export default function Profile({ user, userData, brand }: { user: FirebaseUser,
           <div className="flex-1 text-center md:text-left space-y-4">
             <div>
               <div className="flex items-center justify-center md:justify-start gap-3 mb-1">
-                <h2 className="text-4xl font-extrabold tracking-tight">{userData?.displayName || user?.displayName || 'Creator'}</h2>
+                <h2 className="text-4xl font-serif font-bold tracking-tight text-white">{userData?.displayName || user?.displayName || 'Creator'}</h2>
                 {userData?.accountStatus && (
                   <div className={cn(
                     "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border shadow-lg",
                     userData.accountStatus === 'active' 
                       ? "bg-accent-emerald/20 text-accent-emerald border-accent-emerald/30" 
-                      : "bg-amber-500/20 text-amber-500 border-amber-500/30"
+                      : "bg-accent-gold/20 text-accent-gold border-accent-gold/30"
                   )}>
                     {userData.accountStatus}
                   </div>
                 )}
                 {userData?.avatarType === 'ai_generated' && (
-                  <div className="px-2 py-0.5 bg-accent-violet/20 text-accent-violet rounded-md text-[10px] font-bold uppercase tracking-widest border border-accent-violet/20 flex items-center gap-1">
+                  <div className="px-2 py-0.5 bg-accent-gold/20 text-accent-gold rounded-md text-[10px] font-bold uppercase tracking-widest border border-accent-gold/20 flex items-center gap-1">
                     <BrandIcon size={12} />
                     AI Avatar
                   </div>
@@ -148,7 +148,7 @@ export default function Profile({ user, userData, brand }: { user: FirebaseUser,
               <div className="px-4 py-1.5 bg-white/10 rounded-full text-[11px] font-bold uppercase tracking-widest border border-white/10 backdrop-blur-md">
                 {brand?.archetype || 'Visionary'} Creator
               </div>
-              <div className="px-4 py-1.5 bg-accent-violet/20 text-accent-violet rounded-full text-[11px] font-bold uppercase tracking-widest border border-accent-violet/20">
+              <div className="px-4 py-1.5 bg-accent-gold/20 text-accent-gold rounded-full text-[11px] font-bold uppercase tracking-widest border border-accent-gold/20">
                 Pro Member
               </div>
             </div>
@@ -157,7 +157,7 @@ export default function Profile({ user, userData, brand }: { user: FirebaseUser,
           <div className="flex flex-col gap-3">
             <button 
               onClick={() => setShowAvatarGenerator(true)}
-              className="px-8 py-4 bg-accent-violet text-white rounded-2xl font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl flex items-center justify-center gap-2"
+              className="px-8 py-4 bg-accent-gold text-premium-bg rounded-2xl font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-accent-gold/20 flex items-center justify-center gap-2"
             >
               <BrandIcon size={16} />
               Generate AI Avatar
@@ -174,13 +174,13 @@ export default function Profile({ user, userData, brand }: { user: FirebaseUser,
         </div>
 
         {/* Abstract background shapes */}
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-accent-violet/10 rounded-full blur-[100px] -mr-20 -mt-20" />
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-accent-gold/10 rounded-full blur-[100px] -mr-20 -mt-20" />
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent-emerald/10 rounded-full blur-[100px] -ml-20 -mb-20" />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {[
-          { label: 'Total Reach', value: '124.5K', icon: TrendingUp, color: 'text-accent-violet' },
+          { label: 'Total Reach', value: '124.5K', icon: TrendingUp, color: 'text-accent-gold' },
           { label: 'Content Score', value: '94/100', icon: Award, color: 'text-accent-gold' },
           { label: 'Streak Days', value: '42', icon: Zap, color: 'text-accent-emerald' },
         ].map((stat, i) => (
@@ -196,49 +196,49 @@ export default function Profile({ user, userData, brand }: { user: FirebaseUser,
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="premium-card p-10 bg-premium-surface">
-          <h3 className="text-xl font-bold mb-8 flex items-center gap-3">
-            <Globe className="w-6 h-6 text-accent-cobalt" />
+          <h3 className="text-xl font-serif font-bold mb-8 flex items-center gap-3 text-premium-ink">
+            <Globe className="w-6 h-6 text-accent-gold" />
             Public Portfolio
           </h3>
           <div className="space-y-6">
             <div className="p-6 bg-premium-bg rounded-2xl border border-premium-border">
               <p className="text-sm font-bold text-premium-muted uppercase tracking-widest mb-2">Live URL</p>
               <div className="flex items-center justify-between gap-4">
-                <code className="text-accent-cobalt font-mono text-sm truncate">creatoros.app/profile/{user?.uid?.slice(0, 8)}</code>
+                <code className="text-accent-gold font-mono text-sm truncate">creatoros.app/profile/{user?.uid?.slice(0, 8)}</code>
                 <ExternalLink className="w-4 h-4 text-premium-muted cursor-pointer hover:text-premium-ink" />
               </div>
             </div>
             <p className="text-premium-muted text-sm leading-relaxed">
               Your public portfolio is active and indexing. Every piece of content you "Publish" in the Content Studio is automatically showcased here.
             </p>
-            <button className="w-full py-4 bg-premium-ink text-white rounded-2xl font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl">
+            <button className="w-full py-4 bg-accent-gold text-premium-bg rounded-2xl font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-accent-gold/20">
               Customize Portfolio
             </button>
           </div>
         </div>
 
         <div className="premium-card p-10 bg-premium-surface">
-          <h3 className="text-xl font-bold mb-8 flex items-center gap-3">
-            <Calendar className="w-6 h-6 text-accent-violet" />
+          <h3 className="text-xl font-serif font-bold mb-8 flex items-center gap-3 text-premium-ink">
+            <Calendar className="w-6 h-6 text-accent-gold" />
             Account Details
           </h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between py-3 border-bottom border-premium-border">
               <span className="text-premium-muted font-medium">Member Since</span>
-              <span className="font-bold">March 2024</span>
+              <span className="font-bold text-premium-ink">March 2024</span>
             </div>
             <div className="flex items-center justify-between py-3 border-bottom border-premium-border">
               <span className="text-premium-muted font-medium">Plan</span>
-              <span className="font-bold text-accent-violet">{userData?.subscriptionTier === 'pro' ? 'Creator Pro' : 'Free Plan'}</span>
+              <span className="font-bold text-accent-gold">{userData?.subscriptionTier === 'pro' ? 'Creator Pro' : 'Free Plan'}</span>
             </div>
             <div className="flex items-center justify-between py-3 border-bottom border-premium-border">
               <span className="text-premium-muted font-medium">Account Status</span>
               <div className="flex items-center gap-2">
                 <div className={cn(
                   "w-2 h-2 rounded-full animate-pulse",
-                  userData?.accountStatus === 'active' ? "bg-accent-emerald" : "bg-amber-500"
+                  userData?.accountStatus === 'active' ? "bg-accent-emerald" : "bg-accent-gold"
                 )} />
-                <span className="font-bold capitalize">{userData?.accountStatus || 'Active'}</span>
+                <span className="font-bold capitalize text-premium-ink">{userData?.accountStatus || 'Active'}</span>
               </div>
             </div>
             <div className="flex items-center justify-between py-3 border-bottom border-premium-border">

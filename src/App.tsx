@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  LayoutGrid, 
-  PenTool, 
-  Palette, 
-  Compass, 
   Users2, 
   PieChart, 
   Settings,
@@ -13,7 +9,7 @@ import {
   Trophy,
   LogOut,
   Loader2,
-  UserCircle
+  UserCircle,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from './lib/utils';
@@ -27,23 +23,32 @@ import BrandingEngine from './components/BrandingEngine';
 import Roadmap from './components/Roadmap';
 import Community from './components/Community';
 import Reports from './components/Reports';
+import PromptArchitect from './components/PromptArchitect';
 import Profile from './components/Profile';
 import Login from './components/Login';
 import LoadingScreen from './components/LoadingScreen';
 import BrandIcon from './components/BrandIcon';
+import { StudioIcon, HubIcon, RoadmapIcon, CommunityIcon, IntelligenceIcon, ProfileIcon } from './components/IdentityIcons';
+import { BookOpen, Sparkles } from 'lucide-react';
 import Onboarding from './components/Onboarding';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
+import LandingPage from './components/LandingPage';
+import HelpCenter from './components/HelpCenter';
+import CreatorHub from './components/CreatorHub';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 const NAV_ITEMS = [
-  { id: 'home', label: 'Home', icon: LayoutGrid, component: Dashboard },
-  { id: 'create', label: 'Create', icon: PenTool, component: ContentStudio },
-  { id: 'brand', label: 'Brand', icon: Palette, component: BrandingEngine },
-  { id: 'roadmap', label: 'Roadmap', icon: Compass, component: Roadmap },
-  { id: 'community', label: 'Community', icon: Users2, component: Community },
-  { id: 'reports', label: 'Reports', icon: PieChart, component: Reports },
-  { id: 'profile', label: 'Profile', icon: UserCircle, component: Profile },
+  { id: 'home', label: 'Home', icon: HubIcon, component: Dashboard },
+  { id: 'create', label: 'Create', icon: StudioIcon, component: ContentStudio },
+  { id: 'brand', label: 'Brand', icon: BrandIcon, component: BrandingEngine },
+  { id: 'roadmap', label: 'Roadmap', icon: RoadmapIcon, component: Roadmap },
+  { id: 'hub', label: 'Creator Hub', icon: HubIcon, component: CreatorHub, locked: true },
+  { id: 'community', label: 'Community', icon: CommunityIcon, component: Community },
+  { id: 'reports', label: 'Reports', icon: IntelligenceIcon, component: Reports },
+  { id: 'help', label: 'Help', icon: BookOpen, component: HelpCenter },
+  { id: 'prompts', label: 'Architect', icon: Sparkles, component: PromptArchitect },
+  { id: 'profile', label: 'Profile', icon: ProfileIcon, component: Profile },
 ];
 
 export default function App() {
@@ -181,8 +186,11 @@ export default function App() {
   }
 
   if (!user) {
-    return <Login />;
+    document.body.classList.remove('is-app');
+    return <LandingPage />;
   }
+
+  document.body.classList.add('is-app');
 
   const handleOnboardingComplete = (targetTab?: string) => {
     setShowOnboarding(false);
@@ -202,7 +210,7 @@ export default function App() {
         
         {/* Atmospheric Background Elements */}
         <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent-violet/5 rounded-full blur-[120px] animate-pulse" />
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent-gold/5 rounded-full blur-[120px] animate-pulse" />
           <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent-emerald/5 rounded-full blur-[150px] animate-pulse" style={{ animationDelay: '2s' }} />
           <div className="absolute top-[20%] right-[-5%] w-[30%] h-[30%] bg-accent-gold/5 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '4s' }} />
         </div>
@@ -215,7 +223,7 @@ export default function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsMobileMenuOpen(false)}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[60] md:hidden"
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[60] lg:hidden"
           />
         )}
       </AnimatePresence>
@@ -225,24 +233,24 @@ export default function App() {
         initial={false}
         animate={{ 
           width: isSidebarOpen ? 240 : 80,
-          x: isMobileMenuOpen ? 0 : (typeof window !== 'undefined' && window.innerWidth < 768 ? -240 : 0)
+          x: isMobileMenuOpen ? 0 : (typeof window !== 'undefined' && window.innerWidth < 1024 ? -280 : 0)
         }}
         className={cn(
-          "bg-premium-surface border-r border-premium-border flex flex-col z-[70] fixed md:relative h-full transition-transform md:translate-x-0",
-          !isMobileMenuOpen && "-translate-x-full md:translate-x-0"
+          "bg-premium-surface border-r border-premium-border flex flex-col z-[70] fixed lg:relative h-full transition-transform lg:translate-x-0",
+          !isMobileMenuOpen && "-translate-x-full lg:translate-x-0"
         )}
       >
         <div className="h-20 flex items-center px-6">
           {isSidebarOpen ? (
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-premium-ink rounded-xl flex items-center justify-center shadow-lg shadow-black/5">
-                <BrandIcon size={20} className="text-white" />
+              <div className="w-9 h-9 bg-premium-bg rounded-xl flex items-center justify-center shadow-lg shadow-black/5 border border-accent-gold/20">
+                <BrandIcon size={20} className="text-accent-gold" />
               </div>
               <span className="font-serif font-bold text-xl tracking-tight text-premium-ink">CreatorOS</span>
             </div>
           ) : (
-            <div className="w-9 h-9 bg-premium-ink rounded-xl flex items-center justify-center mx-auto shadow-lg shadow-black/5">
-              <BrandIcon size={20} className="text-white" />
+            <div className="w-9 h-9 bg-premium-bg rounded-xl flex items-center justify-center mx-auto shadow-lg shadow-black/5 border border-accent-gold/20">
+              <BrandIcon size={20} className="text-accent-gold" />
             </div>
           )}
         </div>
@@ -251,21 +259,33 @@ export default function App() {
           {NAV_ITEMS.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => {
+                if (item.locked && projects.length === 0) return;
+                setActiveTab(item.id);
+              }}
+              disabled={item.locked && projects.length === 0}
               className={cn(
                 "w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group relative",
                 activeTab === item.id 
-                  ? "bg-premium-ink text-white shadow-xl shadow-black/10" 
-                  : "text-premium-muted hover:bg-black/[0.03] hover:text-premium-ink"
+                  ? "bg-accent-gold text-premium-bg shadow-xl shadow-accent-gold/20" 
+                  : "text-premium-muted hover:bg-white/[0.03] hover:text-premium-ink",
+                item.locked && projects.length === 0 && "opacity-40 cursor-not-allowed grayscale"
               )}
             >
               <item.icon className={cn(
                 "w-[18px] h-[18px] flex-shrink-0 transition-colors",
-                activeTab === item.id ? "text-white" : "text-premium-muted group-hover:text-premium-ink"
+                activeTab === item.id ? "text-premium-bg" : "text-premium-muted group-hover:text-accent-gold"
               )} />
-              {isSidebarOpen && <span className="font-medium text-[14px]">{item.label}</span>}
+              {isSidebarOpen && (
+                <div className="flex items-center justify-between flex-1">
+                  <span className="font-medium text-[14px]">{item.label}</span>
+                  {item.locked && projects.length === 0 && (
+                    <div className="px-1.5 py-0.5 bg-white/5 rounded text-[8px] font-black uppercase tracking-widest text-white/40">Locked</div>
+                  )}
+                </div>
+              )}
               {activeTab === item.id && !isSidebarOpen && (
-                <div className="absolute left-0 w-1 h-5 bg-premium-ink rounded-r-full" />
+                <div className="absolute left-0 w-1 h-5 bg-accent-gold rounded-r-full" />
               )}
             </button>
           ))}
@@ -292,25 +312,25 @@ export default function App() {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto relative bg-premium-bg">
         {/* Header */}
-        <header className="sticky top-0 bg-premium-ink text-white px-4 md:px-8 h-16 flex items-center justify-between z-40 shadow-xl">
-          <div className="flex items-center gap-4 w-1/3">
+        <header className="sticky top-0 bg-premium-surface border-b border-premium-border text-premium-ink px-4 lg:px-8 h-16 flex items-center justify-between z-40 shadow-xl">
+          <div className="flex items-center gap-4 flex-1">
             <button 
               onClick={() => setIsMobileMenuOpen(true)}
-              className="md:hidden p-2 hover:bg-white/10 rounded-xl transition-colors"
+              className="lg:hidden p-2 hover:bg-white/10 rounded-xl transition-colors"
             >
-              <AlignLeft className="w-5 h-5 text-white" />
+              <AlignLeft className="w-5 h-5 text-premium-ink" />
             </button>
           </div>
           
-          <div className="flex items-center justify-center gap-2 w-1/3">
+          <div className="flex items-center justify-center gap-2 flex-shrink-0">
             <BrandIcon size={16} className="text-accent-gold" glow />
             <span className="font-serif font-bold text-lg tracking-tight">CreatorOS</span>
           </div>
           
-          <div className="flex items-center justify-end gap-3 md:gap-4 w-1/3">
+          <div className="flex items-center justify-end gap-3 md:gap-4 flex-1">
             <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full">
               <div className="w-1 h-1 rounded-full bg-accent-emerald animate-pulse" />
-              <span className="text-[9px] font-black text-white/40 tracking-widest uppercase">System Live</span>
+              <span className="text-[9px] font-black text-premium-ink/40 tracking-widest uppercase">System Live</span>
             </div>
             <img 
               src={user.photoURL || ''} 
@@ -321,7 +341,7 @@ export default function App() {
           </div>
         </header>
 
-        <div className="px-4 md:px-10 pt-20 pb-20 max-w-[1400px] mx-auto">
+        <div className="px-4 lg:px-10 pt-20 pb-20 max-w-[1400px] mx-auto">
           {/* Section Indicator */}
           <div className="mb-6 md:mb-8">
             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-premium-muted/60">
