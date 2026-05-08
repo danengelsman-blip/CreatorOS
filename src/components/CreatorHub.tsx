@@ -59,16 +59,8 @@ export default function CreatorHub({ projects = [] }: { projects: any[] }) {
     const totalDays = daysInMonth(year, month);
     const startDay = firstDayOfMonth(year, month);
 
-    // Padding for previous month
-    for (let i = 0; i < startDay; i++) {
-      days.push(null);
-    }
-
-    // Current month days
-    for (let i = 1; i <= totalDays; i++) {
-      days.push(new Date(year, month, i));
-    }
-
+    for (let i = 0; i < startDay; i++) days.push(null);
+    for (let i = 1; i <= totalDays; i++) days.push(new Date(year, month, i));
     return days;
   }, [currentDate]);
 
@@ -76,40 +68,27 @@ export default function CreatorHub({ projects = [] }: { projects: any[] }) {
   const prevMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
 
   return (
-    <div className="max-w-7xl mx-auto space-y-10 pb-20">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 bg-accent-gold/10 text-accent-gold rounded-lg flex items-center justify-center">
-              <HubIcon size={20} className="w-4 h-4" />
-            </div>
-            <span className="text-[11px] font-bold text-white/40 uppercase tracking-widest">Creator Hub</span>
-          </div>
-          <h2 className="text-3xl md:text-5xl font-serif font-bold tracking-tight">Your Content Empire</h2>
-          <p className="text-white/50 mt-2 max-w-xl">
-            Manage, schedule, and architect your multi-platform presence from a single command center.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3 p-1 bg-premium-surface border border-premium-border rounded-2xl">
+    <div className="max-w-4xl mx-auto space-y-8 pb-20">
+      {/* iOS Segmented Control */}
+      <div className="flex justify-center pt-4">
+        <div className="inline-flex p-1 bg-[var(--bg-secondary)] rounded-[10px] w-full max-w-[400px]">
           <button 
             onClick={() => setView('grid')}
             className={cn(
-              "px-6 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2",
-              view === 'grid' ? "bg-accent-gold text-premium-bg shadow-lg" : "text-premium-muted hover:text-white"
+              "flex-1 py-1.5 rounded-[8px] text-[13px] font-semibold transition-all",
+              view === 'grid' ? "bg-[var(--bg-tertiary)] ios-elevated shadow-sm" : "text-[var(--label-secondary)]"
             )}
           >
-            <Layers className="w-4 h-4" /> Grid
+            Grid
           </button>
           <button 
             onClick={() => setView('calendar')}
             className={cn(
-              "px-6 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2",
-              view === 'calendar' ? "bg-accent-gold text-premium-bg shadow-lg" : "text-premium-muted hover:text-white"
+              "flex-1 py-1.5 rounded-[8px] text-[13px] font-semibold transition-all",
+              view === 'calendar' ? "bg-[var(--bg-tertiary)] ios-elevated shadow-sm" : "text-[var(--label-secondary)]"
             )}
           >
-            <CalendarIcon className="w-4 h-4" /> Calendar
+            Calendar
           </button>
         </div>
       </div>
@@ -118,53 +97,54 @@ export default function CreatorHub({ projects = [] }: { projects: any[] }) {
         {view === 'grid' ? (
           <motion.div 
             key="grid"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            className="space-y-6"
           >
-            {content.map((item) => (
-              <ContentCard key={item.id} item={item} />
-            ))}
-            
-            {/* Empty State / Add New */}
-            <button className="premium-card p-10 border-dashed border-white/10 flex flex-col items-center justify-center gap-4 hover:border-accent-gold/30 hover:bg-white/[0.02] transition-all group">
-              <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-accent-gold/10 transition-colors">
-                <Plus className="w-6 h-6 text-white/20 group-hover:text-accent-gold" />
+            <section>
+              <h4 className="ios-label">Active Drafts</h4>
+              <div className="ios-card divide-y divide-[var(--separator)] overflow-hidden">
+                {content.length > 0 ? content.map((item) => (
+                  <ContentRow key={item.id} item={item} />
+                )) : (
+                  <div className="p-8 text-center text-[var(--label-secondary)]">No content found. Start a new project to see it here.</div>
+                )}
+                
+                <button className="w-full p-4 flex items-center gap-3 text-[var(--accent)] active:bg-[var(--separator)] transition-colors group">
+                  <div className="w-8 h-8 rounded-full bg-[var(--accent)]/10 flex items-center justify-center">
+                    <Plus size={18} />
+                  </div>
+                  <span className="font-semibold text-[17px]">New Masterpiece</span>
+                </button>
               </div>
-              <div className="text-center">
-                <div className="font-bold text-sm">Architect New Content</div>
-                <div className="text-[10px] text-white/30 uppercase tracking-widest mt-1">Expand your empire</div>
-              </div>
-            </button>
+            </section>
           </motion.div>
         ) : (
           <motion.div 
             key="calendar"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="premium-card p-8 md:p-12"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            className="ios-card p-6"
           >
-            {/* Calendar Header */}
-            <div className="flex items-center justify-between mb-12">
-              <h3 className="text-2xl font-serif font-bold">
+            <div className="flex items-center justify-between mb-8 px-2">
+              <h3 className="text-[20px] font-bold">
                 {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
               </h3>
-              <div className="flex gap-4">
-                <button onClick={prevMonth} className="p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
-                  <ChevronLeft className="w-5 h-5" />
+              <div className="flex gap-2">
+                <button onClick={prevMonth} className="p-2 text-[var(--accent)] active:opacity-40">
+                  <ChevronLeft size={22} />
                 </button>
-                <button onClick={nextMonth} className="p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
-                  <ChevronRight className="w-5 h-5" />
+                <button onClick={nextMonth} className="p-2 text-[var(--accent)] active:opacity-40">
+                  <ChevronRight size={22} />
                 </button>
               </div>
             </div>
 
-            {/* Calendar Grid */}
-            <div className="grid grid-cols-7 gap-4">
-              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                <div key={day} className="text-center text-[10px] font-black uppercase tracking-[0.2em] text-white/30 pb-6">
+            <div className="grid grid-cols-7 gap-1">
+              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
+                <div key={day} className="text-center text-[11px] font-bold text-[var(--label-tertiary)] pb-4">
                   {day}
                 </div>
               ))}
@@ -172,26 +152,24 @@ export default function CreatorHub({ projects = [] }: { projects: any[] }) {
                 <div 
                   key={i} 
                   className={cn(
-                    "min-h-[140px] p-4 rounded-2xl border border-white/5 transition-all",
-                    date ? "bg-white/[0.02] hover:bg-white/[0.04]" : "opacity-0"
+                    "min-h-[60px] p-1 rounded-[8px] flex flex-col items-center gap-1",
+                    date ? "bg-[var(--bg-secondary)]/30" : "opacity-0"
                   )}
                 >
                   {date && (
                     <>
-                      <div className="text-xs font-bold text-white/40 mb-4">{date.getDate()}</div>
-                      <div className="space-y-2">
+                      <div className={cn(
+                        "text-[12px] font-medium p-1 w-6 h-6 flex items-center justify-center rounded-full",
+                        date.toDateString() === new Date().toDateString() ? "bg-[var(--accent)] text-white" : "text-[var(--label-primary)]"
+                      )}>
+                        {date.getDate()}
+                      </div>
+                      <div className="flex gap-0.5">
                         {content
                           .filter(item => item.scheduledDate?.toDateString() === date.toDateString())
+                          .slice(0, 3)
                           .map(item => (
-                            <div 
-                              key={item.id} 
-                              className={cn(
-                                "p-2 rounded-lg text-[10px] font-bold truncate",
-                                PLATFORM_COLORS[item.platform] || PLATFORM_COLORS.multi
-                              )}
-                            >
-                              {item.title}
-                            </div>
+                            <div key={item.id} className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
                           ))
                         }
                       </div>
@@ -207,49 +185,31 @@ export default function CreatorHub({ projects = [] }: { projects: any[] }) {
   );
 }
 
-function ContentCard({ item }: { item: ContentItem }) {
+function ContentRow({ item }: { item: ContentItem }) {
   const isMulti = item.platform === 'multi' || (item.platforms && item.platforms.length > 1);
-  const colorClass = isMulti ? PLATFORM_COLORS.multi : (PLATFORM_COLORS[item.platform] || PLATFORM_COLORS.multi);
-
+  
   return (
-    <div className="premium-card p-8 group hover:shadow-2xl hover:shadow-accent-gold/5 transition-all">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4 flex items-center justify-between active:bg-[var(--separator)] transition-colors cursor-pointer group">
+      <div className="flex items-center gap-3 min-w-0">
         <div className={cn(
-          "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-2",
-          colorClass
+          "w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white font-bold text-[10px]",
+          PLATFORM_COLORS[item.platform] || PLATFORM_COLORS.multi
         )}>
-          {isMulti ? <Share2 className="w-3 h-3" /> : <div className="w-1.5 h-1.5 rounded-full bg-current opacity-50" />}
-          {isMulti ? 'Multi-Platform' : item.platform}
+           {item.platform === 'tiktok' && 'T'}
+           {item.platform === 'instagram' && 'I'}
+           {item.platform === 'youtube' && 'Y'}
+           {isMulti && 'M'}
         </div>
-        <button className="text-white/20 hover:text-white transition-colors">
-          <MoreVertical className="w-5 h-5" />
-        </button>
-      </div>
-
-      <h4 className="text-xl font-bold mb-4 line-clamp-2 group-hover:text-accent-gold transition-colors">
-        {item.title}
-      </h4>
-
-      <div className="flex items-center gap-6 pt-6 border-t border-white/5">
-        <div className="flex items-center gap-2 text-[10px] font-bold text-white/40 uppercase tracking-widest">
-          <Clock className="w-3.5 h-3.5" />
-          {item.scheduledDate?.toLocaleDateString([], { month: 'short', day: 'numeric' })}
-        </div>
-        <div className="flex items-center gap-2 text-[10px] font-bold text-accent-emerald uppercase tracking-widest">
-          <CheckCircle2 className="w-3.5 h-3.5" />
-          {item.status}
+        <div className="flex flex-col min-w-0">
+          <span className="font-semibold text-[17px] truncate">{item.title}</span>
+          <div className="flex items-center gap-2 text-[13px] text-[var(--label-secondary)]">
+            <span className="capitalize">{item.status}</span>
+            <span className="opacity-30">•</span>
+            <span>{item.scheduledDate?.toLocaleDateString([], { month: 'short', day: 'numeric' })}</span>
+          </div>
         </div>
       </div>
-
-      {isMulti && item.platforms && (
-        <div className="mt-6 flex gap-2">
-          {item.platforms.map(p => (
-            <div key={p} className="w-6 h-6 rounded-lg bg-white/5 flex items-center justify-center text-[10px]" title={p}>
-              {p.charAt(0).toUpperCase()}
-            </div>
-          ))}
-        </div>
-      )}
+      <ChevronRight size={18} className="text-[var(--label-tertiary)] flex-shrink-0" />
     </div>
   );
 }

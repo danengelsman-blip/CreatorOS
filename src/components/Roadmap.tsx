@@ -7,7 +7,9 @@ import {
   Star, 
   Lock,
   CheckCircle2,
-  ChevronRight
+  ChevronRight,
+  Target,
+  Award
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
@@ -18,8 +20,8 @@ const STAGES = [
     title: 'Idea Discovery',
     desc: 'Find your niche and define your brand identity.',
     days: [1, 2, 3, 4, 5, 6],
-    icon: Star,
-    color: 'bg-yellow-500'
+    icon: Target,
+    color: 'var(--system-orange)'
   },
   {
     id: 'writing',
@@ -27,7 +29,7 @@ const STAGES = [
     desc: 'Master the art of hooks and storytelling.',
     days: [7, 8, 9, 10, 11, 12],
     icon: Zap,
-    color: 'bg-indigo-500'
+    color: 'var(--accent)'
   },
   {
     id: 'publishing',
@@ -35,7 +37,7 @@ const STAGES = [
     desc: 'Build a system to post every single day.',
     days: [13, 14, 15, 16, 17, 18],
     icon: Flag,
-    color: 'bg-emerald-500'
+    color: 'var(--system-green)'
   },
   {
     id: 'growth',
@@ -43,15 +45,15 @@ const STAGES = [
     desc: 'Optimize for reach and engagement.',
     days: [19, 20, 21, 22, 23, 24],
     icon: Trophy,
-    color: 'bg-purple-500'
+    color: '#5856D6'
   },
   {
     id: 'monetization',
     title: 'First Dollar',
     desc: 'Set up your monetization engine.',
     days: [25, 26, 27, 28, 29, 30],
-    icon: Star,
-    color: 'bg-orange-500'
+    icon: Award,
+    color: 'var(--system-orange)'
   }
 ];
 
@@ -60,120 +62,88 @@ export default function Roadmap({ brand, user }: { brand: any, user: any }) {
   const completedDays = [1];
 
   return (
-    <div className="space-y-8 md:space-y-12">
-      <div className="p-8 md:p-12 bg-premium-ink text-white rounded-[32px] md:rounded-[40px] relative overflow-hidden shadow-2xl shadow-black/20">
-        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-10">
-          <div className="space-y-6 max-w-2xl text-center md:text-left">
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-white/10 rounded-full text-[10px] md:text-[11px] font-bold uppercase tracking-[0.15em] border border-white/10 backdrop-blur-md">
-              <Map className="w-4 h-4 text-accent-gold" />
-              30-Day Creator Challenge
-            </div>
-            <h2 className="text-3xl md:text-5xl font-serif font-bold tracking-tight leading-tight text-white text-balance">Your path to <span className="text-accent-gold italic font-normal">monetization</span>.</h2>
-            <p className="text-lg md:text-xl text-white/50 leading-relaxed font-medium">
-              A structured, high-performance roadmap designed to take you from zero to your first dollar in 30 days.
-            </p>
-          </div>
-          <div className="md:block">
-            <div className="relative w-40 h-40 md:w-56 md:h-56 flex items-center justify-center">
-              <svg className="w-full h-full -rotate-90">
-                <circle
-                  cx="50%"
-                  cy="50%"
-                  r="45%"
-                  fill="none"
-                  stroke="rgba(255,255,255,0.05)"
-                  strokeWidth="12"
-                />
-                <motion.circle
-                  cx="50%"
-                  cy="50%"
-                  r="45%"
-                  fill="none"
-                  stroke="#10B981"
-                  strokeWidth="12"
-                  strokeDasharray="283%"
-                  initial={{ strokeDashoffset: "283%" }}
-                  animate={{ strokeDashoffset: `${283 - (283 * 1) / 30}%` }}
-                  transition={{ duration: 1.5, ease: [0.23, 1, 0.32, 1] }}
-                  strokeLinecap="round"
-                />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-3xl md:text-5xl font-extrabold tracking-tighter">1/30</span>
-                <span className="text-[9px] md:text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mt-1">Days Active</span>
-              </div>
-            </div>
-          </div>
+    <div className="space-y-8 pb-20">
+      <h1 className="px-1 pt-4">Roadmap</h1>
+
+      {/* Progress Card */}
+      <section className="bg-[var(--bg-tertiary)] ios-card p-6 flex items-center justify-between">
+        <div className="flex-1">
+          <span className="ios-label px-0 mb-1">Current Challenge</span>
+          <h2 className="text-[28px] font-bold tracking-tight">30-Day Launch</h2>
+          <p className="text-[17px] text-[var(--label-secondary)] font-medium">Your path to your first dollar.</p>
         </div>
-        
-        {/* Abstract background shapes */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent-gold/10 rounded-full blur-[120px] -mr-40 -mt-40" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-accent-emerald/10 rounded-full blur-[120px] -ml-40 -mb-40" />
-      </div>
+        <div className="relative w-24 h-24 flex items-center justify-center">
+            <svg className="w-full h-full -rotate-90">
+              <circle cx="50%" cy="50%" r="42%" fill="none" stroke="var(--bg-secondary)" strokeWidth="6" />
+              <motion.circle
+                cx="50%" cy="50%" r="42%" fill="none" stroke="var(--system-green)" strokeWidth="6"
+                strokeDasharray="264%"
+                initial={{ strokeDashoffset: "264%" }}
+                animate={{ strokeDashoffset: `${264 - (264 * 1) / 30}%` }}
+                strokeLinecap="round"
+              />
+            </svg>
+            <span className="absolute text-[20px] font-bold tracking-tighter">1/30</span>
+        </div>
+      </section>
 
-      <div className="space-y-10 relative">
-        {/* Vertical line connector */}
-        <div className="absolute left-12 top-10 bottom-10 w-0.5 bg-premium-border hidden md:block" />
-
+      {/* Roadmap List */}
+      <div className="space-y-10">
         {STAGES.map((stage, idx) => {
           const isUnlocked = idx === 0;
-          const isCompleted = false;
-
+          
           return (
-            <div 
-              key={stage.id}
-              className={cn(
-                "relative premium-card p-6 md:p-10 bg-premium-surface transition-all duration-500 group",
-                !isUnlocked && "opacity-50 grayscale pointer-events-none"
-              )}
-            >
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 md:gap-10">
-                <div className="flex flex-col sm:flex-row items-start gap-6 md:gap-8">
-                  <div className={cn(
-                    "w-14 h-14 md:w-16 md:h-16 rounded-2xl text-premium-bg shadow-2xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110", 
-                    stage.color === 'bg-indigo-500' ? 'bg-accent-gold' : stage.color === 'bg-purple-500' ? 'bg-accent-gold' : stage.color
-                  )}>
-                    <stage.icon className="w-7 h-7 md:w-8 md:h-8" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-xl md:text-2xl font-serif font-bold tracking-tight text-premium-ink">{stage.title}</h3>
-                      {!isUnlocked && <Lock className="w-4 h-4 text-premium-muted" />}
+            <section key={stage.id}>
+              <span className="ios-label uppercase">{stage.title}</span>
+              <div className={cn(
+                "bg-[var(--bg-tertiary)] ios-card overflow-hidden",
+                !isUnlocked && "opacity-40"
+              )}>
+                <div className="p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white" style={{ backgroundColor: stage.color }}>
+                      <stage.icon size={24} />
                     </div>
-                    <p className="text-[14px] md:text-base text-premium-muted font-medium leading-relaxed max-w-md">{stage.desc}</p>
+                    <div className="flex flex-col">
+                      <span className="font-bold text-[17px] leading-tight flex items-center gap-2">
+                        {stage.title}
+                        {!isUnlocked && <Lock size={14} className="text-[var(--label-tertiary)]" />}
+                      </span>
+                      <p className="text-[14px] text-[var(--label-secondary)] font-medium leading-tight mt-0.5">{stage.desc}</p>
+                    </div>
                   </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {stage.days.map(day => {
+                      const isDayCompleted = completedDays.includes(day);
+                      const isCurrentDay = day === currentDay;
+
+                      return (
+                        <div 
+                          key={day}
+                          className={cn(
+                            "w-8 h-8 rounded-full flex items-center justify-center font-bold text-[13px] border transition-all",
+                            isDayCompleted ? "bg-[var(--system-green)] border-[var(--system-green)] text-white" :
+                            isCurrentDay ? "bg-[var(--accent)] border-[var(--accent)] text-white scale-110" :
+                            "bg-[var(--bg-secondary)] border-transparent text-[var(--label-secondary)]"
+                          )}
+                        >
+                          {isDayCompleted ? <CheckCircle2 size={16} /> : day}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <button className={cn(
+                    "ios-button h-10 px-4 text-[14px]",
+                    isUnlocked ? "ios-button-filled" : "ios-button-gray opacity-50"
+                  )}>
+                    {isUnlocked ? 'Continue' : 'Locked'}
+                    <ChevronRight size={14} />
+                  </button>
                 </div>
-
-                <div className="flex flex-wrap gap-2 md:gap-3">
-                  {stage.days.map(day => {
-                    const isDayCompleted = completedDays.includes(day);
-                    const isCurrentDay = day === currentDay;
-
-                    return (
-                      <div 
-                        key={day}
-                        className={cn(
-                          "w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center font-bold text-[13px] md:text-[15px] border transition-all duration-300",
-                          isDayCompleted ? "bg-accent-emerald border-accent-emerald text-premium-bg shadow-lg shadow-accent-emerald/20" :
-                          isCurrentDay ? "bg-accent-gold border-accent-gold text-premium-bg scale-110 shadow-2xl shadow-accent-gold/20" :
-                          "bg-premium-bg border-premium-border text-premium-muted hover:bg-white/10"
-                        )}
-                      >
-                        {isDayCompleted ? <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6" /> : day}
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <button className={cn(
-                  "w-full md:w-auto px-6 md:px-8 py-3 md:py-4 rounded-[16px] md:rounded-[20px] font-bold text-[13px] md:text-[14px] flex items-center justify-center gap-2 transition-all shadow-xl",
-                  isUnlocked ? "bg-accent-gold text-premium-bg hover:scale-[1.02] active:scale-[0.98] shadow-accent-gold/20" : "bg-premium-bg text-premium-muted cursor-not-allowed shadow-none"
-                )}>
-                  {isUnlocked ? 'Continue Journey' : 'Locked Stage'}
-                  <ChevronRight className="w-4 h-4" />
-                </button>
               </div>
-            </div>
+            </section>
           );
         })}
       </div>

@@ -153,8 +153,7 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
       // 2. Set this avatar as active
       await updateDoc(doc(db, 'avatars', avatar.id), { isActive: true });
 
-      // 3. Update User Profile
-      await updateProfile(auth.currentUser, { photoURL: avatar.url });
+      // 3. Update User Document in Firestore
       await updateDoc(doc(db, 'users', auth.currentUser.uid), {
         photoURL: avatar.url,
         avatarType: 'ai_generated',

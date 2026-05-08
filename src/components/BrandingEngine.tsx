@@ -3,9 +3,13 @@ import {
   Send, 
   CheckCircle2, 
   RefreshCw,
-  MessageSquare
+  MessageSquare,
+  ChevronRight,
+  Palette,
+  Type,
+  Target,
+  Zap
 } from 'lucide-react';
-import { StudioIcon, HubIcon, IntelligenceIcon, CommunityIcon } from './IdentityIcons';
 import { motion } from 'motion/react';
 import { generateBrandKit } from '../services/gemini';
 import { cn } from '../lib/utils';
@@ -13,7 +17,7 @@ import { db, serverTimestamp, handleFirestoreError, OperationType } from '../fir
 import { doc, setDoc } from 'firebase/firestore';
 import BrandIcon from './BrandIcon';
 
-export default function BrandingEngine({ brand, setBrand, user }: { brand: any, setBrand: any, user: any }) {
+export default function Brand({ brand, setBrand, user }: { brand: any, setBrand: any, user: any }) {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -23,7 +27,6 @@ export default function BrandingEngine({ brand, setBrand, user }: { brand: any, 
     try {
       const kit = await generateBrandKit(input);
       
-      // Save to Firestore
       const brandRef = doc(db, 'projects', `brand_${user.uid}`);
       await setDoc(brandRef, {
         userId: user.uid,
@@ -44,207 +47,170 @@ export default function BrandingEngine({ brand, setBrand, user }: { brand: any, 
 
   if (brand) {
     return (
-      <div className="space-y-8 md:space-y-10">
-        <div className="bg-premium-ink text-premium-bg p-8 md:p-12 rounded-[32px] md:rounded-[40px] relative overflow-hidden shadow-2xl shadow-black/20">
-          <div className="relative z-10">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
-              <div className="p-2.5 bg-premium-bg/10 rounded-xl backdrop-blur-md w-fit">
-                <BrandIcon size={24} className="text-accent-gold" glow />
-              </div>
-              <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">{brand.name}</h2>
+      <div className="space-y-8 pb-20">
+        <h1 className="px-1 pt-4">Brand</h1>
+
+        {/* Identity Overview */}
+        <section className="bg-[var(--bg-tertiary)] ios-card overflow-hidden">
+          <div className="p-6 flex flex-col sm:flex-row items-center gap-6">
+            <div className="w-16 h-16 bg-[var(--bg-secondary)] rounded-2xl flex items-center justify-center flex-shrink-0">
+              <BrandIcon size={32} className="text-[var(--accent)]" />
             </div>
-            <p className="text-xl md:text-2xl text-premium-bg/50 font-serif italic leading-relaxed max-w-2xl">"{brand.tagline}"</p>
-            
-            <div className="mt-8 md:mt-10 flex flex-wrap gap-3 md:gap-4">
-              <div className="px-4 md:px-5 py-2 md:py-2.5 bg-premium-bg/10 rounded-full text-[12px] md:text-[13px] font-bold tracking-wide border border-premium-bg/10 backdrop-blur-sm">
-                <span className="text-premium-bg/40 uppercase mr-2 tracking-widest text-[9px] md:text-[10px]">Archetype</span>
-                {brand.archetype}
-              </div>
-              <div className="px-4 md:px-5 py-2 md:py-2.5 bg-premium-bg/10 rounded-full text-[12px] md:text-[13px] font-bold tracking-wide border border-premium-bg/10 backdrop-blur-sm">
-                <span className="text-premium-bg/40 uppercase mr-2 tracking-widest text-[9px] md:text-[10px]">Personality</span>
-                {brand.personality}
-              </div>
+            <div className="flex-1 text-center sm:text-left">
+              <h2 className="text-[28px] font-bold tracking-tight mb-1">{brand.name}</h2>
+              <p className="text-[17px] text-[var(--label-secondary)] font-medium">{brand.tagline}</p>
             </div>
           </div>
           
-          {/* Abstract background shapes */}
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent-gold/20 rounded-full blur-[120px] -mr-40 -mt-40" />
-          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-accent-emerald/20 rounded-full blur-[120px] -ml-40 -mb-40" />
-        </div>
+          <div className="border-t border-[var(--separator)] p-6 grid grid-cols-2 gap-4">
+             <div>
+               <span className="ios-label px-0">Archetype</span>
+               <span className="font-semibold">{brand.archetype}</span>
+             </div>
+             <div>
+               <span className="ios-label px-0">Visual Style</span>
+               <span className="font-semibold block truncate">{brand.visual_style}</span>
+             </div>
+          </div>
+        </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Visual Identity */}
-          <BrandCard title="Visual Identity" icon={HubIcon}>
-            <div className="space-y-8">
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-premium-muted mb-4">Color Palette</p>
-                <div className="flex gap-4">
-                  {Object.entries(brand.colors).map(([key, color]: [string, any]) => (
-                    <div key={key} className="group relative">
-                      <div 
-                        className="w-14 h-14 rounded-2xl shadow-sm border border-premium-border transition-transform group-hover:scale-110" 
-                        style={{ backgroundColor: color }} 
-                      />
-                      <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap bg-premium-ink text-premium-bg px-2 py-1 rounded">
-                        {color}
+        {/* Assets & Voice Inset Grouped List */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <section>
+            <span className="ios-label">Visual Identity</span>
+            <div className="bg-[var(--bg-tertiary)] ios-card overflow-hidden divide-y divide-[var(--separator)]">
+              <div className="p-4 flex flex-col gap-4">
+                 <div className="flex items-center gap-3">
+                   <div className="w-8 h-8 rounded-lg bg-[var(--system-orange)] flex items-center justify-center text-white">
+                     <Palette size={18} />
+                   </div>
+                   <span className="font-semibold text-[17px]">Colors</span>
+                 </div>
+                 <div className="grid grid-cols-4 gap-2">
+                    {Object.entries(brand.colors).map(([key, color]: [string, any]) => (
+                      <div key={key} className="flex flex-col items-center gap-1">
+                        <div 
+                          className="w-full aspect-square rounded-lg shadow-sm border border-[var(--separator)]" 
+                          style={{ backgroundColor: color }} 
+                        />
+                        <span className="text-[10px] font-mono text-[var(--label-tertiary)] uppercase">{color}</span>
+                      </div>
+                    ))}
+                 </div>
+              </div>
+
+              <div className="p-4 flex items-center justify-between">
+                 <div className="flex items-center gap-3">
+                   <div className="w-8 h-8 rounded-lg bg-[var(--accent)] flex items-center justify-center text-white">
+                     <Type size={18} />
+                   </div>
+                   <div className="flex flex-col">
+                     <span className="font-semibold text-[17px]">{brand.typography.heading}</span>
+                     <span className="text-[13px] text-[var(--label-secondary)]">Primary Typeface</span>
+                   </div>
+                 </div>
+                 <ChevronRight size={18} className="text-[var(--label-tertiary)]" />
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <span className="ios-label">Voice & Strategy</span>
+            <div className="bg-[var(--bg-tertiary)] ios-card overflow-hidden divide-y divide-[var(--separator)]">
+               <div className="p-4">
+                  <div className="flex items-center gap-3 mb-4">
+                     <div className="w-8 h-8 rounded-lg bg-[var(--system-green)] flex items-center justify-center text-white">
+                       <Target size={18} />
+                     </div>
+                     <span className="font-semibold text-[17px]">Core Hooks</span>
+                  </div>
+                  <div className="space-y-2">
+                    {brand.content_hooks.slice(0, 2).map((hook: string, i: number) => (
+                      <div key={i} className="p-3 bg-[var(--bg-secondary)] rounded-xl text-[14px] font-medium leading-tight">
+                        {hook}
+                      </div>
+                    ))}
+                  </div>
+               </div>
+
+               <div className="p-4">
+                  <div className="flex items-center gap-3 mb-4">
+                     <div className="w-8 h-8 rounded-lg bg-[#5856D6] flex items-center justify-center text-white">
+                       <Zap size={18} />
+                     </div>
+                     <span className="font-semibold text-[17px]">Catchphrases</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {brand.catchphrases.map((phrase: string, i: number) => (
+                      <span key={i} className="px-3 py-1 bg-[var(--bg-secondary)] text-[var(--label-primary)] rounded-full text-[13px] font-semibold">
+                        {phrase}
                       </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-premium-muted mb-4">Typography</p>
-                <div className="space-y-4">
-                  <div className="p-4 bg-premium-bg rounded-2xl border border-premium-border">
-                    <p className="text-2xl font-bold mb-1" style={{ fontFamily: brand.typography.heading }}>
-                      {brand.typography.heading}
-                    </p>
-                    <p className="text-[11px] font-bold text-premium-muted uppercase tracking-widest">Heading Font</p>
+                    ))}
                   </div>
-                  <div className="p-4 bg-premium-bg rounded-2xl border border-premium-border">
-                    <p className="text-base font-medium mb-1" style={{ fontFamily: brand.typography.body }}>
-                      {brand.typography.body}
-                    </p>
-                    <p className="text-[11px] font-bold text-premium-muted uppercase tracking-widest">Body Font</p>
-                  </div>
-                </div>
-              </div>
+               </div>
             </div>
-          </BrandCard>
-
-          {/* Content Strategy */}
-          <BrandCard title="Content Strategy" icon={MessageSquare}>
-            <div className="space-y-8">
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-premium-muted mb-4">Core Hooks</p>
-                <div className="space-y-3">
-                  {brand.content_hooks.slice(0, 3).map((hook: string, i: number) => (
-                    <div key={i} className="p-4 bg-premium-bg rounded-2xl text-[13px] border border-premium-border leading-relaxed font-medium">
-                      "{hook}"
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-premium-muted mb-4">Catchphrases</p>
-                <div className="flex flex-wrap gap-2">
-                  {brand.catchphrases.map((phrase: string, i: number) => (
-                    <span key={i} className="px-4 py-2 bg-premium-ink text-premium-bg rounded-full text-[12px] font-bold tracking-tight">
-                      {phrase}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </BrandCard>
-
-          {/* Style Guide */}
-          <BrandCard title="Style Guide" icon={IntelligenceIcon}>
-            <div className="space-y-8">
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-premium-muted mb-4">Visual Language</p>
-                <p className="text-[14px] text-premium-ink leading-relaxed font-medium">{brand.visual_style}</p>
-              </div>
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-premium-muted mb-4">Thumbnail Direction</p>
-                <p className="text-[14px] text-premium-ink leading-relaxed font-medium">{brand.thumbnail_style}</p>
-              </div>
-              <div className="pt-4">
-                <button 
-                  onClick={() => setBrand(null)}
-                  className="w-full py-4 border border-premium-border rounded-2xl text-[13px] font-bold hover:bg-premium-ink hover:text-premium-bg transition-all flex items-center justify-center gap-2 group"
-                >
-                  <RefreshCw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
-                  Re-generate Identity
-                </button>
-              </div>
-            </div>
-          </BrandCard>
+          </section>
         </div>
+
+        <section className="pt-4">
+          <button 
+            onClick={() => setBrand(null)}
+            className="ios-button-gray w-full text-[17px]"
+          >
+            <RefreshCw size={18} />
+            Re-generate Brand Identity
+          </button>
+        </section>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto pb-8 md:pb-12">
-      <div className="text-center space-y-6 mb-12 md:mb-16">
-        <div className="w-20 h-20 md:w-24 md:h-24 bg-premium-ink rounded-[28px] md:rounded-[32px] flex items-center justify-center mx-auto mb-6 md:mb-8 shadow-2xl shadow-black/20 group hover:scale-105 transition-transform border border-accent-gold/20">
-          <BrandIcon size={40} className="text-accent-gold" glow />
+    <div className="max-w-xl mx-auto flex flex-col gap-12 pb-20">
+      <div className="text-center flex flex-col items-center gap-6 pt-10">
+        <div className="w-20 h-20 bg-[var(--bg-secondary)] rounded-[22px] flex items-center justify-center ios-elevated border-t border-white/10">
+          <BrandIcon size={40} className="text-[var(--accent)]" />
         </div>
-        <h2 className="text-3xl md:text-5xl font-serif font-bold tracking-tight text-balance leading-tight text-premium-ink">Architect your <span className="text-accent-gold italic font-normal">creator brand</span>.</h2>
-        <p className="text-lg md:text-xl text-premium-muted max-w-2xl mx-auto text-balance leading-relaxed">Define your niche, personality, and vision. Our AI will craft a world-class identity system for your journey.</p>
+        <div className="space-y-2">
+          <h1 className="text-[34px] font-bold tracking-tight">Brand</h1>
+          <p className="text-[17px] text-[var(--label-secondary)] font-medium max-w-sm mx-auto">
+            Define your mission and AI will architect a world-class visual and strategic identity.
+          </p>
+        </div>
       </div>
 
-      <div className="premium-card p-6 md:p-10 bg-premium-surface shadow-2xl shadow-black/[0.02]">
-        <div className="flex items-center justify-between mb-4">
-          <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-premium-muted">Describe your vision</label>
+      <div className="ios-card bg-[var(--bg-tertiary)] p-6 space-y-6">
+        <div className="flex justify-between items-center">
+          <span className="ios-label px-0">Mission Description</span>
           <button 
-            onClick={() => setInput("I want to build a brand around minimalist productivity for busy tech professionals. My vibe is calm, professional, but slightly rebellious.")}
-            className="text-[11px] font-bold text-accent-gold hover:underline uppercase tracking-widest"
+            onClick={() => setInput("Minimalist productivity for busy tech professionals. Calm, professional, but slightly rebellious.")}
+            className="text-[15px] font-semibold text-[var(--accent)] active:opacity-40"
           >
-            Try an example
+            Example
           </button>
         </div>
         <textarea 
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Enter your brand's mission, personality, and target audience..."
-          className="w-full h-40 md:h-48 p-6 md:p-8 bg-premium-bg rounded-[20px] md:rounded-[24px] border border-premium-border focus:ring-2 focus:ring-accent-gold/20 outline-none text-lg md:text-xl resize-none font-medium placeholder:text-premium-muted transition-all text-premium-ink"
+          placeholder="What's your core purpose?"
+          className="ios-input h-48 py-4 resize-none"
         />
         
         <button 
           onClick={handleGenerate}
           disabled={isLoading || !input.trim()}
-          className="w-full mt-6 md:mt-8 py-4 md:py-6 bg-accent-gold text-premium-bg rounded-[20px] md:rounded-[24px] font-bold text-lg md:text-xl flex items-center justify-center gap-4 hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:scale-100 shadow-xl shadow-accent-gold/20"
+          className="ios-button-filled w-full text-[17px]"
         >
           {isLoading ? (
             <>
-              <RefreshCw className="w-6 h-6 animate-spin" />
-              Architecting Your Identity...
+              <RefreshCw size={20} className="animate-spin" />
+              Generating...
             </>
           ) : (
-            <>
-              <BrandIcon size={24} className="text-accent-gold" glow />
-              Generate Brand Kit
-            </>
+            "Build Brand Identity"
           )}
         </button>
       </div>
-
-      <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-10">
-        <FeatureItem icon={HubIcon} title="Visual Identity" desc="Colors, typography, and visual language." />
-        <FeatureItem icon={CommunityIcon} title="Voice & Tone" desc="Core hooks and signature catchphrases." />
-        <FeatureItem icon={StudioIcon} title="Content Strategy" desc="Niche-specific direction and thumbnail styles." />
-      </div>
-    </div>
-  );
-}
-
-function BrandCard({ title, icon: Icon, children }: any) {
-  return (
-    <div className="premium-card p-8 flex flex-col h-full">
-      <div className="flex items-center gap-3 mb-8">
-        <div className="w-10 h-10 bg-premium-bg rounded-xl flex items-center justify-center">
-          <Icon className="w-5 h-5 text-premium-ink" />
-        </div>
-        <h3 className="font-bold text-lg">{title}</h3>
-      </div>
-      <div className="flex-1">
-        {children}
-      </div>
-    </div>
-  );
-}
-
-function FeatureItem({ icon: Icon, title, desc }: any) {
-  return (
-    <div className="flex flex-col items-center text-center space-y-3 group">
-      <div className="w-14 h-14 bg-premium-surface rounded-2xl border border-premium-border shadow-sm flex items-center justify-center mb-2 group-hover:scale-110 group-hover:shadow-md transition-all">
-        <Icon className="w-6 h-6 text-premium-ink" />
-      </div>
-      <h4 className="font-bold text-[15px]">{title}</h4>
-      <p className="text-[13px] text-premium-muted leading-relaxed max-w-[200px]">{desc}</p>
     </div>
   );
 }

@@ -19,13 +19,43 @@ import { auth, db, updateProfile, handleFirestoreError, OperationType, compressB
 import { doc, updateDoc } from 'firebase/firestore';
 import AvatarGenerator from './AvatarGenerator';
 import BrandIcon from './BrandIcon';
+import Integrations from './Integrations';
+import { authorizedFetch } from '../firebase';
 
 import { User as FirebaseUser } from 'firebase/auth';
 
 export default function Profile({ user, userData, brand }: { user: FirebaseUser, userData: any, brand: any }) {
   const [isUploading, setIsUploading] = useState(false);
   const [showAvatarGenerator, setShowAvatarGenerator] = useState(false);
+  const [stats, setStats] = useState({ reach: '---', score: '94/100', streak: '42' });
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const [yt, tt] = await Promise.all([
+          authorizedFetch('/api/analytics/youtube').catch(() => null),
+          authorizedFetch('/api/analytics/tiktok').catch(() => null)
+        ]);
+        
+        let totalViews = 0;
+        if (yt?.views) totalViews += yt.views;
+        if (tt?.views) totalViews += tt.views;
+
+        const formattedReach = totalViews > 1000 
+          ? `${(totalViews / 1000).toFixed(1)}K` 
+          : totalViews.toString();
+
+        setStats(prev => ({
+          ...prev,
+          reach: totalViews > 0 ? formattedReach : '---'
+        }));
+      } catch (error) {
+        console.error('Error fetching profile stats:', error);
+      }
+    };
+    fetchStats();
+  }, []);
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -41,21 +71,13 @@ export default function Profile({ user, userData, brand }: { user: FirebaseUser,
         try {
           const compressedBase64 = await compressBase64Image(rawBase64);
           
-          // 1. Update Firebase Auth Profile
-          await updateProfile(auth.currentUser!, {
-            photoURL: compressedBase64
-          });
-
-          // 2. Update Firestore User Document
+          // 1. Update Firestore User Document
           const userRef = doc(db, 'users', auth.currentUser!.uid);
           await updateDoc(userRef, {
             photoURL: compressedBase64,
             avatarType: 'uploaded',
             updatedAt: new Date().toISOString()
           });
-
-          // Force a reload or update local state if needed
-          window.location.reload(); 
         } catch (error) {
           handleFirestoreError(error, OperationType.UPDATE, `users/${auth.currentUser?.uid}`);
         }
@@ -69,39 +91,38 @@ export default function Profile({ user, userData, brand }: { user: FirebaseUser,
   };
 
   return (
-    <div className="space-y-10">
+    <div className="flex flex-col gap-10">
       <AnimatePresence>
         {showAvatarGenerator && (
           <AvatarGenerator 
             onClose={() => setShowAvatarGenerator(false)} 
-            onAvatarSet={() => window.location.reload()} 
+            onAvatarSet={() => {}} 
           />
         )}
       </AnimatePresence>
 
-      <div className="p-10 bg-premium-ink text-white relative overflow-hidden shadow-2xl shadow-black/20 border border-premium-border rounded-[24px] transition-all duration-300">
-        <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
-          <div className="relative group">
-            <div className="relative w-32 h-32 rounded-3xl overflow-hidden border-4 border-white/10 shadow-2xl">
+      <section className="ios-card bg-[var(--bg-secondary)] p-8 ios-elevated relative overflow-hidden border-t border-white/5">
+        <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
+          <div className="relative shrink-0">
+            <div className="relative w-32 h-32 rounded-3xl overflow-hidden ios-elevated border-4 border-white/10">
               <img 
-                src={user?.photoURL || 'https://picsum.photos/seed/user/200/200'} 
-                alt={user?.displayName} 
+                src={userData?.photoURL || user?.photoURL || 'https://picsum.photos/seed/user/200/200'} 
+                alt={userData?.displayName || user?.displayName || 'User'} 
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
               />
               {isUploading && (
                 <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-sm">
-                  <Loader2 className="w-8 h-8 text-white animate-spin" />
+                  <Loader2 size={32} className="text-white animate-spin" />
                 </div>
               )}
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm gap-4">
+              <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
                 <button 
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
                   className="p-3 bg-white/20 hover:bg-white/40 rounded-xl transition-all"
-                  title="Upload Photo"
                 >
-                  <Camera className="w-6 h-6 text-white" />
+                  <Camera size={24} className="text-white" />
                 </button>
               </div>
             </div>
@@ -112,144 +133,146 @@ export default function Profile({ user, userData, brand }: { user: FirebaseUser,
               accept="image/*" 
               className="hidden" 
             />
-            <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-accent-emerald rounded-2xl flex items-center justify-center border-4 border-premium-ink">
-              <Shield className="w-5 h-5 text-white" />
-            </div>
           </div>
           
           <div className="flex-1 text-center md:text-left space-y-4">
             <div>
-              <div className="flex items-center justify-center md:justify-start gap-3 mb-1">
-                <h2 className="text-4xl font-serif font-bold tracking-tight text-white">{userData?.displayName || user?.displayName || 'Creator'}</h2>
-                {userData?.accountStatus && (
-                  <div className={cn(
-                    "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border shadow-lg",
-                    userData.accountStatus === 'active' 
-                      ? "bg-accent-emerald/20 text-accent-emerald border-accent-emerald/30" 
-                      : "bg-accent-gold/20 text-accent-gold border-accent-gold/30"
-                  )}>
-                    {userData.accountStatus}
-                  </div>
-                )}
-                {userData?.avatarType === 'ai_generated' && (
-                  <div className="px-2 py-0.5 bg-accent-gold/20 text-accent-gold rounded-md text-[10px] font-bold uppercase tracking-widest border border-accent-gold/20 flex items-center gap-1">
-                    <BrandIcon size={12} />
-                    AI Avatar
-                  </div>
-                )}
+              <div className="flex flex-col sm:flex-row items-center md:items-start md:justify-start gap-2 mb-2">
+                <h2 className="text-[34px] font-bold tracking-tight">{userData?.displayName || user?.displayName || 'Creator'}</h2>
+                <div className="flex gap-2">
+                  <span className="px-2 py-0.5 bg-[var(--system-green)]/10 text-[var(--system-green)] rounded-md text-[11px] font-bold uppercase tracking-widest border border-[var(--system-green)]/10">
+                    Pro
+                  </span>
+                  {userData?.avatarType === 'ai_generated' && (
+                    <span className="px-2 py-0.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded-md text-[11px] font-bold uppercase tracking-widest border border-[var(--accent)]/10 flex items-center gap-1">
+                      <BrandIcon size={12} />
+                      AI
+                    </span>
+                  )}
+                </div>
               </div>
-              <p className="text-white/50 font-medium flex items-center justify-center md:justify-start gap-2">
-                <Mail className="w-4 h-4" />
+              <p className="text-[17px] text-[var(--label-secondary)] font-medium flex items-center justify-center md:justify-start gap-2">
+                <Mail size={16} />
                 {user?.email}
               </p>
             </div>
             
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
-              <div className="px-4 py-1.5 bg-white/10 rounded-full text-[11px] font-bold uppercase tracking-widest border border-white/10 backdrop-blur-md">
-                {brand?.archetype || 'Visionary'} Creator
-              </div>
-              <div className="px-4 py-1.5 bg-accent-gold/20 text-accent-gold rounded-full text-[11px] font-bold uppercase tracking-widest border border-accent-gold/20">
-                Pro Member
-              </div>
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
+              <span className="px-3 py-1 bg-[var(--bg-tertiary)] rounded-full text-[13px] font-semibold text-[var(--label-secondary)] border border-[var(--separator)]">
+                {brand?.archetype || 'Visionary'}
+              </span>
+              <span className="px-3 py-1 bg-[var(--bg-tertiary)] rounded-full text-[13px] font-semibold text-[var(--label-secondary)] border border-[var(--separator)]">
+                Joined {new Date(user?.metadata.creationTime || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              </span>
             </div>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3 min-w-[200px]">
             <button 
               onClick={() => setShowAvatarGenerator(true)}
-              className="px-8 py-4 bg-accent-gold text-premium-bg rounded-2xl font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-accent-gold/20 flex items-center justify-center gap-2"
+              className="ios-button-tinted w-full"
             >
-              <BrandIcon size={16} />
-              Generate AI Avatar
+              <BrandIcon size={18} />
+              AI Avatar Generator
             </button>
-            <div className="flex gap-3">
-              <button className="flex-1 p-4 bg-white/10 hover:bg-white/20 rounded-2xl transition-all border border-white/10 flex items-center justify-center">
-                <Share2 className="w-5 h-5" />
-              </button>
-              <button className="flex-1 px-8 py-4 bg-premium-surface border border-premium-border text-premium-ink rounded-2xl font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl">
-                Edit Profile
-              </button>
-            </div>
+            <button className="ios-button-filled w-full">
+              Edit Account
+            </button>
           </div>
         </div>
 
-        {/* Abstract background shapes */}
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-accent-gold/10 rounded-full blur-[100px] -mr-20 -mt-20" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent-emerald/10 rounded-full blur-[100px] -ml-20 -mb-20" />
-      </div>
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[var(--accent)]/5 rounded-full blur-[100px] -mr-20 -mt-20" />
+      </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { label: 'Total Reach', value: '124.5K', icon: TrendingUp, color: 'text-accent-gold' },
-          { label: 'Content Score', value: '94/100', icon: Award, color: 'text-accent-gold' },
-          { label: 'Streak Days', value: '42', icon: Zap, color: 'text-accent-emerald' },
+          { label: 'Total Reach', value: stats.reach, icon: TrendingUp, color: 'text-[var(--accent)]' },
+          { label: 'Content Score', value: stats.score, icon: Award, color: 'text-[var(--accent)]' },
+          { label: 'Streak Days', value: stats.streak, icon: Zap, color: 'text-[var(--system-green)]' },
         ].map((stat, i) => (
-          <div key={i} className="premium-card p-8 bg-premium-surface">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-[11px] font-bold text-premium-muted uppercase tracking-[0.2em]">{stat.label}</span>
-              <stat.icon className={cn("w-5 h-5", stat.color)} />
+          <div key={i} className="ios-card bg-[var(--bg-secondary)] p-6 flex flex-col gap-1">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-bold text-[var(--label-secondary)] uppercase tracking-[0.2em]">{stat.label}</span>
+              <stat.icon size={18} className={stat.color} />
             </div>
-            <p className="text-3xl font-extrabold tracking-tight">{stat.value}</p>
+            <p className="text-[28px] font-bold tracking-tight">{stat.value}</p>
           </div>
         ))}
       </div>
 
+      <section className="bg-[var(--bg-secondary)] ios-card p-8">
+        <Integrations />
+      </section>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="premium-card p-10 bg-premium-surface">
-          <h3 className="text-xl font-serif font-bold mb-8 flex items-center gap-3 text-premium-ink">
-            <Globe className="w-6 h-6 text-accent-gold" />
-            Public Portfolio
-          </h3>
-          <div className="space-y-6">
-            <div className="p-6 bg-premium-bg rounded-2xl border border-premium-border">
-              <p className="text-sm font-bold text-premium-muted uppercase tracking-widest mb-2">Live URL</p>
-              <div className="flex items-center justify-between gap-4">
-                <code className="text-accent-gold font-mono text-sm truncate">creatoros.app/profile/{user?.uid?.slice(0, 8)}</code>
-                <ExternalLink className="w-4 h-4 text-premium-muted cursor-pointer hover:text-premium-ink" />
+        <section>
+          <h4 className="ios-label">Profile Settings</h4>
+          <div className="ios-card bg-[var(--bg-tertiary)] overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-[var(--separator)]">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center">
+                  <Globe size={18} />
+                </div>
+                <span className="text-[17px] font-medium">Public Portfolio</span>
+              </div>
+              <ExternalLink size={16} className="text-[var(--label-tertiary)]" />
+            </div>
+            <div className="p-4 bg-[var(--bg-secondary)]/50">
+              <div className="p-3 bg-[var(--bg-tertiary)] rounded-xl border border-[var(--separator)] mb-4">
+                <code className="text-[13px] font-mono text-[var(--accent)] font-bold break-all">
+                  creatoros.app/profile/{user?.uid?.slice(0, 8)}
+                </code>
+              </div>
+              <p className="text-[14px] text-[var(--label-secondary)] leading-relaxed mb-4">
+                Your portfolio is live. Content published in Studio is featured here automatically.
+              </p>
+              <button className="ios-button-tinted w-full">Customize URL</button>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h4 className="ios-label">Subscription & Account</h4>
+          <div className="ios-card bg-[var(--bg-tertiary)] divide-y divide-[var(--separator)]">
+            <div className="p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[var(--system-orange)]/10 text-[var(--system-orange)] flex items-center justify-center">
+                  <Award size={18} />
+                </div>
+                <span className="text-[17px] font-medium">Current Plan</span>
+              </div>
+              <span className="text-[17px] font-bold text-[var(--accent)]">Creator Pro</span>
+            </div>
+            <div className="p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[var(--system-green)]/10 text-[var(--system-green)] flex items-center justify-center">
+                  <Shield size={18} />
+                </div>
+                <span className="text-[17px] font-medium">Status</span>
+              </div>
+              <span className="text-[17px] font-bold text-[var(--system-green)]">Active</span>
+            </div>
+            <div className="p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center">
+                  <Share2 size={18} />
+                </div>
+                <span className="text-[17px] font-medium">Auto-Publish</span>
+              </div>
+              <div className="w-12 h-6 bg-[var(--system-green)] rounded-full relative">
+                <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm" />
               </div>
             </div>
-            <p className="text-premium-muted text-sm leading-relaxed">
-              Your public portfolio is active and indexing. Every piece of content you "Publish" in the Content Studio is automatically showcased here.
-            </p>
-            <button className="w-full py-4 bg-accent-gold text-premium-bg rounded-2xl font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-accent-gold/20">
-              Customize Portfolio
+          </div>
+          <div className="mt-8">
+            <button 
+              onClick={() => auth.signOut()}
+              className="w-full text-[17px] font-semibold text-[var(--system-red)] py-4 ios-card bg-[var(--bg-tertiary)] active:bg-[var(--system-red)]/5"
+            >
+              Sign Out
             </button>
           </div>
-        </div>
-
-        <div className="premium-card p-10 bg-premium-surface">
-          <h3 className="text-xl font-serif font-bold mb-8 flex items-center gap-3 text-premium-ink">
-            <Calendar className="w-6 h-6 text-accent-gold" />
-            Account Details
-          </h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between py-3 border-bottom border-premium-border">
-              <span className="text-premium-muted font-medium">Member Since</span>
-              <span className="font-bold text-premium-ink">March 2024</span>
-            </div>
-            <div className="flex items-center justify-between py-3 border-bottom border-premium-border">
-              <span className="text-premium-muted font-medium">Plan</span>
-              <span className="font-bold text-accent-gold">{userData?.subscriptionTier === 'pro' ? 'Creator Pro' : 'Free Plan'}</span>
-            </div>
-            <div className="flex items-center justify-between py-3 border-bottom border-premium-border">
-              <span className="text-premium-muted font-medium">Account Status</span>
-              <div className="flex items-center gap-2">
-                <div className={cn(
-                  "w-2 h-2 rounded-full animate-pulse",
-                  userData?.accountStatus === 'active' ? "bg-accent-emerald" : "bg-accent-gold"
-                )} />
-                <span className="font-bold capitalize text-premium-ink">{userData?.accountStatus || 'Active'}</span>
-              </div>
-            </div>
-            <div className="flex items-center justify-between py-3 border-bottom border-premium-border">
-              <span className="text-premium-muted font-medium">Connected Accounts</span>
-              <div className="flex gap-2">
-                <div className="w-6 h-6 bg-black rounded-full" />
-                <div className="w-6 h-6 bg-blue-600 rounded-full" />
-              </div>
-            </div>
-          </div>
-        </div>
+        </section>
       </div>
     </div>
   );

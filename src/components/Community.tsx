@@ -12,7 +12,6 @@ import {
   MessageCircleMore
 } from 'lucide-react';
 import { cn } from '../lib/utils';
-import AppleCardStack from './ui/AppleCardStack';
 import BrandIcon from './BrandIcon';
 
 const LEADERBOARD = [
@@ -22,205 +21,131 @@ const LEADERBOARD = [
   { name: 'Elena Rodriguez', niche: 'Sustainable Living', streak: 25, score: 90, avatar: 'https://picsum.photos/seed/elena/100/100' },
 ];
 
-export default function Community({ user, setActiveTab }: { user: any, setActiveTab: (tab: string) => void }) {
+export default function Community({ user, userData, setActiveTab }: { user: any, userData: any, setActiveTab: (tab: string) => void }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
-      {/* Feed */}
-      <div className="md:col-span-8 space-y-10">
-        <div className="premium-card p-6 bg-premium-surface flex items-center gap-4 border border-premium-border">
-          <div className="w-12 h-12 rounded-2xl bg-premium-bg flex items-center justify-center border border-premium-border overflow-hidden">
-            {user?.photoURL ? (
-              <img src={user.photoURL} alt={user.displayName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-            ) : (
-              <Search className="w-5 h-5 text-white/40" />
-            )}
-          </div>
-          <input 
-            type="text" 
-            placeholder={`What's on your mind, ${user?.displayName?.split(' ')[0] || 'Creator'}?`} 
-            className="flex-1 bg-transparent outline-none font-medium text-lg placeholder:text-white/30"
-          />
-        </div>
+    <div className="space-y-8 pb-20">
+      <h1 className="px-1 pt-4">Community</h1>
 
-        <div className="space-y-6">
-          <div className="flex items-center justify-between px-2">
-            <h3 className="text-[11px] font-bold text-white/40 uppercase tracking-[0.2em]">Live Momentum</h3>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-accent-emerald rounded-full animate-pulse" />
-              <span className="text-[11px] font-bold text-accent-emerald uppercase tracking-widest">1,204 Online</span>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Feed */}
+        <div className="lg:col-span-8 space-y-8">
+          <section className="bg-[var(--bg-tertiary)] ios-card p-4 flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-[var(--bg-secondary)] overflow-hidden flex-shrink-0">
+              {(userData?.photoURL || user?.photoURL) ? (
+                <img src={userData?.photoURL || user?.photoURL} alt={userData?.displayName || user?.displayName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+              ) : (
+                <Users className="w-5 h-5 text-[var(--label-tertiary)] m-2.5" />
+              )}
             </div>
-          </div>
-          
-      {[
-        { name: 'Sarah Chen', platform: 'LinkedIn', score: 92, content: "Just finished Day 12 of the 30-Day Challenge! The AI coach suggested I tighten my hook and it really worked. Seeing 2x engagement already.", boosts: 12, comments: 3, color: 'from-indigo-500 to-purple-500' },
-        { name: 'Marcus Thorne', platform: 'Twitter/X', score: 88, content: "The branding engine just gave me a tagline that actually feels like me. Finally moving past the 'blank page' phase.", boosts: 8, comments: 5, color: 'from-emerald-500 to-teal-500' },
-        { name: 'Elena Rodriguez', platform: 'Instagram', score: 95, content: "Hit 1,000 followers today! The content scoring system is basically a cheat code for growth.", boosts: 24, comments: 12, color: 'from-orange-500 to-pink-500' }
-      ].map((item, i) => (
-        <div key={i} className="premium-card p-6 md:p-8 bg-premium-surface hover:shadow-2xl hover:shadow-black/[0.03] transition-all duration-500 group border border-premium-border">
-          <div className="flex items-center gap-4 mb-6">
-            <div className={cn("w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-gradient-to-br flex-shrink-0 shadow-inner", item.color)} />
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between gap-2">
-                <h4 className="font-bold text-base md:text-lg tracking-tight truncate text-premium-ink">{item.name}</h4>
-                <div className="flex items-center gap-1.5 px-2 py-0.5 md:px-2.5 md:py-1 bg-accent-emerald/5 text-accent-emerald rounded-lg border border-accent-emerald/10 flex-shrink-0">
-                  <BrandIcon size={12} />
-                  <span className="text-[10px] md:text-[11px] font-bold tabular-nums leading-none">{item.score}</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-[10px] md:text-[12px] text-white/40 font-bold uppercase tracking-widest">{item.platform}</span>
-                <span className="w-1 h-1 rounded-full bg-white/20" />
-                <span className="text-[10px] md:text-[12px] text-white/40 font-medium">2m ago</span>
+            <input 
+              type="text" 
+              placeholder={`Share your progress, ${user?.displayName?.split(' ')[0] || 'Creator'}...`} 
+              className="flex-1 bg-transparent outline-none text-[17px] font-medium placeholder:text-[var(--label-tertiary)]"
+            />
+          </section>
+
+          <section className="space-y-4">
+            <div className="flex items-center justify-between pr-4">
+              <span className="ios-label uppercase">Live Momentum</span>
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 bg-[var(--system-green)] rounded-full animate-pulse" />
+                <span className="text-[12px] font-bold text-[var(--system-green)] uppercase tracking-wider">1,204 Active</span>
               </div>
             </div>
-          </div>
-                    <div className="pl-0 sm:pl-14 md:pl-16">
-            <p className="text-base md:text-lg leading-relaxed text-premium-ink mb-6 md:mb-8 font-medium italic font-serif">
-              "{item.content}"
-            </p>
             
-            <div className="flex items-center gap-6 md:gap-8 pt-6 border-t border-premium-border">
-              <button className="flex items-center gap-2 text-[12px] md:text-[13px] font-bold text-white/40 hover:text-accent-gold transition-colors group/btn">
-                <Zap className="w-4 h-4 group-hover/btn:fill-accent-gold transition-all" />
-                <span className="tabular-nums">{item.boosts}</span>
-              </button>
-              <button className="flex items-center gap-2 text-[12px] md:text-[13px] font-bold text-white/40 hover:text-accent-gold transition-colors group/btn">
-                <MessageCircle className="w-4 h-4 group-hover/btn:fill-accent-gold transition-all" />
-                <span className="tabular-nums">{item.comments}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      ))}
-        </div>
-      </div>
-
-      {/* Sidebar */}
-      <div className="md:col-span-4 space-y-10">
-        <div className="premium-card p-10 bg-premium-surface">
-          <div className="flex items-center justify-between mb-10">
-            <h3 className="font-serif font-bold text-lg tracking-tight text-premium-ink">Daily Inspiration</h3>
-            <div className="w-10 h-10 bg-accent-gold/10 rounded-xl flex items-center justify-center">
-              <BrandIcon size={20} />
-            </div>
-          </div>
-          
-          <AppleCardStack 
-            items={[
-              {
-                id: 1,
-                content: (
-                  <div className="p-8 flex flex-col h-full bg-gradient-to-br from-accent-gold/5 to-transparent">
-                    <div className="w-12 h-12 rounded-2xl bg-premium-surface border border-premium-border shadow-sm flex items-center justify-center mb-6">
-                      <Zap className="w-6 h-6 text-accent-gold" />
+            <div className="space-y-4">
+              {[
+                { name: 'Sarah Chen', platform: 'LinkedIn', score: 92, content: "Just finished Day 12 of the 30-Day Challenge! The AI coach suggested I tighten my hook and it really worked. Seeing 2x engagement already.", boosts: 12, comments: 3 },
+                { name: 'Marcus Thorne', platform: 'Twitter', score: 88, content: "The branding engine just gave me a tagline that actually feels like me. Finally moving past the 'blank page' phase.", boosts: 8, comments: 5 },
+                { name: 'Elena Rodriguez', platform: 'Instagram', score: 95, content: "Hit 1,000 followers today! The content scoring system is basically a cheat code for growth.", boosts: 24, comments: 12 }
+              ].map((item, i) => (
+                <div key={i} className="bg-[var(--bg-tertiary)] ios-card p-6 transition-all active:scale-[0.99]">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[var(--bg-secondary)] flex-shrink-0" />
+                      <div className="flex flex-col">
+                        <span className="font-bold text-[17px] tracking-tight">{item.name}</span>
+                        <span className="text-[13px] text-[var(--label-secondary)]">{item.platform} • 2m ago</span>
+                      </div>
                     </div>
-                    <h4 className="text-xl font-serif font-bold mb-2 text-premium-ink">Morning Hook</h4>
-                    <p className="text-white/60 text-sm leading-relaxed">
-                      "I spent 100 hours researching X so you don't have to. Here are the 3 things that actually matter..."
-                    </p>
-                    <div className="mt-auto flex items-center gap-2 text-[11px] font-bold text-accent-gold uppercase tracking-widest">
-                      Fling to skip <ChevronRight className="w-3 h-3" />
+                    <div className="bg-[var(--bg-secondary)] px-2 py-1 rounded-lg flex items-center gap-1">
+                      <BrandIcon size={12} className="text-[var(--system-green)]" />
+                      <span className="text-[13px] font-bold tabular-nums">{item.score}</span>
                     </div>
                   </div>
-                ),
-                backContent: (
-                  <div className="p-8 flex flex-col h-full">
-                    <h4 className="text-xl font-serif font-bold mb-4 text-premium-ink">Why it works</h4>
-                    <p className="text-white/60 text-sm leading-relaxed">
-                      This hook leverages the "Curiosity Gap" and "Time Saved" value propositions. It positions you as an authority who has done the hard work.
-                    </p>
-                  </div>
-                )
-              },
-              {
-                id: 2,
-                content: (
-                  <div className="p-8 flex flex-col h-full bg-gradient-to-br from-accent-emerald/5 to-transparent">
-                    <div className="w-12 h-12 rounded-2xl bg-premium-surface border border-premium-border shadow-sm flex items-center justify-center mb-6">
-                      <Globe className="w-6 h-6 text-accent-emerald" />
-                    </div>
-                    <h4 className="text-xl font-serif font-bold mb-2 text-premium-ink">Visual Style</h4>
-                    <p className="text-white/60 text-sm leading-relaxed">
-                      Use high-contrast, minimalist thumbnails with a single focal point to increase CTR by up to 40%.
-                    </p>
-                    <div className="mt-auto flex items-center gap-2 text-[11px] font-bold text-accent-emerald uppercase tracking-widest">
-                      Fling to skip <ChevronRight className="w-3 h-3" />
-                    </div>
-                  </div>
-                ),
-                backContent: (
-                  <div className="p-8 flex flex-col h-full">
-                    <h4 className="text-xl font-serif font-bold mb-4 text-premium-ink">Pro Tip</h4>
-                    <p className="text-white/60 text-sm leading-relaxed">
-                      Avoid cluttered backgrounds. The human eye gravitates towards simplicity in a busy feed.
-                    </p>
-                  </div>
-                )
-              }
-            ]}
-          />
-        </div>
-
-        <div className="premium-card p-10 bg-premium-surface">
-          <div className="flex items-center justify-between mb-10">
-            <h3 className="font-bold text-lg tracking-tight">Elite Creators</h3>
-            <div className="w-10 h-10 bg-accent-gold/10 rounded-xl flex items-center justify-center">
-              <Trophy className="w-5 h-5 text-accent-gold" />
-            </div>
-          </div>
-          <div className="space-y-8">
-            {LEADERBOARD.map((user, i) => (
-              <div key={i} className="flex items-center justify-between group cursor-pointer">
-                <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <img 
-                      src={user.avatar} 
-                      alt={user.name} 
-                      className="w-12 h-12 rounded-2xl object-cover shadow-sm group-hover:scale-110 transition-transform"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-premium-ink text-white rounded-full flex items-center justify-center text-[10px] font-bold border-2 border-white">
-                      {i + 1}
-                    </div>
-                  </div>
-                  <div>
-                    <p className="font-bold text-[15px] text-premium-ink">{user.name}</p>
-                    <p className="text-[12px] text-white/40 font-medium">{user.niche}</p>
+                  
+                  <p className="text-[17px] leading-snug font-medium mb-6">
+                    {item.content}
+                  </p>
+                  
+                  <div className="flex items-center gap-6 pt-4 border-t border-[var(--separator)]">
+                    <button className="flex items-center gap-2 text-[14px] font-bold text-[var(--label-secondary)] active:text-[var(--accent)]">
+                      <Zap size={18} />
+                      {item.boosts}
+                    </button>
+                    <button className="flex items-center gap-2 text-[14px] font-bold text-[var(--label-secondary)] active:text-[var(--accent)]">
+                      <MessageCircle size={18} />
+                      {item.comments}
+                    </button>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="font-bold text-[15px] text-premium-ink">{user.streak}d</p>
-                  <p className="text-[10px] text-white/40 uppercase font-bold tracking-widest">Streak</p>
-                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        {/* Community Sidebar */}
+        <div className="lg:col-span-4 space-y-8">
+           <section>
+              <span className="ios-label uppercase">Elite Creators</span>
+              <div className="bg-[var(--bg-tertiary)] ios-card overflow-hidden divide-y divide-[var(--separator)]">
+                {LEADERBOARD.map((user, i) => (
+                  <div key={i} className="p-4 flex items-center justify-between active:bg-[var(--separator)] transition-colors cursor-pointer">
+                    <div className="flex items-center gap-3">
+                      <div className="relative">
+                        <img 
+                          src={user.avatar} 
+                          alt={user.name} 
+                          className="w-10 h-10 rounded-full object-cover"
+                          referrerPolicy="no-referrer"
+                        />
+                        <div className="absolute -top-1 -right-1 w-5 h-5 bg-[var(--label-primary)] text-[var(--bg-primary)] rounded-full flex items-center justify-center text-[10px] font-bold border-2 border-[var(--bg-tertiary)]">
+                          {i + 1}
+                        </div>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="font-bold text-[15px]">{user.name}</span>
+                        <span className="text-[12px] text-[var(--label-secondary)]">{user.niche}</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                       <span className="block font-bold text-[15px]">{user.streak}d</span>
+                       <span className="block text-[10px] text-[var(--label-tertiary)] font-bold uppercase">Streak</span>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          <button className="w-full mt-10 py-5 bg-premium-bg border border-premium-border rounded-[20px] text-[13px] font-bold text-premium-ink hover:bg-premium-ink hover:text-premium-bg transition-all shadow-sm">
-            View Global Rankings
-          </button>
-        </div>
+           </section>
 
-        <div className="bg-premium-ink p-10 rounded-[24px] text-premium-bg shadow-2xl shadow-black/20 relative overflow-hidden group">
-          <div className="relative z-10">
-            <div className="w-12 h-12 bg-black/10 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-md border border-black/10">
-              <Globe className="w-6 h-6 text-accent-gold" />
-            </div>
-            <h3 className="text-2xl font-serif font-bold tracking-tight mb-3">Creator Journey</h3>
-            <p className="text-[14px] text-black/50 mb-8 leading-relaxed font-medium">
-              Your public portfolio updates in real-time as you build. Share your momentum with the world.
-            </p>
-            <button 
-              onClick={() => setActiveTab('profile')}
-              className="w-full py-5 bg-accent-gold border border-accent-gold text-premium-bg rounded-[20px] font-bold text-[14px] flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-accent-gold/20"
-            >
-              View My Page
-              <ArrowUpRight className="w-4 h-4" />
-            </button>
-          </div>
-          
-          {/* Abstract background shapes */}
-          <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-accent-emerald/20 rounded-full blur-[80px] group-hover:scale-125 transition-transform duration-1000" />
-          <div className="absolute -top-20 -left-20 w-64 h-64 bg-accent-gold/10 rounded-full blur-[80px]" />
+           <section>
+              <div className="bg-[var(--accent)] p-6 rounded-[24px] text-white space-y-4">
+                 <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                    <Globe size={20} className="text-white" />
+                 </div>
+                 <div className="space-y-1">
+                    <h3 className="text-[20px] font-bold tracking-tight">Public Presence</h3>
+                    <p className="text-white/80 text-[14px] leading-tight font-medium">
+                      Your portfolio updates in real-time as you build. Share your momentum with the world.
+                    </p>
+                 </div>
+                 <button 
+                   onClick={() => setActiveTab('profile')}
+                   className="w-full h-12 bg-white text-[var(--accent)] rounded-[12px] font-bold text-[15px] active:opacity-80 transition-opacity"
+                 >
+                   View My Page
+                 </button>
+              </div>
+           </section>
         </div>
       </div>
     </div>

@@ -19,20 +19,19 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-premium-bg flex flex-col sm:flex-row overflow-hidden">
+    <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col sm:flex-row overflow-hidden">
       {/* Left Pane - Branding & Value Prop */}
-      <div className="hidden sm:flex sm:w-1/2 relative flex-col justify-between p-8 xl:p-20 border-r border-white/10">
+      <div className="hidden sm:flex sm:w-1/2 relative flex-col justify-between p-8 xl:p-20 border-r border-[var(--separator)] overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-accent-violet/20 rounded-full blur-[120px]" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-accent-emerald/10 rounded-full blur-[120px]" />
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
+          <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-[var(--accent)]/10 rounded-full blur-[120px]" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-[var(--system-green)]/10 rounded-full blur-[120px]" />
         </div>
 
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-16">
-            <BrandIcon size={32} className="text-accent-gold" glow />
-            <span className="text-2xl font-serif font-bold text-white tracking-tight">CreatorOS</span>
+            <BrandIcon size={32} className="text-[var(--accent)]" />
+            <span className="text-[24px] font-bold tracking-tight">CreatorOS</span>
           </div>
 
           <motion.div
@@ -40,57 +39,57 @@ export default function Login() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <h1 className="text-5xl xl:text-6xl font-serif font-bold text-white tracking-tight leading-[1.1] mb-6">
-              The AI Operating System for Modern Creators.
+            <h1 className="text-[44px] xl:text-[54px] font-bold tracking-tight leading-tight mb-6">
+              The OS for Modern Creators.
             </h1>
-            <p className="text-xl text-white/60 leading-relaxed max-w-xl mb-12">
-              Automate your workflow, generate high-quality content, and scale your audience with data-driven insights.
+            <p className="text-[20px] text-[var(--label-secondary)] leading-relaxed max-w-xl mb-12 font-medium">
+              Automate your workflow, generate high-quality content, and scale your audience with AI.
             </p>
 
-            <div className="space-y-6">
-              <FeatureItem icon={Sparkles} title="AI-Powered Workflow" desc="Generate scripts, hooks, and captions in seconds." />
-              <FeatureItem icon={Globe} title="Audience Insights" desc="Understand your niche and track your growth." />
-              <FeatureItem icon={ShieldCheck} title="Secure & Synced" desc="Your brand identity, safe in the cloud." />
+            <div className="flex flex-col gap-6">
+              <FeatureItem icon={Sparkles} title="AI-Powered Workflow" desc="Generate scripts & hooks in seconds." />
+              <FeatureItem icon={Globe} title="Audience Insights" desc="Understand your niche and track growth." />
+              <FeatureItem icon={ShieldCheck} title="Built for Security" desc="Your brand is safe in the cloud." />
             </div>
           </motion.div>
         </div>
 
-        <div className="relative z-10 flex items-center gap-4 text-white/40 text-sm font-medium">
-          <span>Trusted by 50,000+ creators</span>
-          <div className="w-1 h-1 rounded-full bg-white/20" />
-          <span>Join the revolution</span>
+        <div className="relative z-10 flex items-center gap-4 text-[var(--label-tertiary)] text-[13px] font-bold uppercase tracking-widest">
+          <span>Trusted by 50K Creators</span>
+          <div className="w-1.5 h-1.5 rounded-full bg-[var(--separator)]" />
+          <span>Join the Club</span>
         </div>
       </div>
 
       {/* Right Pane - Login Form */}
-      <div className="w-full sm:w-1/2 flex items-center justify-center p-6 sm:p-12 relative">
+      <div className="w-full sm:w-1/2 flex items-center justify-center p-6 sm:p-12 relative bg-[var(--bg-secondary)]">
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
           className="max-w-md w-full relative z-10"
         >
-          <div className="p-10 sm:p-12 bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] rounded-[40px] text-center">
+          <div className="ios-card bg-[var(--bg-tertiary)] p-10 sm:p-12 ios-elevated text-center border-t border-white/5">
             <div className="sm:hidden mb-10">
-              <div className="w-20 h-20 bg-white/10 rounded-[28px] flex items-center justify-center mx-auto mb-6 border border-white/10 shadow-2xl">
-                <BrandIcon size={40} className="text-accent-gold" glow />
+              <div className="w-20 h-20 bg-[var(--bg-secondary)] rounded-[22px] flex items-center justify-center mx-auto mb-6 border border-[var(--separator)] shadow-sm">
+                <BrandIcon size={40} className="text-[var(--accent)]" />
               </div>
-              <h1 className="text-3xl font-serif font-bold text-white tracking-tight mb-2">CreatorOS</h1>
-              <p className="text-white/40 font-medium">Your AI Creator Workspace</p>
+              <h1 className="text-[34px] font-bold tracking-tight mb-1">CreatorOS</h1>
+              <p className="text-[17px] text-[var(--label-secondary)] font-medium">Your AI Creator Workspace</p>
             </div>
 
             <div className="hidden sm:block mb-10">
-              <h2 className="text-3xl font-bold text-white mb-2">Welcome back</h2>
-              <p className="text-white/60">Sign in to access your workspace</p>
+              <h2 className="text-[28px] font-bold mb-1">Welcome</h2>
+              <p className="text-[17px] text-[var(--label-secondary)] font-medium">Sign in to access your workspace</p>
             </div>
 
             <button 
               onClick={handleLogin}
               disabled={isLoading}
-              className="w-full py-5 bg-premium-surface text-premium-ink rounded-[24px] font-bold text-lg flex items-center justify-center gap-3 hover:bg-white/10 transition-all shadow-xl shadow-white/5 border border-premium-border active:scale-[0.98] disabled:opacity-50 group"
+              className="ios-button-filled w-full py-4 text-[17px] group"
             >
               {isLoading ? (
-                <Loader2 className="w-6 h-6 animate-spin" />
+                <Loader2 size={24} className="animate-spin" />
               ) : (
                 <>
                   <img 
@@ -100,17 +99,17 @@ export default function Login() {
                     referrerPolicy="no-referrer"
                   />
                   <span>Continue with Google</span>
-                  <ArrowRight className="w-5 h-5 opacity-0 -ml-8 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
+                  <ArrowRight size={20} className="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
                 </>
               )}
             </button>
 
-            <div className="mt-10 pt-8 border-t border-white/10">
-              <p className="text-white/30 text-xs leading-relaxed">
+            <div className="mt-10 pt-8 border-t border-[var(--separator)]">
+              <p className="text-[12px] text-[var(--label-tertiary)] leading-relaxed font-medium">
                 By continuing, you agree to our{' '}
-                <a href="/terms" className="text-white/60 hover:text-white underline underline-offset-4 transition-colors">Terms of Service</a>
+                <a href="/terms" className="text-[var(--label-secondary)] hover:text-[var(--accent)] underline underline-offset-4 transition-colors">Terms</a>
                 {' '}and{' '}
-                <a href="/privacy" className="text-white/60 hover:text-white underline underline-offset-4 transition-colors">Privacy Policy</a>.
+                <a href="/privacy" className="text-[var(--label-secondary)] hover:text-[var(--accent)] underline underline-offset-4 transition-colors">Privacy</a>.
               </p>
             </div>
           </div>
@@ -123,12 +122,12 @@ export default function Login() {
 function FeatureItem({ icon: Icon, title, desc }: { icon: any, title: string, desc: string }) {
   return (
     <div className="flex items-start gap-4">
-      <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 shrink-0">
-        <Icon className="w-6 h-6 text-accent-gold" />
+      <div className="w-12 h-12 rounded-xl bg-[var(--bg-tertiary)] flex items-center justify-center border border-[var(--separator)] shrink-0 shadow-sm">
+        <Icon size={24} className="text-[var(--accent)]" />
       </div>
       <div>
-        <h3 className="text-white font-bold text-lg mb-1">{title}</h3>
-        <p className="text-white/50 leading-relaxed">{desc}</p>
+        <h3 className="font-bold text-[17px] mb-0.5">{title}</h3>
+        <p className="text-[15px] text-[var(--label-secondary)] leading-snug">{desc}</p>
       </div>
     </div>
   );

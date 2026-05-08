@@ -62,6 +62,23 @@
         "updatedAt": { "type": "string", "format": "date-time" }
       },
       "required": ["userId", "name", "type", "createdAt"]
+    },
+    "SupportTicket": {
+      "title": "Support Ticket",
+      "description": "A support request submitted by a user.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "subject": { "type": "string" },
+        "message": { "type": "string" },
+        "status": { "type": "string", "enum": ["open", "resolved"] },
+        "userData": { "type": "object" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "resolvedAt": { "type": "string", "format": "date-time" },
+        "resolvedBy": { "type": "string" }
+      },
+      "required": ["userId", "subject", "message", "status", "createdAt"]
     }
   },
   "firestore": {
@@ -80,6 +97,10 @@
     "/projects/{projectId}": {
       "schema": "Project",
       "description": "User projects and assets"
+    },
+    "/support_tickets/{ticketId}": {
+      "schema": "SupportTicket",
+      "description": "Support tickets for user assistance"
     }
   }
 }
