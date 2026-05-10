@@ -24,7 +24,7 @@ const LEADERBOARD = [
 export default function Community({ user, userData, setActiveTab }: { user: any, userData: any, setActiveTab: (tab: string) => void }) {
   return (
     <div className="space-y-8 pb-20">
-      <h1 className="px-1 pt-4">Community</h1>
+      <h1 className="font-serif text-[36px] font-semibold tracking-[-0.015em] text-[var(--label-primary)] px-1 pt-4">Community</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Feed */}
@@ -34,7 +34,7 @@ export default function Community({ user, userData, setActiveTab }: { user: any,
               {(userData?.photoURL || user?.photoURL) ? (
                 <img src={userData?.photoURL || user?.photoURL} alt={userData?.displayName || user?.displayName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
               ) : (
-                <Users className="w-5 h-5 text-[var(--label-tertiary)] m-2.5" />
+                <Users className="w-5 h-5 text-[var(--label-tertiary)] m-2.5" strokeWidth={1.5} />
               )}
             </div>
             <input 
@@ -69,7 +69,7 @@ export default function Community({ user, userData, setActiveTab }: { user: any,
                       </div>
                     </div>
                     <div className="bg-[var(--bg-secondary)] px-2 py-1 rounded-lg flex items-center gap-1">
-                      <BrandIcon size={12} className="text-[var(--system-green)]" />
+                      <BrandIcon size={12} strokeWidth={1.5} className="text-[var(--system-green)]" />
                       <span className="text-[13px] font-bold tabular-nums">{item.score}</span>
                     </div>
                   </div>
@@ -80,11 +80,11 @@ export default function Community({ user, userData, setActiveTab }: { user: any,
                   
                   <div className="flex items-center gap-6 pt-4 border-t border-[var(--separator)]">
                     <button className="flex items-center gap-2 text-[14px] font-bold text-[var(--label-secondary)] active:text-[var(--accent)]">
-                      <Zap size={18} />
+                      <Zap size={18} strokeWidth={1.5} />
                       {item.boosts}
                     </button>
                     <button className="flex items-center gap-2 text-[14px] font-bold text-[var(--label-secondary)] active:text-[var(--accent)]">
-                      <MessageCircle size={18} />
+                      <MessageCircle size={18} strokeWidth={1.5} />
                       {item.comments}
                     </button>
                   </div>
@@ -128,13 +128,13 @@ export default function Community({ user, userData, setActiveTab }: { user: any,
            </section>
 
            <section>
-              <div className="bg-[var(--accent)] p-6 rounded-[24px] text-white space-y-4">
+              <div className="bg-[var(--accent)] p-6 rounded-[24px] text-white space-y-4 shadow-[inset_0px_2px_4px_rgba(255,255,255,0.1),0px_4px_12px_color-mix(in_srgb,var(--accent)_20%,transparent)]">
                  <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-                    <Globe size={20} className="text-white" />
+                    <Globe size={20} strokeWidth={1.5} className="text-white" />
                  </div>
                  <div className="space-y-1">
-                    <h3 className="text-[20px] font-bold tracking-tight">Public Presence</h3>
-                    <p className="text-white/80 text-[14px] leading-tight font-medium">
+                    <h3 className="font-serif text-[24px] font-semibold tracking-tight">Public Presence</h3>
+                    <p className="text-white/90 text-[14px] leading-tight font-medium">
                       Your portfolio updates in real-time as you build. Share your momentum with the world.
                     </p>
                  </div>

@@ -99,7 +99,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
               
               <div className="absolute bottom-12 left-12 right-12 z-20">
                 <div className="p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 w-fit mb-6 shadow-2xl">
-                  <step.icon size={40} className="text-white" glow={step.id === 'welcome'} />
+                  <step.icon size={40} className="text-white" glow={step.id === 'welcome'} strokeWidth={1.5} />
                 </div>
                 <div className="space-y-4">
                   <div className="flex gap-2">
@@ -141,11 +141,11 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
               className="space-y-8"
             >
               <div className="sm:hidden w-16 h-16 rounded-[20px] flex items-center justify-center mb-6 bg-[var(--bg-tertiary)] border border-[var(--separator)]">
-                <step.icon size={32} className="text-[var(--accent)]" />
+                <step.icon size={32} strokeWidth={1.5} className="text-[var(--accent)]" />
               </div>
               
               <div className="space-y-4">
-                <h2 className="text-[38px] sm:text-[44px] font-bold tracking-tight leading-tight text-balance">
+                <h2 className="font-serif text-[38px] sm:text-[44px] font-semibold tracking-[-0.015em] leading-tight text-balance">
                   {step.title}
                 </h2>
                 <p className="text-[19px] sm:text-[21px] text-[var(--label-secondary)] leading-relaxed font-medium">
@@ -159,7 +159,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   className="ios-button-filled w-full py-5 text-[19px]"
                 >
                   {currentStep === STEPS.length - 1 ? "Get Started" : "Continue"}
-                  <ChevronRight size={24} />
+                  <ChevronRight size={24} strokeWidth={1.5} />
                 </button>
                 
                 {currentStep > 0 && (

@@ -113,7 +113,7 @@ export default function Profile({ user, userData, brand }: { user: FirebaseUser,
               />
               {isUploading && (
                 <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-sm">
-                  <Loader2 size={32} className="text-white animate-spin" />
+                  <Loader2 size={32} strokeWidth={1.5} className="text-white animate-spin" />
                 </div>
               )}
               <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
@@ -122,7 +122,7 @@ export default function Profile({ user, userData, brand }: { user: FirebaseUser,
                   disabled={isUploading}
                   className="p-3 bg-white/20 hover:bg-white/40 rounded-xl transition-all"
                 >
-                  <Camera size={24} className="text-white" />
+                  <Camera size={24} strokeWidth={1.5} className="text-white" />
                 </button>
               </div>
             </div>
@@ -138,21 +138,21 @@ export default function Profile({ user, userData, brand }: { user: FirebaseUser,
           <div className="flex-1 text-center md:text-left space-y-4">
             <div>
               <div className="flex flex-col sm:flex-row items-center md:items-start md:justify-start gap-2 mb-2">
-                <h2 className="text-[34px] font-bold tracking-tight">{userData?.displayName || user?.displayName || 'Creator'}</h2>
-                <div className="flex gap-2">
+                <h1 className="font-serif text-[36px] font-semibold tracking-[-0.015em] text-[var(--label-primary)]">{userData?.displayName || user?.displayName || 'Creator'}</h1>
+                <div className="flex gap-2 items-center">
                   <span className="px-2 py-0.5 bg-[var(--system-green)]/10 text-[var(--system-green)] rounded-md text-[11px] font-bold uppercase tracking-widest border border-[var(--system-green)]/10">
                     Pro
                   </span>
                   {userData?.avatarType === 'ai_generated' && (
                     <span className="px-2 py-0.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded-md text-[11px] font-bold uppercase tracking-widest border border-[var(--accent)]/10 flex items-center gap-1">
-                      <BrandIcon size={12} />
+                      <BrandIcon size={12} strokeWidth={1.5} />
                       AI
                     </span>
                   )}
                 </div>
               </div>
               <p className="text-[17px] text-[var(--label-secondary)] font-medium flex items-center justify-center md:justify-start gap-2">
-                <Mail size={16} />
+                <Mail size={16} strokeWidth={1.5} />
                 {user?.email}
               </p>
             </div>
@@ -172,7 +172,7 @@ export default function Profile({ user, userData, brand }: { user: FirebaseUser,
               onClick={() => setShowAvatarGenerator(true)}
               className="ios-button-tinted w-full"
             >
-              <BrandIcon size={18} />
+              <BrandIcon size={18} strokeWidth={1.5} />
               AI Avatar Generator
             </button>
             <button className="ios-button-filled w-full">
@@ -193,7 +193,7 @@ export default function Profile({ user, userData, brand }: { user: FirebaseUser,
           <div key={i} className="ios-card bg-[var(--bg-secondary)] p-6 flex flex-col gap-1">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[11px] font-bold text-[var(--label-secondary)] uppercase tracking-[0.2em]">{stat.label}</span>
-              <stat.icon size={18} className={stat.color} />
+              <stat.icon size={18} strokeWidth={1.5} className={stat.color} />
             </div>
             <p className="text-[28px] font-bold tracking-tight">{stat.value}</p>
           </div>
@@ -210,12 +210,12 @@ export default function Profile({ user, userData, brand }: { user: FirebaseUser,
           <div className="ios-card bg-[var(--bg-tertiary)] overflow-hidden">
             <div className="flex items-center justify-between p-4 border-b border-[var(--separator)]">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center">
-                  <Globe size={18} />
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background: 'color-mix(in srgb, var(--accent) 12%, transparent)', color: 'var(--accent)'}}>
+                  <Globe size={18} strokeWidth={1.5} />
                 </div>
                 <span className="text-[17px] font-medium">Public Portfolio</span>
               </div>
-              <ExternalLink size={16} className="text-[var(--label-tertiary)]" />
+              <ExternalLink size={16} strokeWidth={1.5} className="text-[var(--label-tertiary)]" />
             </div>
             <div className="p-4 bg-[var(--bg-secondary)]/50">
               <div className="p-3 bg-[var(--bg-tertiary)] rounded-xl border border-[var(--separator)] mb-4">
@@ -236,30 +236,30 @@ export default function Profile({ user, userData, brand }: { user: FirebaseUser,
           <div className="ios-card bg-[var(--bg-tertiary)] divide-y divide-[var(--separator)]">
             <div className="p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-[var(--system-orange)]/10 text-[var(--system-orange)] flex items-center justify-center">
-                  <Award size={18} />
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background: 'color-mix(in srgb, var(--accent) 12%, transparent)', color: 'var(--accent)'}}>
+                  <Award size={18} strokeWidth={1.5} />
                 </div>
                 <span className="text-[17px] font-medium">Current Plan</span>
               </div>
-              <span className="text-[17px] font-bold text-[var(--accent)]">Creator Pro</span>
+              <span className="text-[17px] font-serif italic text-[var(--label-primary)]">Creator Pro</span>
             </div>
             <div className="p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-[var(--system-green)]/10 text-[var(--system-green)] flex items-center justify-center">
-                  <Shield size={18} />
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background: 'color-mix(in srgb, var(--system-green) 12%, transparent)', color: 'var(--system-green)'}}>
+                  <Shield size={18} strokeWidth={1.5} />
                 </div>
                 <span className="text-[17px] font-medium">Status</span>
               </div>
-              <span className="text-[17px] font-bold text-[var(--system-green)]">Active</span>
+              <span className="text-[17px] font-serif italic text-[var(--system-green)]">Active</span>
             </div>
             <div className="p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center">
-                  <Share2 size={18} />
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background: 'color-mix(in srgb, var(--accent) 12%, transparent)', color: 'var(--accent)'}}>
+                  <Share2 size={18} strokeWidth={1.5} />
                 </div>
                 <span className="text-[17px] font-medium">Auto-Publish</span>
               </div>
-              <div className="w-12 h-6 bg-[var(--system-green)] rounded-full relative">
+              <div className="w-12 h-6 bg-[var(--accent)] rounded-full relative">
                 <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm" />
               </div>
             </div>

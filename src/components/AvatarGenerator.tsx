@@ -207,73 +207,73 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
       <motion.div 
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
-        className="bg-premium-surface w-full max-w-5xl h-[85vh] rounded-[32px] overflow-hidden flex flex-col shadow-2xl"
+        className="bg-[var(--bg-secondary)] w-full max-w-5xl h-[85vh] rounded-[32px] overflow-hidden flex flex-col shadow-2xl"
       >
         {/* Header */}
-        <div className="p-8 border-b border-premium-border flex items-center justify-between bg-premium-surface sticky top-0 z-10">
-          <div className="flex items-center gap-4 text-premium-ink">
-            <div className="w-12 h-12 bg-accent-gold/10 rounded-2xl flex items-center justify-center">
-              <BrandIcon size={24} />
+        <div className="p-8 border-b border-[var(--separator)] flex items-center justify-between bg-[var(--bg-secondary)] sticky top-0 z-10">
+          <div className="flex items-center gap-4 text-[var(--label-primary)]">
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{background: 'color-mix(in srgb, var(--accent) 12%, transparent)', color: 'var(--accent)'}}>
+              <BrandIcon size={24} strokeWidth={1.5} />
             </div>
             <div>
               <h2 className="text-2xl font-serif font-bold tracking-tight">AI Avatar Generator</h2>
-              <p className="text-sm text-premium-muted">Design your digital identity with CreatorOS AI</p>
+              <p className="text-sm text-[var(--label-secondary)]">Design your digital identity with CreatorOS AI</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-3 hover:bg-white/10 rounded-2xl transition-colors text-premium-muted hover:text-premium-ink"
+            className="p-3 hover:bg-[var(--bg-tertiary)] rounded-2xl transition-colors text-[var(--label-secondary)] hover:text-[var(--label-primary)]"
           >
-            <X className="w-6 h-6" />
+            <X className="w-6 h-6" strokeWidth={1.5} />
           </button>
         </div>
 
         <div className="flex-1 overflow-hidden flex flex-col md:flex-row">
           {/* Controls Panel */}
-          <div className="w-full md:w-[400px] border-r border-premium-border p-8 overflow-y-auto bg-premium-bg">
+          <div className="w-full md:w-[400px] border-r border-[var(--separator)] p-8 overflow-y-auto bg-[var(--bg-primary)]">
             <div className="space-y-8">
               {/* Tabs */}
-              <div className="flex p-1 bg-premium-bg rounded-2xl border border-premium-border">
+              <div className="flex p-1 bg-[var(--bg-primary)] rounded-2xl border border-[var(--separator)]">
                 <button 
                   onClick={() => setActiveTab('prompt')}
                   className={cn(
                     "flex-1 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2",
-                    activeTab === 'prompt' ? "bg-premium-surface text-premium-ink shadow-sm border border-premium-border" : "text-premium-muted hover:text-premium-ink"
+                    activeTab === 'prompt' ? "bg-[var(--bg-secondary)] text-[var(--label-primary)] shadow-sm border border-[var(--separator)]" : "text-[var(--label-secondary)] hover:text-[var(--label-primary)]"
                   )}
                 >
-                  <Type className="w-4 h-4" />
+                  <Type className="w-4 h-4" strokeWidth={1.5} />
                   Text Prompt
                 </button>
                 <button 
                   onClick={() => setActiveTab('photo')}
                   className={cn(
                     "flex-1 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2",
-                    activeTab === 'photo' ? "bg-premium-surface text-premium-ink shadow-sm border border-premium-border" : "text-premium-muted hover:text-premium-ink"
+                    activeTab === 'photo' ? "bg-[var(--bg-secondary)] text-[var(--label-primary)] shadow-sm border border-[var(--separator)]" : "text-[var(--label-secondary)] hover:text-[var(--label-primary)]"
                   )}
                 >
-                  <Camera className="w-4 h-4" />
+                  <Camera className="w-4 h-4" strokeWidth={1.5} />
                   Photo Transform
                 </button>
               </div>
 
               {activeTab === 'photo' && (
                 <div className="space-y-4">
-                  <label className="text-[11px] font-bold text-premium-muted uppercase tracking-widest">Reference Photo</label>
+                  <label className="text-[11px] font-bold text-[var(--label-secondary)] uppercase tracking-widest">Reference Photo</label>
                   <div 
                     onClick={() => fileInputRef.current?.click()}
-                    className="aspect-square rounded-3xl border-2 border-dashed border-premium-border bg-premium-surface flex flex-col items-center justify-center cursor-pointer hover:border-accent-gold transition-colors overflow-hidden relative group"
+                    className="aspect-square rounded-3xl border-2 border-dashed border-[var(--separator)] bg-[var(--bg-secondary)] flex flex-col items-center justify-center cursor-pointer hover:border-[var(--accent)] transition-colors overflow-hidden relative group"
                   >
                     {referenceImage ? (
                       <>
                         <img src={referenceImage} alt="Reference" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <RefreshCw className="w-8 h-8 text-white" />
+                          <RefreshCw className="w-8 h-8 text-white" strokeWidth={1.5} />
                         </div>
                       </>
                     ) : (
                       <>
-                        <Upload className="w-8 h-8 text-premium-muted mb-2" />
-                        <p className="text-xs font-bold text-premium-muted">Upload Photo</p>
+                        <Upload className="w-8 h-8 text-[var(--label-secondary)] mb-2" strokeWidth={1.5} />
+                        <p className="text-xs font-bold text-[var(--label-secondary)]">Upload Photo</p>
                       </>
                     )}
                   </div>
@@ -288,7 +288,7 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
               )}
 
               <div className="space-y-4">
-                <label className="text-[11px] font-bold text-premium-muted uppercase tracking-widest">Avatar Style</label>
+                <label className="text-[11px] font-bold text-[var(--label-secondary)] uppercase tracking-widest">Avatar Style</label>
                 <div className="grid grid-cols-2 gap-3">
                   {AVATAR_STYLES.map((style) => (
                     <button
@@ -297,13 +297,13 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
                       className={cn(
                         "p-4 rounded-2xl border text-left transition-all",
                         selectedStyle.id === style.id 
-                          ? "bg-premium-surface border-accent-gold shadow-sm ring-1 ring-accent-gold" 
-                          : "bg-premium-surface border-premium-border hover:border-premium-muted"
+                          ? "bg-[var(--bg-secondary)] border-[var(--accent)] shadow-sm ring-1 ring-[var(--accent)]" 
+                          : "bg-[var(--bg-secondary)] border-[var(--separator)] hover:border-[var(--label-secondary)]"
                       )}
                     >
                       <p className={cn(
                         "text-xs font-bold",
-                        selectedStyle.id === style.id ? "text-accent-gold" : "text-premium-ink"
+                        selectedStyle.id === style.id ? "text-[var(--accent)]" : "text-[var(--label-primary)]"
                       )}>
                         {style.name}
                       </p>
@@ -313,28 +313,28 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
               </div>
 
               <div className="space-y-4">
-                <label className="text-[11px] font-bold text-premium-muted uppercase tracking-widest">Custom Prompt (Optional)</label>
+                <label className="text-[11px] font-bold text-[var(--label-secondary)] uppercase tracking-widest">Custom Prompt (Optional)</label>
                 <textarea 
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   placeholder="e.g. wearing a black hoodie, holding a coffee cup..."
-                  className="w-full h-32 p-4 bg-premium-surface border border-premium-border rounded-2xl outline-none focus:ring-2 focus:ring-accent-gold/20 focus:border-accent-gold transition-all text-sm resize-none text-premium-ink"
+                  className="w-full h-32 p-4 bg-[var(--bg-secondary)] border border-[var(--separator)] rounded-2xl outline-none focus:ring-2 focus:ring-[var(--accent)]/20 focus:border-[var(--accent)] transition-all text-sm resize-none text-[var(--label-primary)]"
                 />
               </div>
 
               <button 
                 onClick={handleGenerate}
                 disabled={isGenerating || (activeTab === 'photo' && !referenceImage)}
-                className="w-full py-5 bg-accent-gold text-premium-bg rounded-2xl font-bold text-sm flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-accent-gold/20 disabled:opacity-50 disabled:scale-100"
+                className="w-full py-5 bg-[var(--accent)] text-[var(--bg-primary)] rounded-2xl font-bold text-sm flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-[var(--accent)]/20 disabled:opacity-50 disabled:scale-100"
               >
                 {isGenerating ? (
                   <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <Loader2 className="w-5 h-5 animate-spin" strokeWidth={1.5} />
                     Generating...
                   </>
                 ) : (
                   <>
-                    <Zap className="w-5 h-5 text-premium-bg" />
+                    <Zap className="w-5 h-5 text-[var(--bg-primary)]" strokeWidth={1.5} />
                     Generate Avatar
                   </>
                 )}
@@ -343,29 +343,29 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
           </div>
 
           {/* Preview Panel */}
-          <div className="flex-1 p-8 overflow-y-auto bg-premium-surface">
+          <div className="flex-1 p-8 overflow-y-auto bg-[var(--bg-secondary)]">
             <div className="space-y-8">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-bold">Your AI Avatars</h3>
-                <span className="text-xs font-bold text-premium-muted">{generatedAvatars.length} Avatars</span>
+                <span className="text-xs font-bold text-[var(--label-secondary)]">{generatedAvatars.length} Avatars</span>
               </div>
 
               {generatedAvatars.length === 0 && !isGenerating ? (
                 <div className="h-[400px] flex flex-col items-center justify-center text-center space-y-4">
-                  <div className="w-20 h-20 bg-premium-bg rounded-full flex items-center justify-center border border-premium-border">
-                    <Palette className="w-10 h-10 text-premium-muted" />
+                  <div className="w-20 h-20 bg-[var(--bg-primary)] rounded-full flex items-center justify-center border border-[var(--separator)]">
+                    <Palette className="w-10 h-10 text-[var(--label-secondary)]" strokeWidth={1.5} />
                   </div>
                   <div>
-                    <p className="font-serif font-bold text-premium-ink">No avatars yet</p>
-                    <p className="text-sm text-premium-muted">Generate your first AI avatar to see it here.</p>
+                    <p className="font-serif font-bold text-[var(--label-primary)]">No avatars yet</p>
+                    <p className="text-sm text-[var(--label-secondary)]">Generate your first AI avatar to see it here.</p>
                   </div>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                   {isGenerating && (
-                    <div className="aspect-square rounded-[32px] bg-premium-bg border-2 border-dashed border-accent-gold/20 flex flex-col items-center justify-center space-y-4 animate-pulse">
-                      <Loader2 className="w-10 h-10 text-accent-gold animate-spin" />
-                      <p className="text-xs font-bold text-accent-gold uppercase tracking-widest">Generating...</p>
+                    <div className="aspect-square rounded-[32px] bg-[var(--bg-primary)] border-2 border-dashed border-[var(--accent)]/20 flex flex-col items-center justify-center space-y-4 animate-pulse">
+                      <Loader2 className="w-10 h-10 text-[var(--accent)] animate-spin" strokeWidth={1.5} />
+                      <p className="text-xs font-bold text-[var(--accent)] uppercase tracking-widest">Generating...</p>
                     </div>
                   )}
                   
@@ -375,13 +375,13 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
                       layout
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="group relative aspect-square rounded-[32px] overflow-hidden bg-premium-bg shadow-sm hover:shadow-xl transition-all border border-premium-border"
+                      className="group relative aspect-square rounded-[32px] overflow-hidden bg-[var(--bg-primary)] shadow-sm hover:shadow-xl transition-all border border-[var(--separator)]"
                     >
                       <img src={avatar.url} alt="AI Avatar" className="w-full h-full object-cover" />
                       
                       {avatar.isActive && (
-                        <div className="absolute top-4 right-4 px-3 py-1 bg-accent-emerald text-white text-[10px] font-bold rounded-full shadow-lg flex items-center gap-1">
-                          <Check className="w-3 h-3" />
+                        <div className="absolute top-4 right-4 px-3 py-1 bg-[var(--system-green)] text-white text-[10px] font-bold rounded-full shadow-lg flex items-center gap-1">
+                          <Check className="w-3 h-3" strokeWidth={1.5} />
                           Active
                         </div>
                       )}
@@ -393,21 +393,21 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
                             className="p-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors border border-white/10"
                             title="Download"
                           >
-                            <Download className="w-5 h-5 text-white" />
+                            <Download className="w-5 h-5 text-white" strokeWidth={1.5} />
                           </button>
                           <button 
                             onClick={() => handleDelete(avatar.id)}
                             className="p-3 bg-red-500/20 hover:bg-red-500/40 rounded-xl transition-colors border border-red-500/20"
                             title="Delete"
                           >
-                            <Trash2 className="w-5 h-5 text-red-500" />
+                            <Trash2 className="w-5 h-5 text-red-500" strokeWidth={1.5} />
                           </button>
                         </div>
                         
                         {!avatar.isActive && (
                           <button 
                             onClick={() => handleSetAsActive(avatar)}
-                            className="w-full py-3 bg-premium-surface border border-premium-border text-premium-ink rounded-xl font-bold text-xs hover:scale-[1.05] transition-transform"
+                            className="w-full py-3 bg-[var(--bg-secondary)] border border-[var(--separator)] text-[var(--label-primary)] rounded-xl font-bold text-xs hover:scale-[1.05] transition-transform"
                           >
                             Set as Profile
                           </button>

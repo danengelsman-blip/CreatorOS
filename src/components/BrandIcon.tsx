@@ -5,9 +5,10 @@ interface BrandIconProps {
   className?: string;
   size?: number;
   glow?: boolean;
+  strokeWidth?: number;
 }
 
-export default function BrandIcon({ className, size = 24, glow = false }: BrandIconProps) {
+export default function BrandIcon({ className, size = 24, glow = false, strokeWidth = 1.5 }: BrandIconProps) {
   return (
     <div className="relative flex items-center justify-center">
       <svg 
@@ -21,16 +22,16 @@ export default function BrandIcon({ className, size = 24, glow = false }: BrandI
         <path 
           d="M20 4L34 11V29L20 36L6 29V11L20 4Z" 
           stroke="currentColor" 
-          strokeWidth="2.5"
+          strokeWidth={strokeWidth}
           strokeLinejoin="round"
         />
         <path 
           d="M20 12V28M12 20H28" 
           stroke="currentColor" 
-          strokeWidth="2.5" 
+          strokeWidth={strokeWidth} 
           strokeLinecap="round" 
         />
-        <circle cx="20" cy="20" r="1.5" fill="currentColor" />
+        <circle cx="20" cy="20" r={strokeWidth * 0.6} fill="currentColor" />
       </svg>
       {glow && (
         <div className="absolute inset-0 bg-current opacity-20 blur-[8px] rounded-full animate-pulse" />

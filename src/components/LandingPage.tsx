@@ -71,7 +71,7 @@ export default function LandingPage() {
       )}>
         <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <BrandIcon size={20} className="text-[var(--accent)]" />
+            <BrandIcon size={20} strokeWidth={1.5} className="text-[var(--accent)]" />
             <span className="font-bold text-[19px] tracking-tight">CreatorOS</span>
           </div>
 
@@ -96,7 +96,7 @@ export default function LandingPage() {
             className="md:hidden p-2 text-[var(--label-secondary)]"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
-            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            {isMobileMenuOpen ? <X size={20} strokeWidth={1.5} /> : <Menu size={20} strokeWidth={1.5} />}
           </button>
         </div>
       </nav>
@@ -127,11 +127,11 @@ export default function LandingPage() {
       <section className="pt-44 pb-20 px-6">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-[var(--bg-secondary)] rounded-full text-[13px] font-bold text-[var(--label-secondary)] uppercase tracking-tight">
-            <div className="w-1.5 h-1.5 rounded-full bg-[var(--system-green)]" />
+            <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
             Public Beta 2.0
           </div>
 
-          <h1 className="text-[48px] sm:text-[64px] md:text-[80px] font-bold tracking-tight leading-[1.05] text-balance">
+          <h1 className="font-serif text-[48px] sm:text-[64px] md:text-[80px] font-semibold tracking-[-0.015em] text-[var(--label-primary)] leading-[1.05] text-balance">
             Architect your <br className="hidden sm:block" />
             content empire.
           </h1>
@@ -146,7 +146,7 @@ export default function LandingPage() {
               className="ios-button-filled w-full sm:w-auto h-14 px-10 text-[17px]"
             >
               Start Your Journey
-              <ArrowRight size={20} />
+              <ArrowRight size={20} strokeWidth={1.5} />
             </button>
             <button 
               onClick={handleSignIn}
@@ -175,7 +175,7 @@ export default function LandingPage() {
       <section id="features" className="py-32 px-6 bg-[var(--bg-secondary)]/30">
         <div className="max-w-7xl mx-auto">
           <span className="ios-label uppercase text-center block mb-4">The Operating System</span>
-          <h2 className="text-[34px] md:text-[44px] font-bold tracking-tight text-center mb-16 text-balance max-w-2xl mx-auto">
+          <h2 className="font-serif text-[34px] md:text-[44px] font-semibold tracking-[-0.015em] text-[var(--label-primary)] text-center mb-16 text-balance max-w-2xl mx-auto">
             Everything you need for world-class content.
           </h2>
 
@@ -185,8 +185,8 @@ export default function LandingPage() {
                 key={feature.id}
                 className="ios-card bg-[var(--bg-tertiary)] p-8 flex flex-col gap-6"
               >
-                <div className="w-12 h-12 rounded-xl bg-[var(--accent)]/10 flex items-center justify-center text-[var(--accent)]">
-                  <feature.icon size={24} />
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center text-[var(--accent)]" style={{background: 'color-mix(in srgb, var(--accent) 12%, transparent)'}}>
+                  <feature.icon size={24} strokeWidth={1.5} />
                 </div>
                 <div className="space-y-2">
                   <h3 className="text-[22px] font-bold tracking-tight">{feature.title}</h3>
@@ -202,7 +202,7 @@ export default function LandingPage() {
       <section id="pricing" className="py-32 px-6">
         <div className="max-w-3xl mx-auto">
           <span className="ios-label uppercase text-center block mb-4">Pricing</span>
-          <h2 className="text-[34px] font-bold tracking-tight text-center mb-16">Choose your plan.</h2>
+          <h2 className="font-serif text-[34px] font-semibold tracking-[-0.015em] text-[var(--label-primary)] text-center mb-16">Choose your plan.</h2>
 
           <div className="bg-[var(--bg-tertiary)] ios-card overflow-hidden divide-y divide-[var(--separator)]">
             <div className="p-6 flex items-center justify-between group active:bg-[var(--separator)] transition-colors cursor-pointer">
@@ -220,7 +220,7 @@ export default function LandingPage() {
               <div className="flex flex-col">
                 <span className="font-bold text-[19px] flex items-center gap-2">
                   Creator Pro
-                  <div className="px-2 py-0.5 bg-[var(--accent)] text-[10px] font-bold text-white rounded-full uppercase tracking-tight">Best Value</div>
+                  <div className="px-2 py-0.5 bg-[var(--system-green)] text-[10px] font-bold text-white rounded-full uppercase tracking-tight">Best Value</div>
                 </span>
                 <span className="text-[14px] text-[var(--label-secondary)] font-medium">Unlimited DNA • AI Scoring • 4K Support</span>
               </div>
@@ -274,7 +274,7 @@ export default function LandingPage() {
             <div className="flex items-center gap-4 justify-center sm:justify-start">
                {[Twitter, Youtube, Instagram].map((Icon, i) => (
                  <div key={i} className="w-10 h-10 rounded-full bg-[var(--bg-secondary)] flex items-center justify-center text-[var(--label-secondary)] hover:text-[var(--accent)] transition-colors cursor-pointer">
-                    <Icon size={18} />
+                    <Icon size={18} strokeWidth={1.5} />
                  </div>
                ))}
             </div>

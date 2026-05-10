@@ -94,21 +94,21 @@ export default function SupportHub({ user }: { user: any }) {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 h-[calc(100vh-14rem)]">
+    <div className="flex flex-col lg:flex-row gap-8 h-[calc(100vh-14rem)] pb-20">
       {/* Sidebar - Tickets List */}
       <div className="w-full lg:w-96 flex flex-col gap-4">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-xl font-serif font-bold flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-accent-gold" />
+            <ShieldCheck className="w-5 h-5 text-[var(--accent)]" strokeWidth={1.5} />
             Support Inbox
           </h2>
-          <span className="px-2 py-0.5 bg-accent-gold/10 text-accent-gold rounded text-[10px] font-black uppercase tracking-widest">
+          <span className="px-2 py-0.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded text-[10px] font-black uppercase tracking-widest">
             Dev Only
           </span>
         </div>
 
-        <div className="premium-card p-4 flex items-center gap-3 bg-premium-surface">
-          <Search className="w-4 h-4 text-premium-muted" />
+        <div className="ios-card p-4 flex items-center gap-3 bg-[var(--bg-secondary)] border border-[var(--separator)]">
+          <Search className="w-4 h-4 text-[var(--label-secondary)]" strokeWidth={1.5} />
           <input 
             type="text" 
             placeholder="Search tickets..." 
@@ -119,7 +119,7 @@ export default function SupportHub({ user }: { user: any }) {
         <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
           {tickets.length === 0 ? (
             <div className="text-center py-12 opacity-40">
-              <MessageSquare className="w-8 h-8 mx-auto mb-3" />
+              <MessageSquare className="w-8 h-8 mx-auto mb-3" strokeWidth={1.5} />
               <p className="text-[13px]">No active tickets</p>
             </div>
           ) : (
@@ -133,14 +133,14 @@ export default function SupportHub({ user }: { user: any }) {
                 className={cn(
                   "w-full text-left p-5 rounded-2xl border transition-all group",
                   selectedTicket?.id === ticket.id 
-                    ? "bg-premium-ink text-premium-bg border-premium-ink shadow-lg shadow-black/10" 
-                    : "bg-premium-surface border-premium-border hover:border-accent-gold/30"
+                    ? "bg-[var(--label-primary)] text-[var(--bg-primary)] border-[var(--label-primary)] shadow-lg shadow-black/10" 
+                    : "bg-[var(--bg-secondary)] border-[var(--separator)] hover:border-[var(--accent)]/30"
                 )}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-accent-gold/10 flex items-center justify-center">
-                      <User className="w-4 h-4 text-accent-gold" />
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{background: 'color-mix(in srgb, var(--accent) 10%, transparent)', color: 'var(--accent)'}}>
+                      <User className="w-4 h-4" strokeWidth={1.5} />
                     </div>
                     <div>
                       <h4 className="text-[13px] font-bold line-clamp-1">{ticket.subject}</h4>
@@ -150,9 +150,9 @@ export default function SupportHub({ user }: { user: any }) {
                     </div>
                   </div>
                   {ticket.status === 'resolved' ? (
-                    <CheckCircle2 className="w-4 h-4 text-accent-emerald" />
+                    <CheckCircle2 className="w-4 h-4 text-[var(--system-green)]" strokeWidth={1.5} />
                   ) : (
-                    <div className="w-2 h-2 rounded-full bg-accent-gold animate-pulse" />
+                    <div className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
                   )}
                 </div>
                 <p className="text-[12px] opacity-70 line-clamp-2 leading-relaxed mb-3">
@@ -160,7 +160,7 @@ export default function SupportHub({ user }: { user: any }) {
                 </p>
                 <div className="flex items-center gap-3 text-[10px] opacity-40">
                   <span className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
+                    <Clock className="w-3 h-3" strokeWidth={1.5} />
                     {ticket.createdAt?.toDate().toLocaleDateString()}
                   </span>
                   <span className="uppercase font-bold tracking-widest">{ticket.userData?.subscriptionTier || 'Free'}</span>
@@ -179,44 +179,44 @@ export default function SupportHub({ user }: { user: any }) {
             animate={{ opacity: 1, y: 0 }}
             className="h-full flex flex-col gap-6"
           >
-            <div className="premium-card p-8 bg-premium-surface">
+            <div className="ios-card p-8 bg-[var(--bg-secondary)] border border-[var(--separator)]">
               <div className="flex items-start justify-between mb-8">
                 <div>
                   <div className="flex items-center gap-3 mb-2">
                     <span className={cn(
                       "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em]",
-                      selectedTicket.status === 'resolved' ? "bg-accent-emerald/10 text-accent-emerald" : "bg-accent-gold/10 text-accent-gold"
+                      selectedTicket.status === 'resolved' ? "bg-[var(--system-green)]/10 text-[var(--system-green)]" : "bg-[var(--accent)]/10 text-[var(--accent)]"
                     )}>
                       {selectedTicket.status || 'open'}
                     </span>
-                    <span className="text-premium-muted text-[13px]">Ticket ID: {selectedTicket.id.slice(0, 8)}</span>
+                    <span className="text-[var(--label-secondary)] text-[13px]">Ticket ID: {selectedTicket.id.slice(0, 8)}</span>
                   </div>
-                  <h3 className="text-2xl font-serif font-bold">{selectedTicket.subject}</h3>
+                  <h3 className="font-serif text-2xl font-semibold tracking-[-0.015em]">{selectedTicket.subject}</h3>
                 </div>
                 <div className="flex gap-3">
                   {selectedTicket.status !== 'resolved' && (
                     <button 
                       onClick={() => handleResolve(selectedTicket.id)}
-                      className="px-6 py-2.5 bg-accent-emerald text-white rounded-xl text-[13px] font-bold shadow-lg shadow-accent-emerald/20 flex items-center gap-2"
+                      className="px-6 py-2.5 bg-[var(--system-green)] text-white rounded-xl text-[13px] font-bold shadow-lg shadow-[var(--system-green)]/20 flex items-center gap-2"
                     >
-                      <CheckCircle2 className="w-4 h-4" />
+                      <CheckCircle2 className="w-4 h-4" strokeWidth={1.5} />
                       Mark Resolved
                     </button>
                   )}
                 </div>
               </div>
 
-              <div className="p-6 bg-premium-bg rounded-2xl border border-premium-border space-y-4">
-                <div className="flex items-center justify-between border-b border-premium-border/5 pb-4">
+              <div className="p-6 bg-[var(--bg-primary)] rounded-2xl border border-[var(--separator)] space-y-4">
+                <div className="flex items-center justify-between border-b border-[var(--separator)]/50 pb-4">
                    <div className="flex items-center gap-3">
                       <img src={selectedTicket.userData?.photoURL} alt="" className="w-10 h-10 rounded-full grayscale opacity-50" />
                       <div>
                         <p className="text-[13px] font-bold">{selectedTicket.userData?.displayName}</p>
-                        <p className="text-[11px] text-premium-muted">{selectedTicket.userData?.email}</p>
+                        <p className="text-[11px] text-[var(--label-secondary)]">{selectedTicket.userData?.email}</p>
                       </div>
                    </div>
                 </div>
-                <p className="text-[15px] leading-relaxed text-premium-ink/80 pt-2 whitespace-pre-wrap">
+                <p className="text-[15px] leading-relaxed text-[var(--label-primary)]/80 pt-2 whitespace-pre-wrap">
                   {selectedTicket.message}
                 </p>
               </div>
@@ -225,17 +225,17 @@ export default function SupportHub({ user }: { user: any }) {
             {/* AI Assistance Layer */}
             <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 min-h-0">
                {/* AI Suggestion */}
-               <div className="premium-card p-6 border-accent-gold/20 flex flex-col bg-premium-surface/50">
+               <div className="ios-card p-6 border-[var(--accent)]/20 flex flex-col bg-[var(--bg-secondary)]/50">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2 text-accent-gold">
-                      <Brain className="w-4 h-4" />
+                    <div className="flex items-center gap-2 text-[var(--accent)]">
+                      <Brain className="w-4 h-4" strokeWidth={1.5} />
                       <span className="text-[11px] font-black uppercase tracking-widest">Assurance Suggestion</span>
                     </div>
                     {!suggestion && (
                       <button 
                         onClick={() => getAiSuggestion(selectedTicket)}
                         disabled={isGenerating}
-                        className="text-[11px] font-bold hover:underline disabled:opacity-50"
+                        className="text-[11px] font-bold hover:underline disabled:opacity-50 text-[var(--accent)]"
                       >
                         {isGenerating ? 'Analyzing...' : 'Generate Helper'}
                       </button>
@@ -244,19 +244,19 @@ export default function SupportHub({ user }: { user: any }) {
                   <div className="flex-1 relative overflow-hidden">
                     {suggestion ? (
                       <div className="absolute inset-0 overflow-y-auto pr-2 custom-scrollbar">
-                        <p className="text-[13px] leading-relaxed text-premium-ink/70 italic p-4 bg-accent-gold/5 rounded-xl border border-accent-gold/10">
+                        <p className="text-[13px] leading-relaxed text-[var(--label-primary)]/70 italic p-4 bg-[var(--accent)]/5 rounded-xl border border-[var(--accent)]/10">
                           {suggestion}
                         </p>
                         <button 
                           onClick={() => setReplyText(suggestion)}
-                          className="mt-3 text-[11px] font-bold text-accent-gold flex items-center gap-1 hover:gap-2 transition-all"
+                          className="mt-3 text-[11px] font-bold text-[var(--accent)] flex items-center gap-1 hover:gap-2 transition-all"
                         >
-                          Use this response <ChevronRight className="w-3 h-3" />
+                          Use this response <ChevronRight className="w-3 h-3" strokeWidth={1.5} />
                         </button>
                       </div>
                     ) : (
                       <div className="flex flex-col items-center justify-center h-full opacity-20 text-center">
-                        <Brain className="w-12 h-12 mb-4" />
+                        <Brain className="w-12 h-12 mb-4" strokeWidth={1.5} />
                         <p className="text-[12px] max-w-[140px]">AI can analyze the ticket and suggest a response</p>
                       </div>
                     )}
@@ -264,20 +264,20 @@ export default function SupportHub({ user }: { user: any }) {
                </div>
 
                {/* Reply Box */}
-               <div className="premium-card p-6 flex flex-col bg-premium-surface">
-                  <div className="flex items-center gap-2 mb-4 text-premium-muted">
-                    <Send className="w-4 h-4" />
+               <div className="ios-card p-6 flex flex-col bg-[var(--bg-secondary)] pb-20 md:pb-6">
+                  <div className="flex items-center gap-2 mb-4 text-[var(--label-secondary)]">
+                    <Send className="w-4 h-4" strokeWidth={1.5} />
                     <span className="text-[11px] font-black uppercase tracking-widest">Draft Reply</span>
                   </div>
                   <textarea 
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
                     placeholder="Type your response or select an AI suggestion..."
-                    className="flex-1 bg-premium-bg rounded-xl border border-premium-border p-4 text-[13px] resize-none outline-none focus:ring-2 focus:ring-accent-gold/10 transition-all"
+                    className="flex-1 bg-[var(--bg-primary)] rounded-xl border border-[var(--separator)] p-4 text-[13px] resize-none outline-none focus:ring-2 focus:ring-[var(--accent)]/10 transition-all text-[var(--label-primary)] placeholder:text-[var(--label-tertiary)]"
                   />
                   <div className="mt-4 flex justify-end">
-                    <button className="px-8 py-3 bg-premium-ink text-premium-bg rounded-xl text-[13px] font-bold flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all">
-                      <Send className="w-4 h-4" />
+                    <button className="ios-button-filled px-8 py-3 rounded-xl text-[13px] flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                      <Send className="w-4 h-4" strokeWidth={1.5} />
                       Send Response
                     </button>
                   </div>
@@ -285,11 +285,11 @@ export default function SupportHub({ user }: { user: any }) {
             </div>
           </motion.div>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-center opacity-30 select-none">
-            <div className="w-24 h-24 rounded-[40px] bg-premium-surface border border-premium-border flex items-center justify-center mb-6">
-              <MessageSquare className="w-10 h-10" />
+          <div className="flex-1 flex flex-col items-center justify-center text-center opacity-30 select-none -translate-y-10">
+            <div className="w-24 h-24 rounded-[40px] bg-[var(--bg-secondary)] border border-[var(--separator)] flex items-center justify-center mb-6">
+              <MessageSquare className="w-10 h-10" strokeWidth={1.5} />
             </div>
-            <h3 className="text-xl font-serif font-bold mb-2">Select a ticket to review</h3>
+            <h3 className="font-serif text-xl font-bold mb-2">Select a ticket to review</h3>
             <p className="text-[13px] max-w-[240px]">High-assurance AI analysis will be available for all selected tickets.</p>
           </div>
         )}

@@ -4,11 +4,11 @@ import BrandIcon from './BrandIcon';
 
 export default function LoadingScreen() {
   return (
-    <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col items-center justify-center relative overflow-hidden">
       {/* Background Atmosphere */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent-gold/10 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-accent-emerald/5 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[120px] animate-pulse" style={{backgroundColor: 'color-mix(in srgb, var(--accent) 10%, transparent)'}} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full blur-[100px] animate-pulse" style={{backgroundColor: 'color-mix(in srgb, var(--system-green) 5%, transparent)', animationDelay: '1s' }} />
       </div>
 
       {/* Icon Container */}
@@ -36,7 +36,7 @@ export default function LoadingScreen() {
               ease: "easeInOut" 
             }}
           >
-            <BrandIcon size={40} className="text-white" />
+            <BrandIcon size={40} className="text-white" strokeWidth={1.5} />
           </motion.div>
 
           {/* Shine Effect */}
@@ -62,15 +62,15 @@ export default function LoadingScreen() {
         transition={{ delay: 0.4, duration: 0.6 }}
         className="mt-8 text-center z-10"
       >
-        <h1 className="font-serif font-bold text-2xl text-white tracking-tight mb-2">CreatorOS</h1>
+        <h1 className="font-serif font-bold text-2xl text-[var(--label-primary)] tracking-tight mb-2">CreatorOS</h1>
         <div className="flex items-center justify-center gap-2">
-          <div className="w-1 h-1 rounded-full bg-accent-gold animate-pulse" />
-          <span className="text-[10px] font-black text-white/40 tracking-[0.3em] uppercase">Initializing System</span>
+          <div className="w-1 h-1 rounded-full bg-[var(--accent)] animate-pulse" />
+          <span className="text-[10px] font-black text-[var(--label-tertiary)] tracking-[0.3em] uppercase">Initializing System</span>
         </div>
       </motion.div>
 
       {/* Progress Bar (Decorative) */}
-      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-48 h-[1px] bg-white/10 overflow-hidden">
+      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-48 h-[1px] bg-[var(--separator)] overflow-hidden">
         <motion.div 
           animate={{ 
             left: ['-100%', '100%'] 
@@ -80,7 +80,7 @@ export default function LoadingScreen() {
             repeat: Infinity, 
             ease: "easeInOut" 
           }}
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-accent-gold to-transparent"
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--accent)] to-transparent"
         />
       </div>
     </div>

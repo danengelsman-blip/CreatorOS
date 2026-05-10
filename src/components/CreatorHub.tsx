@@ -113,7 +113,7 @@ export default function CreatorHub({ projects = [] }: { projects: any[] }) {
                 
                 <button className="w-full p-4 flex items-center gap-3 text-[var(--accent)] active:bg-[var(--separator)] transition-colors group">
                   <div className="w-8 h-8 rounded-full bg-[var(--accent)]/10 flex items-center justify-center">
-                    <Plus size={18} />
+                    <Plus size={18} strokeWidth={1.5} />
                   </div>
                   <span className="font-semibold text-[17px]">New Masterpiece</span>
                 </button>
@@ -129,15 +129,15 @@ export default function CreatorHub({ projects = [] }: { projects: any[] }) {
             className="ios-card p-6"
           >
             <div className="flex items-center justify-between mb-8 px-2">
-              <h3 className="text-[20px] font-bold">
+              <h3 className="font-serif text-[20px] font-bold tracking-[-0.015em]">
                 {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
               </h3>
               <div className="flex gap-2">
                 <button onClick={prevMonth} className="p-2 text-[var(--accent)] active:opacity-40">
-                  <ChevronLeft size={22} />
+                  <ChevronLeft size={22} strokeWidth={1.5} />
                 </button>
                 <button onClick={nextMonth} className="p-2 text-[var(--accent)] active:opacity-40">
-                  <ChevronRight size={22} />
+                  <ChevronRight size={22} strokeWidth={1.5} />
                 </button>
               </div>
             </div>
@@ -209,7 +209,7 @@ function ContentRow({ item }: { item: ContentItem }) {
           </div>
         </div>
       </div>
-      <ChevronRight size={18} className="text-[var(--label-tertiary)] flex-shrink-0" />
+      <ChevronRight size={18} strokeWidth={1.5} className="text-[var(--label-tertiary)] flex-shrink-0" />
     </div>
   );
 }

@@ -106,10 +106,10 @@ export default function Integrations() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-20">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold">Integrations</h2>
+          <h2 className="font-serif text-[28px] font-semibold tracking-[-0.015em]">Integrations</h2>
           <p className="text-sm text-[var(--label-secondary)]">Connect your platforms to sync real-time analytics.</p>
         </div>
       </div>
@@ -136,17 +136,17 @@ export default function Integrations() {
                     "w-12 h-12 rounded-2xl flex items-center justify-center bg-white/5",
                     platform.color
                   )}>
-                    <platform.icon className="w-6 h-6" />
+                    <platform.icon className="w-6 h-6" strokeWidth={1.5} />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-semibold">{platform.name}</h3>
+                      <h3 className="font-semibold text-[17px]">{platform.name}</h3>
                       {connected && (
                         <span className={cn(
                           "flex items-center gap-1 text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded-full",
                           isVerified ? "text-emerald-500 bg-emerald-500/10" : "text-blue-500 bg-blue-500/10"
                         )}>
-                          <CheckCircle2 className="w-3 h-3" />
+                          <CheckCircle2 className="w-3 h-3" strokeWidth={1.5} />
                           {isVerified ? 'Verified' : 'Passive Tracking'}
                         </span>
                       )}
@@ -215,7 +215,7 @@ export default function Integrations() {
       </div>
 
       <div className="ios-card bg-amber-500/5 border border-amber-500/20 p-4 flex gap-3 text-amber-500">
-        <AlertCircle className="w-5 h-5 shrink-0" />
+        <AlertCircle className="w-5 h-5 shrink-0" strokeWidth={1.5} />
         <div className="text-xs space-y-1">
           <p className="font-bold">OAuth Configuration Required</p>
           <p className="opacity-80">

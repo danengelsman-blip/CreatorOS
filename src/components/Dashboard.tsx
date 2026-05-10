@@ -14,7 +14,9 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
   return (
     <div className="space-y-8 pb-20">
       {/* Header */}
-      <h1 className="px-1 pt-4">Hi, {firstName}</h1>
+      <h1 className="font-serif text-[36px] font-semibold tracking-[-0.015em] text-[var(--label-primary)] px-1 pt-4">
+        Hi, {firstName}
+      </h1>
 
       {/* Primary Metric Card */}
       <section className="bg-[var(--bg-tertiary)] ios-card overflow-hidden">
@@ -22,8 +24,8 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
           <span className="ios-label px-0 mb-4">Active Momentum</span>
           
           <div className="mb-6">
-            <div className="text-[28px] font-bold tracking-tight leading-tight mb-2">
-              Your audience is growing 24% faster.
+            <div className="text-[28px] font-bold tracking-tight leading-tight mb-2 text-[var(--label-primary)]">
+              Your audience is growing <span className="font-serif italic font-normal">24% faster</span>.
             </div>
             <p className="text-[var(--label-secondary)] text-[17px] leading-snug">
               You're on track to hit your 5,000 follower milestone this month.
@@ -50,14 +52,14 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
            <div className="p-4 flex items-center justify-between active:bg-[var(--separator)] transition-colors cursor-pointer">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-[var(--system-green)] flex items-center justify-center text-white">
-                  <Target size={18} />
+                  <Target size={18} strokeWidth={1.5} />
                 </div>
                 <div className="flex flex-col">
                   <span className="font-semibold text-[17px]">First Dollar Goal</span>
                   <span className="text-[13px] text-[var(--label-secondary)]">65% Completed</span>
                 </div>
               </div>
-              <ChevronRight size={18} className="text-[var(--label-tertiary)]" />
+              <ChevronRight size={18} strokeWidth={1.5} className="text-[var(--label-tertiary)]" />
            </div>
            
            <div className="p-5 flex flex-col gap-5">
@@ -65,7 +67,7 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: '65%' }}
-                  className="h-full bg-[var(--system-green)]"
+                  className="h-full bg-[var(--accent)]"
                 />
               </div>
               <div className="space-y-4">
@@ -92,7 +94,7 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
              >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-10 h-10 rounded-xl bg-[var(--bg-secondary)] flex items-center justify-center flex-shrink-0">
-                    <PenTool size={20} className="text-[var(--label-secondary)]" />
+                    <PenTool size={20} strokeWidth={1.5} className="text-[var(--label-secondary)]" />
                   </div>
                   <div className="flex flex-col min-w-0">
                     <span className="font-semibold text-[17px] truncate">{project.name}</span>
@@ -105,11 +107,22 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
                    {project.data?.score && (
                      <span className="text-[13px] font-bold text-[var(--system-green)]">{project.data.score}%</span>
                    )}
-                   <ChevronRight size={18} className="text-[var(--label-tertiary)]" />
+                   <ChevronRight size={18} strokeWidth={1.5} className="text-[var(--label-tertiary)]" />
                 </div>
              </div>
            )) : (
-             <div className="p-8 text-center text-[var(--label-secondary)] text-[15px]">No projects yet.</div>
+             <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+               <div className="w-16 h-16 mb-5 rounded-full flex items-center justify-center" 
+                    style={{background: 'color-mix(in srgb, var(--accent) 8%, transparent)'}}>
+                 <PenTool size={26} strokeWidth={1.5} style={{color: 'var(--accent)'}} />
+               </div>
+               <p className="font-serif text-[20px] mb-1.5 text-[var(--label-primary)]">
+                 A blank workshop
+               </p>
+               <p className="text-[15px] text-[var(--label-secondary)] max-w-[280px] leading-snug">
+                 Your first project is waiting to be made.
+               </p>
+             </div>
            )}
         </div>
       </section>
@@ -155,7 +168,7 @@ function AnalyticsCard({ title, value, change, trend }: any) {
       <span className="text-[22px] font-bold tracking-tight">{value}</span>
       <span className={cn(
         "text-[12px] font-bold",
-        trend === 'up' ? "text-[var(--system-green)]" : "text-[var(--system-red)]"
+        trend === 'up' ? "text-[var(--accent)]" : "text-[var(--system-red)]"
       )}>
         {change}
       </span>
@@ -168,9 +181,9 @@ function MilestoneItem({ label, completed }: { label: string, completed: boolean
     <div className="flex items-center gap-3">
       <div className={cn(
         "w-5 h-5 rounded-full flex items-center justify-center transition-colors shadow-sm",
-        completed ? "bg-[var(--system-green)]" : "bg-[var(--separator)]"
+        completed ? "bg-[var(--accent)]" : "bg-[var(--separator)]"
       )}>
-        {completed && <CheckCircle2 className="w-3 h-3 text-white" />}
+        {completed && <CheckCircle2 className="w-3 h-3 text-white" strokeWidth={1.5} />}
       </div>
       <span className={cn("text-[15px] font-medium", completed ? "text-[var(--label-primary)]" : "text-[var(--label-secondary)]")}>
         {label}

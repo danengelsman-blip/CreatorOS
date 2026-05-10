@@ -68,11 +68,11 @@ export default function Support({ user }: { user: any }) {
 
   return (
     <div className="space-y-8 pb-20">
-      <h1 className="px-1 pt-4">Support</h1>
+      <h1 className="font-serif text-[36px] font-semibold tracking-[-0.015em] text-[var(--label-primary)] px-1 pt-4">Support</h1>
 
       {/* Search Bar */}
       <section className="bg-[var(--bg-tertiary)] ios-card p-3 flex items-center gap-3">
-        <Search size={18} className="text-[var(--label-tertiary)] ml-1" />
+        <Search size={18} strokeWidth={1.5} className="text-[var(--label-tertiary)] ml-1" />
         <input 
           type="text" 
           placeholder="Search documentation"
@@ -93,15 +93,15 @@ export default function Support({ user }: { user: any }) {
                className="p-4 flex items-center justify-between active:bg-[var(--separator)] transition-colors cursor-pointer"
              >
                 <div className="flex items-center gap-3">
-                   <div className="w-10 h-10 rounded-xl bg-[var(--bg-secondary)] flex items-center justify-center">
-                      <section.icon size={22} className="text-[var(--accent)]" />
+                   <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{background: 'color-mix(in srgb, var(--accent) 12%, transparent)', color: 'var(--accent)'}}>
+                      <section.icon size={22} strokeWidth={1.5} />
                    </div>
                    <div className="flex flex-col">
                       <span className="font-semibold text-[17px]">{section.title}</span>
                       <span className="text-[13px] text-[var(--label-secondary)]">{section.description}</span>
                    </div>
                 </div>
-                <ChevronRight size={18} className="text-[var(--label-tertiary)]" />
+                <ChevronRight size={18} strokeWidth={1.5} className="text-[var(--label-tertiary)]" />
              </div>
            ))}
         </div>
@@ -116,12 +116,12 @@ export default function Support({ user }: { user: any }) {
               className="p-4 flex items-center justify-between active:bg-[var(--separator)] transition-colors cursor-pointer"
             >
                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[var(--system-orange)]/10 flex items-center justify-center">
-                     <MessageSquare size={22} className="text-[var(--system-orange)]" />
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{background: 'color-mix(in srgb, var(--system-orange) 12%, transparent)', color: 'var(--system-orange)'}}>
+                     <MessageSquare size={22} strokeWidth={1.5} />
                   </div>
                   <span className="font-semibold text-[17px]">Contact Architect Support</span>
                </div>
-               <Plus size={18} className="text-[var(--accent)]" />
+               <Plus size={18} strokeWidth={1.5} className="text-[var(--accent)]" />
             </div>
          </div>
       </section>

@@ -48,24 +48,23 @@ export default function Brand({ brand, setBrand, user }: { brand: any, setBrand:
   if (brand) {
     return (
       <div className="space-y-8 pb-20">
-        <h1 className="px-1 pt-4">Brand</h1>
+        <h1 className="font-serif text-[36px] font-semibold tracking-[-0.015em] text-[var(--label-primary)] px-1 pt-4">Brand</h1>
 
         {/* Identity Overview */}
         <section className="bg-[var(--bg-tertiary)] ios-card overflow-hidden">
           <div className="p-6 flex flex-col sm:flex-row items-center gap-6">
             <div className="w-16 h-16 bg-[var(--bg-secondary)] rounded-2xl flex items-center justify-center flex-shrink-0">
-              <BrandIcon size={32} className="text-[var(--accent)]" />
+              <BrandIcon size={32} strokeWidth={1.5} className="text-[var(--accent)]" />
             </div>
             <div className="flex-1 text-center sm:text-left">
-              <h2 className="text-[28px] font-bold tracking-tight mb-1">{brand.name}</h2>
-              <p className="text-[17px] text-[var(--label-secondary)] font-medium">{brand.tagline}</p>
+              <h2 className="text-[28px] font-bold tracking-tight mb-1">{brand.archetype}</h2>
             </div>
           </div>
           
           <div className="border-t border-[var(--separator)] p-6 grid grid-cols-2 gap-4">
              <div>
-               <span className="ios-label px-0">Archetype</span>
-               <span className="font-semibold">{brand.archetype}</span>
+               <span className="ios-label px-0">Personality</span>
+               <span className="font-semibold">{brand.personality}</span>
              </div>
              <div>
                <span className="ios-label px-0">Visual Style</span>
@@ -81,8 +80,8 @@ export default function Brand({ brand, setBrand, user }: { brand: any, setBrand:
             <div className="bg-[var(--bg-tertiary)] ios-card overflow-hidden divide-y divide-[var(--separator)]">
               <div className="p-4 flex flex-col gap-4">
                  <div className="flex items-center gap-3">
-                   <div className="w-8 h-8 rounded-lg bg-[var(--system-orange)] flex items-center justify-center text-white">
-                     <Palette size={18} />
+                   <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background: 'color-mix(in srgb, var(--accent) 12%, transparent)', color: 'var(--accent)'}}>
+                     <Palette size={18} strokeWidth={1.5} />
                    </div>
                    <span className="font-semibold text-[17px]">Colors</span>
                  </div>
@@ -101,15 +100,15 @@ export default function Brand({ brand, setBrand, user }: { brand: any, setBrand:
 
               <div className="p-4 flex items-center justify-between">
                  <div className="flex items-center gap-3">
-                   <div className="w-8 h-8 rounded-lg bg-[var(--accent)] flex items-center justify-center text-white">
-                     <Type size={18} />
+                   <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background: 'color-mix(in srgb, var(--accent) 12%, transparent)', color: 'var(--accent)'}}>
+                     <Type size={18} strokeWidth={1.5} />
                    </div>
                    <div className="flex flex-col">
                      <span className="font-semibold text-[17px]">{brand.typography.heading}</span>
                      <span className="text-[13px] text-[var(--label-secondary)]">Primary Typeface</span>
                    </div>
                  </div>
-                 <ChevronRight size={18} className="text-[var(--label-tertiary)]" />
+                 <ChevronRight size={18} strokeWidth={1.5} className="text-[var(--label-tertiary)]" />
               </div>
             </div>
           </section>
@@ -119,8 +118,8 @@ export default function Brand({ brand, setBrand, user }: { brand: any, setBrand:
             <div className="bg-[var(--bg-tertiary)] ios-card overflow-hidden divide-y divide-[var(--separator)]">
                <div className="p-4">
                   <div className="flex items-center gap-3 mb-4">
-                     <div className="w-8 h-8 rounded-lg bg-[var(--system-green)] flex items-center justify-center text-white">
-                       <Target size={18} />
+                     <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background: 'color-mix(in srgb, var(--accent) 12%, transparent)', color: 'var(--accent)'}}>
+                       <Target size={18} strokeWidth={1.5} />
                      </div>
                      <span className="font-semibold text-[17px]">Core Hooks</span>
                   </div>
@@ -135,8 +134,8 @@ export default function Brand({ brand, setBrand, user }: { brand: any, setBrand:
 
                <div className="p-4">
                   <div className="flex items-center gap-3 mb-4">
-                     <div className="w-8 h-8 rounded-lg bg-[#5856D6] flex items-center justify-center text-white">
-                       <Zap size={18} />
+                     <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background: 'color-mix(in srgb, var(--accent) 12%, transparent)', color: 'var(--accent)'}}>
+                       <Zap size={18} strokeWidth={1.5} />
                      </div>
                      <span className="font-semibold text-[17px]">Catchphrases</span>
                   </div>
@@ -157,7 +156,7 @@ export default function Brand({ brand, setBrand, user }: { brand: any, setBrand:
             onClick={() => setBrand(null)}
             className="ios-button-gray w-full text-[17px]"
           >
-            <RefreshCw size={18} />
+            <RefreshCw size={18} strokeWidth={1.5} />
             Re-generate Brand Identity
           </button>
         </section>
@@ -168,11 +167,11 @@ export default function Brand({ brand, setBrand, user }: { brand: any, setBrand:
   return (
     <div className="max-w-xl mx-auto flex flex-col gap-12 pb-20">
       <div className="text-center flex flex-col items-center gap-6 pt-10">
-        <div className="w-20 h-20 bg-[var(--bg-secondary)] rounded-[22px] flex items-center justify-center ios-elevated border-t border-white/10">
+        <div className="w-20 h-20 bg-[var(--bg-secondary)] rounded-[22px] flex items-center justify-center ios-elevated border-t border-[var(--separator)]">
           <BrandIcon size={40} className="text-[var(--accent)]" />
         </div>
         <div className="space-y-2">
-          <h1 className="text-[34px] font-bold tracking-tight">Brand</h1>
+          <h1 className="font-serif text-[36px] font-semibold tracking-[-0.015em] text-[var(--label-primary)]">Brand</h1>
           <p className="text-[17px] text-[var(--label-secondary)] font-medium max-w-sm mx-auto">
             Define your mission and AI will architect a world-class visual and strategic identity.
           </p>
@@ -203,7 +202,7 @@ export default function Brand({ brand, setBrand, user }: { brand: any, setBrand:
         >
           {isLoading ? (
             <>
-              <RefreshCw size={20} className="animate-spin" />
+              <RefreshCw size={20} strokeWidth={1.5} className="animate-spin" />
               Generating...
             </>
           ) : (

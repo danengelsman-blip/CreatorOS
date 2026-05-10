@@ -5,6 +5,8 @@ import {
   Settings,
   AlignLeft,
   XCircle,
+  Menu,
+  X,
   DollarSign,
   Trophy,
   LogOut,
@@ -58,7 +60,6 @@ const DEVELOPER_EMAILS = ['danengelsman@gmail.com'];
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [brand, setBrand] = useState<any>(null);
   const [projects, setProjects] = useState<any[]>([]);
@@ -218,86 +219,33 @@ export default function App() {
           )}
         </AnimatePresence>
         
-        {/* Sidebar (Desktop Only) */}
-        <motion.aside 
-          initial={false}
-          animate={{ 
-            width: isSidebarOpen ? 240 : 80,
-          }}
-          className={cn(
-            "bg-[var(--bg-secondary)] border-r border-[var(--separator)] flex flex-col z-[70] hidden lg:flex h-full",
-          )}
-        >
-          <div className="h-[env(safe-area-inset-top,64px)] flex items-center px-6">
-            <div className={cn("flex items-center gap-3 transition-opacity", !isSidebarOpen && "opacity-0")}>
-              <BrandIcon size={20} className="text-[var(--accent)]" />
-              <span className="font-bold text-xl tracking-tight">CreatorOS</span>
-            </div>
-            {!isSidebarOpen && (
-              <div className="absolute inset-x-0 top-0 h-16 flex items-center justify-center">
-                 <BrandIcon size={20} className="text-[var(--accent)]" />
-              </div>
-            )}
-          </div>
-
-          <nav className="flex-1 px-3 space-y-1 mt-2">
-            {visibleNavItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => {
-                  if (item.locked && projects.length === 0) return;
-                  setActiveTab(item.id);
-                }}
-                className={cn(
-                  "w-full flex items-center gap-3 px-4 py-2 rounded-xl transition-all group relative h-[44px]",
-                  activeTab === item.id 
-                    ? "bg-[var(--accent)] text-white shadow-lg shadow-[#007AFF1A]" 
-                    : "text-[var(--label-secondary)] hover:bg-[var(--separator)]",
-                  item.locked && projects.length === 0 && "opacity-40 cursor-not-allowed grayscale"
-                )}
-              >
-                <item.icon size={18} className="flex-shrink-0" />
-                {isSidebarOpen && (
-                  <span className="font-semibold text-[15px]">{item.label}</span>
-                )}
-              </button>
-            ))}
-          </nav>
-
-          <div className="p-3 border-t border-[var(--separator)] space-y-1 pb-[env(safe-area-inset-bottom,12px)]">
-            <button 
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="w-full flex items-center gap-3 px-4 py-2 text-[var(--label-secondary)] hover:text-[var(--label-primary)] transition-colors rounded-xl h-[44px]"
-            >
-              {isSidebarOpen ? <XCircle size={18} /> : <AlignLeft size={18} className="mx-auto" />}
-              {isSidebarOpen && <span className="text-[15px] font-semibold">Collapse</span>}
-            </button>
-            <button 
-              onClick={() => logout()}
-              className="w-full flex items-center gap-3 px-4 py-2 text-[var(--system-red)] transition-colors rounded-xl h-[44px]"
-            >
-              <LogOut size={18} className={cn(!isSidebarOpen && "mx-auto")} />
-              {isSidebarOpen && <span className="text-[15px] font-semibold">Logout</span>}
-            </button>
-          </div>
-        </motion.aside>
-
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col min-w-0 relative">
           
           {/* iOS Navigation Bar (Header) */}
-          <header className="fixed top-0 left-0 right-0 lg:absolute z-50 material-thin border-b border-[var(--separator)] flex items-center justify-between px-4 pb-2 pt-[env(safe-area-inset-top,16px)] h-[calc(env(safe-area-inset-top,0px)+52px)]">
-            <div className="flex-1">
-               {/* Leading item (empty usually or Back) */}
+          <header className="fixed top-0 left-0 right-0 lg:absolute z-[70] material-thin border-b border-[var(--separator)] flex items-center justify-between px-4 pb-2 pt-[env(safe-area-inset-top,16px)] h-[calc(env(safe-area-inset-top,0px)+52px)]">
+            <div className="flex-1 flex items-center h-full">
+               <button 
+                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+                 className="p-2 -ml-2 hidden lg:flex items-center gap-2 text-[var(--accent)] hover:opacity-80 transition-opacity"
+               >
+                 {isMobileMenuOpen ? <X size={24} strokeWidth={1.5} /> : <Menu size={24} strokeWidth={1.5} />}
+                 <span className="font-bold text-lg hidden sm:block tracking-tight text-[var(--label-primary)]">CreatorOS</span>
+               </button>
+               {/* Mobile Logo Logo */}
+               <div className="lg:hidden flex items-center gap-2">
+                 <BrandIcon size={20} className="text-[var(--accent)]" />
+                 <span className="font-bold tracking-tight text-[var(--label-primary)]">CreatorOS</span>
+               </div>
             </div>
             
-            <div className="flex flex-col items-center flex-1">
+            <div className="flex flex-col items-center flex-1 justify-center h-full">
               <span className="font-semibold text-[17px] tracking-[-0.014em]">
                 {visibleNavItems.find(item => item.id === activeTab)?.label}
               </span>
             </div>
             
-            <div className="flex-1 flex justify-end gap-3">
+            <div className="flex-1 flex justify-end h-full items-center gap-3">
               <div 
                 onClick={() => setActiveTab('profile')}
                 className="cursor-pointer active:scale-95 transition-transform"
@@ -311,6 +259,65 @@ export default function App() {
               </div>
             </div>
           </header>
+
+          <AnimatePresence>
+            {isMobileMenuOpen && (
+              <>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 bg-black/20 z-[60] hidden lg:block"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                />
+                <motion.nav
+                  initial={{ opacity: 0, y: -10, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  className="fixed top-[calc(env(safe-area-inset-top,0px)+60px)] left-4 w-80 bg-[var(--bg-secondary)] ios-card shadow-2xl z-[65] max-h-[80vh] overflow-y-auto custom-scrollbar border border-[var(--separator)] hidden lg:block"
+                >
+                  <div className="p-2 space-y-1">
+                    {visibleNavItems.map((item) => (
+                      <button
+                        key={item.id}
+                        onClick={() => {
+                          if (item.locked && projects.length === 0) return;
+                          setActiveTab(item.id);
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className={cn(
+                          "w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all group",
+                          activeTab === item.id 
+                            ? "bg-[var(--accent)] text-white shadow-md shadow-[#007AFF1A]" 
+                            : "text-[var(--label-secondary)] hover:bg-[var(--separator)]",
+                          item.locked && projects.length === 0 && "opacity-40 cursor-not-allowed grayscale"
+                        )}
+                      >
+                        <div className="flex items-center gap-3">
+                          <item.icon size={20} className="flex-shrink-0" />
+                          <span className="font-semibold text-[15px]">{item.label}</span>
+                        </div>
+                      </button>
+                    ))}
+                    
+                    <div className="my-2 border-t border-[var(--separator)]" />
+                    
+                    <button 
+                      onClick={() => {
+                        logout();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-[var(--system-red)] hover:bg-[var(--separator)] transition-colors rounded-xl"
+                    >
+                      <LogOut size={20} />
+                      <span className="text-[15px] font-semibold">Logout</span>
+                    </button>
+                  </div>
+                </motion.nav>
+              </>
+            )}
+          </AnimatePresence>
 
           <main className="flex-1 overflow-y-auto pt-[calc(env(safe-area-inset-top,0px)+64px)] pb-[calc(env(safe-area-inset-bottom,0px)+83px)] lg:pb-12 px-4 lg:px-10">
             <div className="max-w-[1400px] mx-auto">

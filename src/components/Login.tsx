@@ -30,7 +30,7 @@ export default function Login() {
 
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-16">
-            <BrandIcon size={32} className="text-[var(--accent)]" />
+            <BrandIcon size={32} strokeWidth={1.5} className="text-[var(--accent)]" />
             <span className="text-[24px] font-bold tracking-tight">CreatorOS</span>
           </div>
 
@@ -39,7 +39,7 @@ export default function Login() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <h1 className="text-[44px] xl:text-[54px] font-bold tracking-tight leading-tight mb-6">
+            <h1 className="font-serif text-[44px] xl:text-[54px] font-semibold tracking-[-0.015em] leading-tight mb-6">
               The OS for Modern Creators.
             </h1>
             <p className="text-[20px] text-[var(--label-secondary)] leading-relaxed max-w-xl mb-12 font-medium">
@@ -69,17 +69,17 @@ export default function Login() {
           transition={{ duration: 0.6 }}
           className="max-w-md w-full relative z-10"
         >
-          <div className="ios-card bg-[var(--bg-tertiary)] p-10 sm:p-12 ios-elevated text-center border-t border-white/5">
+          <div className="ios-card bg-[var(--bg-tertiary)] p-10 sm:p-12 ios-elevated text-center border-t border-[var(--separator)]">
             <div className="sm:hidden mb-10">
               <div className="w-20 h-20 bg-[var(--bg-secondary)] rounded-[22px] flex items-center justify-center mx-auto mb-6 border border-[var(--separator)] shadow-sm">
-                <BrandIcon size={40} className="text-[var(--accent)]" />
+                <BrandIcon size={40} strokeWidth={1.5} className="text-[var(--accent)]" />
               </div>
-              <h1 className="text-[34px] font-bold tracking-tight mb-1">CreatorOS</h1>
+              <h1 className="font-serif text-[36px] font-semibold tracking-[-0.015em] mb-1">CreatorOS</h1>
               <p className="text-[17px] text-[var(--label-secondary)] font-medium">Your AI Creator Workspace</p>
             </div>
 
             <div className="hidden sm:block mb-10">
-              <h2 className="text-[28px] font-bold mb-1">Welcome</h2>
+              <h2 className="font-serif text-[30px] font-semibold tracking-[-0.015em] mb-1">Welcome</h2>
               <p className="text-[17px] text-[var(--label-secondary)] font-medium">Sign in to access your workspace</p>
             </div>
 
@@ -89,7 +89,7 @@ export default function Login() {
               className="ios-button-filled w-full py-4 text-[17px] group"
             >
               {isLoading ? (
-                <Loader2 size={24} className="animate-spin" />
+                <Loader2 size={24} strokeWidth={1.5} className="animate-spin" />
               ) : (
                 <>
                   <img 
@@ -99,7 +99,7 @@ export default function Login() {
                     referrerPolicy="no-referrer"
                   />
                   <span>Continue with Google</span>
-                  <ArrowRight size={20} className="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                  <ArrowRight size={20} strokeWidth={1.5} className="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
                 </>
               )}
             </button>
@@ -123,7 +123,7 @@ function FeatureItem({ icon: Icon, title, desc }: { icon: any, title: string, de
   return (
     <div className="flex items-start gap-4">
       <div className="w-12 h-12 rounded-xl bg-[var(--bg-tertiary)] flex items-center justify-center border border-[var(--separator)] shrink-0 shadow-sm">
-        <Icon size={24} className="text-[var(--accent)]" />
+        <Icon size={24} strokeWidth={1.5} className="text-[var(--accent)]" />
       </div>
       <div>
         <h3 className="font-bold text-[17px] mb-0.5">{title}</h3>

@@ -63,13 +63,13 @@ export default function Roadmap({ brand, user }: { brand: any, user: any }) {
 
   return (
     <div className="space-y-8 pb-20">
-      <h1 className="px-1 pt-4">Roadmap</h1>
+      <h1 className="font-serif text-[36px] font-semibold tracking-[-0.015em] text-[var(--label-primary)] px-1 pt-4">Roadmap</h1>
 
       {/* Progress Card */}
       <section className="bg-[var(--bg-tertiary)] ios-card p-6 flex items-center justify-between">
         <div className="flex-1">
           <span className="ios-label px-0 mb-1">Current Challenge</span>
-          <h2 className="text-[28px] font-bold tracking-tight">30-Day Launch</h2>
+          <h2 className="font-serif text-[28px] font-semibold tracking-[-0.015em]">30-Day Launch</h2>
           <p className="text-[17px] text-[var(--label-secondary)] font-medium">Your path to your first dollar.</p>
         </div>
         <div className="relative w-24 h-24 flex items-center justify-center">
@@ -101,13 +101,13 @@ export default function Roadmap({ brand, user }: { brand: any, user: any }) {
               )}>
                 <div className="p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white" style={{ backgroundColor: stage.color }}>
-                      <stage.icon size={24} />
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{background: `color-mix(in srgb, ${stage.color} 12%, transparent)`, color: stage.color}}>
+                      <stage.icon size={24} strokeWidth={1.5} />
                     </div>
                     <div className="flex flex-col">
                       <span className="font-bold text-[17px] leading-tight flex items-center gap-2">
                         {stage.title}
-                        {!isUnlocked && <Lock size={14} className="text-[var(--label-tertiary)]" />}
+                        {!isUnlocked && <Lock size={14} className="text-[var(--label-tertiary)]" strokeWidth={1.5} />}
                       </span>
                       <p className="text-[14px] text-[var(--label-secondary)] font-medium leading-tight mt-0.5">{stage.desc}</p>
                     </div>
@@ -128,7 +128,7 @@ export default function Roadmap({ brand, user }: { brand: any, user: any }) {
                             "bg-[var(--bg-secondary)] border-transparent text-[var(--label-secondary)]"
                           )}
                         >
-                          {isDayCompleted ? <CheckCircle2 size={16} /> : day}
+                          {isDayCompleted ? <CheckCircle2 size={16} strokeWidth={1.5} /> : day}
                         </div>
                       );
                     })}
@@ -139,7 +139,7 @@ export default function Roadmap({ brand, user }: { brand: any, user: any }) {
                     isUnlocked ? "ios-button-filled" : "ios-button-gray opacity-50"
                   )}>
                     {isUnlocked ? 'Continue' : 'Locked'}
-                    <ChevronRight size={14} />
+                    <ChevronRight size={14} strokeWidth={1.5} />
                   </button>
                 </div>
               </div>

@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  --font-mono: "iA Writer Mono S", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 @layer base {
@@ -18,42 +19,42 @@
     --text-caption: 12px;
 
     /* Light Mode Tokens */
-    --bg-primary: #ffffff;
-    --bg-secondary: #f2f2f7;
-    --bg-tertiary: #ffffff;
-    --label-primary: #000000;
-    --label-secondary: rgba(60,60,67,0.60);
-    --label-tertiary: rgba(60,60,67,0.30);
-    --separator: rgba(60,60,67,0.12);
-    --accent: #007AFF;
-    --system-green: #34C759;
-    --system-orange: #FF9500;
-    --system-red: #FF3B30;
+    --bg-primary: #F4EFE6;
+    --bg-secondary: #EBE3D5;
+    --bg-tertiary: #FFFFFF;
+    --label-primary: #2A1F17;
+    --label-secondary: rgba(42,31,23,0.62);
+    --label-tertiary: rgba(42,31,23,0.36);
+    --separator: rgba(42,31,23,0.10);
+    --accent: #B8542C;
+    --system-green: #6B8E4E;
+    --system-orange: #C77D3F;
+    --system-red: #A0432A;
 
     /* Material Backgrounds */
-    --bg-material-thin: rgba(255,255,255,0.72);
-    --bg-material-regular: rgba(255,255,255,0.82);
-    --bg-material-thick: rgba(242,242,247,0.94);
+    --bg-material-thin: rgba(244,239,230,0.72);
+    --bg-material-regular: rgba(244,239,230,0.82);
+    --bg-material-thick: rgba(235,227,213,0.94);
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg-primary: #000000;
-      --bg-secondary: #1c1c1e;
-      --bg-tertiary: #2c2c2e;
-      --label-primary: #ffffff;
-      --label-secondary: rgba(235,235,245,0.60);
-      --label-tertiary: rgba(235,235,245,0.30);
-      --separator: rgba(84,84,88,0.65);
-      --accent: #0A84FF;
-      --system-green: #30D158;
-      --system-orange: #FF9F0A;
-      --system-red: #FF453A;
+      --bg-primary: #1A1612;
+      --bg-secondary: #25201A;
+      --bg-tertiary: #2E2820;
+      --label-primary: #F4EFE6;
+      --label-secondary: rgba(244,239,230,0.62);
+      --label-tertiary: rgba(244,239,230,0.36);
+      --separator: rgba(244,239,230,0.10);
+      --accent: #D4754A;
+      --system-green: #8FAA6E;
+      --system-orange: #D89B5C;
+      --system-red: #C5644A;
 
       /* Dark Material Backgrounds */
-      --bg-material-thin: rgba(28,28,30,0.72);
-      --bg-material-regular: rgba(28,28,30,0.82);
-      --bg-material-thick: rgba(44,44,46,0.94);
+      --bg-material-thin: rgba(26,22,18,0.72);
+      --bg-material-regular: rgba(26,22,18,0.82);
+      --bg-material-thick: rgba(46,40,32,0.94);
     }
   }
 
@@ -63,6 +64,24 @@
     @apply font-sans overflow-x-hidden antialiased;
     font-size: var(--text-body);
     line-height: normal;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+    mix-blend-mode: multiply;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body::before {
+      opacity: 0.06;
+      mix-blend-mode: screen;
+    }
   }
 
   h1 { @apply font-bold tracking-[-0.022em]; font-size: var(--text-large-title); }
@@ -107,8 +126,14 @@
   }
 
   .ios-button-filled {
-    background-color: var(--accent);
-    color: white;
+    background: linear-gradient(180deg, 
+      color-mix(in srgb, var(--accent) 100%, white 8%) 0%, 
+      var(--accent) 100%);
+    color: #FFFFFF;
+    box-shadow: 
+      0 1px 0 rgba(255,255,255,0.15) inset,
+      0 1px 2px rgba(0,0,0,0.1);
+    letter-spacing: -0.005em;
   }
   .ios-button-filled:active {
     opacity: 0.8;
@@ -132,8 +157,30 @@
 
   .ios-card {
     background-color: var(--bg-tertiary);
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
+    border-radius: 14px;
+    border: 0.5px solid var(--separator);
+    box-shadow: 
+      0 1px 0 rgba(255,255,255,0.04) inset,
+      0 1px 3px rgba(0,0,0,0.06),
+      0 8px 20px -8px rgba(0,0,0,0.08);
+    transition: transform 220ms cubic-bezier(0.32, 0.72, 0, 1),
+                box-shadow 220ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .ios-card {
+      box-shadow: 
+        0 1px 0 rgba(255,255,255,0.03) inset,
+        0 1px 3px rgba(0,0,0,0.3),
+        0 8px 20px -8px rgba(0,0,0,0.5);
+    }
+  }
+
+  .ios-card:active {
+    transform: scale(0.992) translateY(1px);
+    box-shadow: 
+      0 1px 0 rgba(255,255,255,0.04) inset,
+      0 0px 1px rgba(0,0,0,0.08);
   }
 
   .ios-elevated {
@@ -161,14 +208,14 @@
   }
 
   .ios-label {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--label-secondary);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--label-tertiary);
     text-transform: uppercase;
-    letter-spacing: -0.01em;
+    letter-spacing: 0.08em;
     padding-left: 1rem;
     padding-right: 1rem;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
     display: block;
   }
 }

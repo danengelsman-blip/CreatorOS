@@ -1,17 +1,8 @@
 import React, { useState } from 'react';
 import { 
-  Sparkles, 
   Copy, 
   Check, 
-  Terminal, 
-  Cpu, 
-  Zap, 
-  Layout, 
-  Database, 
-  Palette,
-  Code2,
-  ExternalLink,
-  MessageSquare
+  RefreshCw
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
@@ -80,15 +71,22 @@ Build "CreatorOS", a premium, all-in-one operating system for digital creators. 
 - projects/brand_{userId}: The creator's brand identity document.`;
 
 export default function PromptArchitect() {
-  const [copied, setCopied] = useState(false);
+  const [copiedStatic, setCopiedStatic] = useState(false);
+  const [copiedGenerated, setCopiedGenerated] = useState(false);
   const [customIdea, setCustomIdea] = useState('');
   const [generatedPrompt, setGeneratedPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const copyToClipboard = (text: string) => {
+  const copyStatic = (text: string) => {
     navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setCopiedStatic(true);
+    setTimeout(() => setCopiedStatic(false), 2000);
+  };
+
+  const copyGenerated = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedGenerated(true);
+    setTimeout(() => setCopiedGenerated(false), 2000);
   };
 
   const handleGenerate = async () => {
@@ -102,7 +100,7 @@ export default function PromptArchitect() {
         contents: `Write a "Super Prompt" for an AI app builder (like anything.com or v0.dev) to build the following app idea: "${customIdea}". 
         Follow the structure:
         1. App Vision
-        2. Design System (suggest a specific visual recipe like Brutalist, Luxury, or Minimal)
+        2. Design System
         3. Technical Stack
         4. Core Modules
         5. User Flow
@@ -121,191 +119,82 @@ export default function PromptArchitect() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-10 pb-20">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 bg-accent-gold/10 text-accent-gold rounded-lg flex items-center justify-center">
-              <Sparkles className="w-4 h-4" />
-            </div>
-            <span className="text-[11px] font-bold text-white/40 uppercase tracking-widest">Prompt Engineering</span>
-          </div>
-          <h2 className="text-3xl md:text-4xl font-serif font-bold tracking-tight">Prompt Architect</h2>
-          <p className="text-white/50 mt-2 max-w-xl">
-            Generate high-fidelity "Super Prompts" to replicate this app or build entirely new ones with extreme precision.
-          </p>
+    <div className="max-w-xl mx-auto flex flex-col gap-8 pb-20">
+      <div className="space-y-4 pt-10">
+        <h1 className="font-serif text-[36px] font-semibold tracking-[-0.015em] text-[var(--label-primary)]">Architect</h1>
+        <p className="text-[17px] text-[var(--label-secondary)]">
+          Generate high-fidelity "Super Prompts" to replicate this app or build entirely new ones with extreme precision.
+        </p>
+      </div>
+      
+      <div className="bg-[var(--bg-tertiary)] ios-card p-6 space-y-6">
+        <div className="flex justify-between items-center">
+          <span className="ios-label px-0">App Idea</span>
         </div>
+        <textarea 
+          value={customIdea}
+          onChange={(e) => setCustomIdea(e.target.value)}
+          placeholder="Describe your app idea..."
+          className="ios-input h-32 py-4 resize-none"
+        />
         
-        <div className="flex items-center gap-3">
-          <div className="flex -space-x-2">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="w-8 h-8 rounded-full border-2 border-premium-bg bg-premium-surface flex items-center justify-center">
-                <Cpu className="w-3 h-3 text-accent-gold" />
-              </div>
-            ))}
-          </div>
-          <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">AI Optimized</span>
+        <button 
+          onClick={handleGenerate}
+          disabled={isGenerating || !customIdea.trim()}
+          className="ios-button-filled w-full text-[17px]"
+        >
+          {isGenerating ? (
+            <>
+              <RefreshCw size={20} strokeWidth={1.5} className="animate-spin mr-2 inline" />
+              Generating...
+            </>
+          ) : (
+            "Generate Super Prompt"
+          )}
+        </button>
+      </div>
+
+      <div className="bg-[var(--bg-tertiary)] ios-card p-6 space-y-4">
+        <div className="flex justify-between items-center">
+          <span className="ios-label px-0">Custom Architect</span>
+          <button 
+            onClick={() => copyStatic(CREATOR_OS_PROMPT)}
+            className="text-[15px] font-semibold text-[var(--accent)] active:opacity-40 transition-opacity"
+          >
+            {copiedStatic ? 'Copied' : 'Copy'}
+          </button>
+        </div>
+        <div className="bg-[var(--bg-secondary)] rounded-xl p-4 max-h-[400px] overflow-y-auto">
+          <pre className="font-mono text-[13px] text-[var(--label-secondary)] whitespace-pre-wrap leading-relaxed">
+            {CREATOR_OS_PROMPT}
+          </pre>
         </div>
       </div>
 
-      {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Column: CreatorOS Prompt */}
-        <div className="lg:col-span-7 space-y-6">
-          <div className="premium-card bg-premium-surface border-accent-gold/10 overflow-hidden flex flex-col h-full">
-            <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
-              <div className="flex items-center gap-3">
-                <Layout className="w-4 h-4 text-accent-gold" />
-                <h3 className="font-bold text-sm">CreatorOS Super Prompt</h3>
-              </div>
+      <AnimatePresence>
+        {generatedPrompt && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className="bg-[var(--bg-tertiary)] ios-card p-6 space-y-4"
+          >
+            <div className="flex justify-between items-center">
+              <span className="ios-label px-0">Generated Result</span>
               <button 
-                onClick={() => copyToClipboard(CREATOR_OS_PROMPT)}
-                className="flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-[11px] font-bold transition-colors"
+                onClick={() => copyGenerated(generatedPrompt)}
+                className="text-[15px] font-semibold text-[var(--accent)] active:opacity-40 transition-opacity"
               >
-                {copied ? <Check className="w-3 h-3 text-accent-emerald" /> : <Copy className="w-3 h-3" />}
-                {copied ? 'Copied' : 'Copy Prompt'}
+                {copiedGenerated ? 'Copied' : 'Copy'}
               </button>
             </div>
-            
-            <div className="p-6 flex-1 overflow-y-auto max-h-[600px] font-mono text-[12px] leading-relaxed text-white/70 bg-black/20">
-              <pre className="whitespace-pre-wrap">{CREATOR_OS_PROMPT}</pre>
+            <div className="bg-[var(--bg-secondary)] rounded-xl p-4 max-h-[400px] overflow-y-auto">
+              <pre className="font-mono text-[13px] text-[var(--label-secondary)] whitespace-pre-wrap leading-relaxed">
+                {generatedPrompt}
+              </pre>
             </div>
-            
-            <div className="p-4 bg-accent-gold/5 border-t border-accent-gold/10 flex items-center gap-3">
-              <Zap className="w-4 h-4 text-accent-gold" />
-              <p className="text-[11px] text-accent-gold/80 font-medium">
-                Use this prompt on <span className="font-bold underline">anything.com</span> to replicate this exact application architecture.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column: Custom Generator */}
-        <div className="lg:col-span-5 space-y-6">
-          <div className="premium-card p-8 bg-premium-ink text-white relative overflow-hidden">
-            <div className="relative z-10">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
-                  <Terminal className="w-5 h-5 text-accent-gold" />
-                </div>
-                <h3 className="font-bold text-lg">Custom Architect</h3>
-              </div>
-              
-              <p className="text-white/50 text-sm mb-6 leading-relaxed">
-                Have a different idea? Describe it briefly, and our AI will architect a full Super Prompt for you.
-              </p>
-              
-              <div className="space-y-4">
-                <textarea 
-                  value={customIdea}
-                  onChange={(e) => setCustomIdea(e.target.value)}
-                  placeholder="e.g., A fitness app for minimalist home workouts with real-time form correction..."
-                  className="w-full h-32 bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-accent-gold/50 transition-colors resize-none"
-                />
-                
-                <button 
-                  onClick={handleGenerate}
-                  disabled={isGenerating || !customIdea.trim()}
-                  className="w-full py-4 bg-accent-gold text-premium-bg rounded-2xl font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-all disabled:opacity-50"
-                >
-                  {isGenerating ? (
-                    <>
-                      <motion.div 
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                      >
-                        <Sparkles className="w-4 h-4" />
-                      </motion.div>
-                      Architecting...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4" />
-                      Generate Super Prompt
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-            
-            {/* Abstract background */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-accent-gold/10 rounded-full blur-[80px] translate-x-1/2 -translate-y-1/2" />
-          </div>
-
-          {/* Generated Result */}
-          <AnimatePresence>
-            {generatedPrompt && (
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="premium-card bg-premium-surface border-accent-emerald/20 overflow-hidden"
-              >
-                <div className="p-4 border-b border-white/5 flex items-center justify-between bg-accent-emerald/5">
-                  <div className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-accent-emerald" />
-                    <span className="text-[11px] font-bold uppercase tracking-widest text-accent-emerald">Generated Result</span>
-                  </div>
-                  <button 
-                    onClick={() => copyToClipboard(generatedPrompt)}
-                    className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-                  >
-                    <Copy className="w-3 h-3" />
-                  </button>
-                </div>
-                <div className="p-6 max-h-[300px] overflow-y-auto font-mono text-[11px] text-white/60 leading-relaxed">
-                  <pre className="whitespace-pre-wrap">{generatedPrompt}</pre>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Tips */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
-              <Palette className="w-4 h-4 text-accent-gold mb-2" />
-              <h4 className="text-[11px] font-bold mb-1 uppercase tracking-wider">Design Recipes</h4>
-              <p className="text-[10px] text-white/40 leading-relaxed">Include specific design moods for better results.</p>
-            </div>
-            <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
-              <Database className="w-4 h-4 text-accent-emerald mb-2" />
-              <h4 className="text-[11px] font-bold mb-1 uppercase tracking-wider">Data Models</h4>
-              <p className="text-[10px] text-white/40 leading-relaxed">Specify entities to get precise Firestore schemas.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Footer Info */}
-      <div className="pt-10 border-t border-white/5 grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="flex gap-4">
-          <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0">
-            <Code2 className="w-5 h-5 text-white/40" />
-          </div>
-          <div>
-            <h4 className="text-sm font-bold mb-1">Technical Precision</h4>
-            <p className="text-xs text-white/40 leading-relaxed">Prompts include full tech stacks and data architecture definitions.</p>
-          </div>
-        </div>
-        <div className="flex gap-4">
-          <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0">
-            <MessageSquare className="w-5 h-5 text-white/40" />
-          </div>
-          <div>
-            <h4 className="text-sm font-bold mb-1">Platform Ready</h4>
-            <p className="text-xs text-white/40 leading-relaxed">Optimized for anything.com, v0.dev, bolt.new, and other AI builders.</p>
-          </div>
-        </div>
-        <div className="flex gap-4">
-          <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0">
-            <ExternalLink className="w-5 h-5 text-white/40" />
-          </div>
-          <div>
-            <h4 className="text-sm font-bold mb-1">Direct Export</h4>
-            <p className="text-xs text-white/40 leading-relaxed">Copy-paste ready structure that AI models can parse instantly.</p>
-          </div>
-        </div>
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

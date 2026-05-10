@@ -67,7 +67,7 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
     if (!body || !brand) return;
     setIsPolishing(true);
     try {
-      const polished = await quickPolish(body, brand.personality);
+      const polished = await quickPolish(body);
       setBody(polished);
     } catch (error) {
       console.error('Polish failed:', error);
@@ -108,10 +108,10 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center space-y-8 max-w-sm mx-auto">
         <div className="w-24 h-24 bg-[var(--bg-secondary)] rounded-[22px] flex items-center justify-center ios-elevated">
-          <Sparkles className="w-10 h-10 text-[var(--label-tertiary)]" />
+          <Sparkles className="w-10 h-10 text-[var(--label-tertiary)]" strokeWidth={1.5} />
         </div>
         <div className="space-y-4">
-          <h2 className="text-[28px] font-bold tracking-tight">Identity Required</h2>
+          <h2 className="font-serif text-[28px] font-semibold tracking-[-0.015em]">Identity Required</h2>
           <p className="text-[var(--label-secondary)] text-[17px] font-medium leading-tight">
             Architect your brand identity before crafting world-class content with AI scoring.
           </p>
@@ -128,7 +128,7 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
 
   return (
     <div className="space-y-8 pb-20">
-      <h1 className="px-1 pt-4">Create</h1>
+      <h1 className="font-serif text-[36px] font-semibold tracking-[-0.015em] text-[var(--label-primary)] px-1 pt-4">Create</h1>
 
       {/* Main Content Area */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -158,7 +158,7 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
               {isPolishing && (
                 <div className="absolute inset-0 z-10 bg-[var(--bg-tertiary)]/60 backdrop-blur-[2px] flex flex-col items-center justify-center gap-4 animate-in fade-in duration-300">
                   <div className="flex items-center gap-3 bg-[var(--bg-primary)] px-5 py-3 rounded-2xl shadow-xl border border-[var(--separator)]">
-                    <Sparkles size={20} className="text-[var(--accent)] animate-pulse" />
+                    <Sparkles size={20} className="text-[var(--accent)] animate-pulse" strokeWidth={1.5} />
                     <span className="text-[15px] font-semibold">AI is polishing your narrative...</span>
                   </div>
                 </div>
@@ -168,7 +168,7 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Title or Hook"
-                className="w-full text-[24px] font-bold tracking-tight outline-none placeholder:text-[var(--label-tertiary)] bg-transparent"
+                className="w-full font-serif text-[24px] font-semibold tracking-[-0.015em] outline-none placeholder:text-[var(--label-tertiary)] bg-transparent"
               />
               <textarea 
                 value={body}
@@ -180,10 +180,10 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
 
             <div className="px-6 py-4 border-t border-[var(--separator)] flex items-center justify-between">
               <div className="flex gap-5 text-[var(--accent)]">
-                <button className="active:opacity-40 transition-opacity"><Type size={22} /></button>
-                <button className="active:opacity-40 transition-opacity"><ImageIcon size={22} /></button>
-                <button className="active:opacity-40 transition-opacity"><Hash size={22} /></button>
-                <button className="active:opacity-40 transition-opacity"><Mic size={22} /></button>
+                <button className="active:opacity-40 transition-opacity"><Type size={22} strokeWidth={1.5} /></button>
+                <button className="active:opacity-40 transition-opacity"><ImageIcon size={22} strokeWidth={1.5} /></button>
+                <button className="active:opacity-40 transition-opacity"><Hash size={22} strokeWidth={1.5} /></button>
+                <button className="active:opacity-40 transition-opacity"><Mic size={22} strokeWidth={1.5} /></button>
               </div>
               
               <div className="flex gap-3">
@@ -193,9 +193,9 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
                   className="ios-button-tinted px-4"
                 >
                   {isPolishing ? (
-                    <RefreshCw size={18} className="animate-spin text-[var(--accent)]" />
+                    <RefreshCw size={18} strokeWidth={1.5} className="animate-spin text-[var(--accent)]" />
                   ) : (
-                    <Sparkles size={18} className="text-[var(--accent)]" />
+                    <Sparkles size={18} strokeWidth={1.5} className="text-[var(--accent)]" />
                   )}
                   <span className="hidden sm:inline">Polish</span>
                 </button>
@@ -205,9 +205,9 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
                   className="ios-button-tinted px-4"
                 >
                   {isScoring ? (
-                    <Loader2 size={18} className="animate-spin text-[var(--accent)]" />
+                    <Loader2 size={18} strokeWidth={1.5} className="animate-spin text-[var(--accent)]" />
                   ) : (
-                    <BrandIcon size={18} />
+                    <BrandIcon size={18} strokeWidth={1.5} />
                   )}
                   <span className="hidden sm:inline">Score</span>
                 </button>
@@ -216,7 +216,7 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
                   disabled={isSaving || !body}
                   className="ios-button-filled px-6"
                 >
-                  {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                  {isSaving ? <Loader2 size={18} strokeWidth={1.5} className="animate-spin" /> : <Save size={18} strokeWidth={1.5} />}
                   Save
                 </button>
               </div>
@@ -234,7 +234,7 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
                 className="space-y-4"
               >
                 <span className="ios-label flex items-center gap-2">
-                  <RefreshCw size={14} className="animate-spin" />
+                  <RefreshCw size={14} strokeWidth={1.5} className="animate-spin" />
                   AI is analyzing your content...
                 </span>
                 <div className="bg-[var(--bg-tertiary)] ios-card overflow-hidden divide-y divide-[var(--separator)] animate-pulse">
@@ -264,7 +264,7 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
                 <span className="ios-label">AI Intelligence Score</span>
                 <div className="bg-[var(--bg-tertiary)] ios-card overflow-hidden divide-y divide-[var(--separator)]">
                    <div className="p-6 flex flex-col items-center">
-                      <div className="text-[48px] font-bold tracking-tight leading-none mb-1">{scoreData.score}</div>
+                      <div className="font-serif text-[48px] font-semibold tracking-[-0.015em] leading-none mb-1">{scoreData.score}</div>
                       <div className={cn(
                         "text-[13px] font-bold uppercase",
                         scoreData.score > 70 ? "text-[var(--system-green)]" : "text-[var(--system-orange)]"
@@ -277,7 +277,7 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
                    </div>
                    {scoreData.suggestions.map((s: string, i: number) => (
                      <div key={i} className="p-4 flex items-center gap-3">
-                        <CheckCircle2 size={18} className="text-[var(--system-green)] shrink-0" />
+                        <CheckCircle2 size={18} strokeWidth={1.5} className="text-[var(--system-green)] shrink-0" />
                         <span className="text-[15px] font-medium">{s}</span>
                      </div>
                    ))}
@@ -294,17 +294,17 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
               <div className="bg-[var(--bg-tertiary)] ios-card overflow-hidden divide-y divide-[var(--separator)]">
                  <div className="p-4 flex items-center justify-between active:bg-[var(--separator)] transition-colors cursor-pointer">
                     <div className="flex items-center gap-3">
-                       <Settings size={20} className="text-[var(--label-secondary)]" />
+                       <Settings size={20} strokeWidth={1.5} className="text-[var(--label-secondary)]" />
                        <span className="font-semibold">Context Settings</span>
                     </div>
-                    <ChevronRight size={18} className="text-[var(--label-tertiary)]" />
+                    <ChevronRight size={18} strokeWidth={1.5} className="text-[var(--label-tertiary)]" />
                  </div>
                  <div className="p-4 flex items-center justify-between active:bg-[var(--separator)] transition-colors cursor-pointer">
                     <div className="flex items-center gap-3">
-                       <Search size={20} className="text-[var(--label-secondary)]" />
+                       <Search size={20} strokeWidth={1.5} className="text-[var(--label-secondary)]" />
                        <span className="font-semibold">Optimize Search</span>
                     </div>
-                    <ChevronRight size={18} className="text-[var(--label-tertiary)]" />
+                    <ChevronRight size={18} strokeWidth={1.5} className="text-[var(--label-tertiary)]" />
                  </div>
               </div>
            </section>
@@ -318,7 +318,7 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
                          <span className="text-xl">{p.icon}</span>
                          <span className="font-semibold">Format for {p.label}</span>
                       </div>
-                      <ChevronRight size={18} className="text-[var(--label-tertiary)]" />
+                      <ChevronRight size={18} strokeWidth={1.5} className="text-[var(--label-tertiary)]" />
                    </div>
                  ))}
               </div>
@@ -335,7 +335,7 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
             className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
           >
             <div className="bg-[var(--system-green)] text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3">
-              <CheckCircle2 size={20} />
+              <CheckCircle2 size={20} strokeWidth={1.5} />
               <span className="font-bold tracking-tight">Saved to CreatorOS</span>
             </div>
           </motion.div>
