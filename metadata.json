@@ -1,6 +1,8 @@
 {
-  "name": "CreatorOS MVP Evaluator",
-  "description": "An application to help creators evaluate their MVPs.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "name": "CreatorOS",
+  "description": "The operating system for creators. Go from zero to your first dollar with AI coaching, branding, and content automation.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
 }
