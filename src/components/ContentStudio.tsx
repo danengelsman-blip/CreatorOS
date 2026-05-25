@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { PaperPlaneRight as Send, CheckCircle as CheckCircle2, ArrowsClockwise as RefreshCw, TextT as Type, Hash, Image as ImageIcon, CaretRight as ChevronRight, DownloadSimple as Download, Microphone as Mic, SpeakerHigh as Volume2, VideoCamera as VideoIcon, Play, CircleNotch as Loader2, FloppyDisk as Save, Sparkle as Sparkles, MagnifyingGlass as Search, GearSix as Settings, DotsThree as MoreHorizontal } from '@phosphor-icons/react';
+import { PaperPlaneRight as Send, CheckCircle as CheckCircle2, ArrowsClockwise as RefreshCw, TextT as Type, Hash, Image as ImageIcon, CaretRight as ChevronRight, DownloadSimple as Download, Microphone as Mic, SpeakerHigh as Volume2, SpeakerSlash, Rewind, FastForward, VideoCamera as VideoIcon, Play, CircleNotch as Loader2, FloppyDisk as Save, Sparkle as Sparkles, MagnifyingGlass as Search, GearSix as Settings, DotsThree as MoreHorizontal, Lightbulb } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'motion/react';
-import { scoreContent, quickPolish, generateSpeech, transcribeAudio, generateVideo, getOperationStatus } from '../services/gemini';
+import { scoreContent, quickPolish, generateSpeech, transcribeAudio, generateVideo, getOperationStatus, generateContentIdeas } from '../services/gemini';
 import { cn } from '../lib/utils';
 import { db, serverTimestamp, handleFirestoreError, OperationType } from '../firebase';
 import { doc, setDoc, collection, addDoc } from 'firebase/firestore';
@@ -34,6 +34,9 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [platform, setPlatform] = useState('tiktok');
+  const [isBrainstorming, setIsBrainstorming] = useState(false);
+  const [brainstormIdeas, setBrainstormIdeas] = useState<any[] | null>(null);
+  const [showBrainstorm, setShowBrainstorm] = useState(false);
   const [isScoring, setIsScoring] = useState(false);
   const [scoreData, setScoreData] = useState<any>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -42,6 +45,12 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [isVideoGenerating, setIsVideoGenerating] = useState(false);
+  const [videoGenerationProgress, setVideoGenerationProgress] = useState('');
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [videoAspect, setVideoAspect] = useState<'9:16' | '16:9'>('9:16');
+  const [isVideoMuted, setIsVideoMuted] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const mediaRecorder = useRef<MediaRecorder | null>(null);
   const audioChunks = useRef<Blob[]>([]);
@@ -51,6 +60,95 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 3000);
+  };
+
+  const handleGenerateVideo = async () => {
+    if (!body || !brand) return;
+    setIsVideoGenerating(true);
+    setVideoGenerationProgress('Initializing...');
+    setVideoUrl(null);
+    try {
+      const prompt = `A short promotional video draft targeting ${platform}. Title: ${title || 'Untitled'}. Narrative: ${body}. Visual style: ${brand.visual_style || 'modern and clean'}. Make it highly engaging.`;
+      const operation = await generateVideo(prompt, videoAspect);
+      setVideoGenerationProgress('Synthesizing visuals...');
+      
+      let done = false;
+      let finalOp = operation;
+      
+      // Polling for video completion
+      while (!done) {
+        await new Promise(r => setTimeout(r, 6000));
+        const status = await getOperationStatus(finalOp);
+        
+        if (status.done) {
+          done = true;
+          if (status.error) {
+             throw new Error(status.error.message || 'Video generation failed');
+          }
+          if (status.uri) {
+            setVideoGenerationProgress('Downloading video...');
+            const { fetchVideoDownloadResponse } = await import('../services/gemini');
+            const blob = await fetchVideoDownloadResponse(status.uri);
+            setVideoUrl(URL.createObjectURL(blob));
+          }
+          break;
+        } else {
+          setVideoGenerationProgress(status.progressPercentage ? `Rendering frames... ${Math.round(status.progressPercentage)}%` : 'Rendering frames... this may take a minute');
+        }
+      }
+      
+    } catch (error: any) {
+      console.error('Video generation error:', error);
+      showToast(error.message || 'Video generation failed. Please try again.');
+    } finally {
+      setIsVideoGenerating(false);
+      setVideoGenerationProgress('');
+    }
+  };
+
+  const handleJumpBack = () => {
+    if (videoRef.current) {
+      videoRef.current.currentTime -= 5;
+    }
+  };
+
+  const handleJumpForward = () => {
+    if (videoRef.current) {
+      videoRef.current.currentTime += 5;
+    }
+  };
+
+  const toggleMute = () => {
+    if (videoRef.current) {
+      const newMutedState = !videoRef.current.muted;
+      videoRef.current.muted = newMutedState;
+      setIsVideoMuted(newMutedState);
+    }
+  };
+
+  const handleBrainstorm = async () => {
+    if (!brand) {
+      showToast('Please set up your Brand Kit first.');
+      return;
+    }
+    
+    if (brainstormIdeas) {
+      setShowBrainstorm(!showBrainstorm);
+      return;
+    }
+
+    setIsBrainstorming(true);
+    setShowBrainstorm(true);
+    try {
+      const ideas = await generateContentIdeas(brand);
+      setBrainstormIdeas(ideas);
+    } catch (error) {
+      console.error('Failed to brainstorm ideas:', error);
+      showToast('Failed to generate ideas. Please try again.');
+      setShowBrainstorm(false);
+    } finally {
+      setIsBrainstorming(false);
+    }
   };
 
   const handleScore = async () => {
@@ -168,13 +266,70 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
                   </div>
                 </div>
               )}
-              <input 
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Title or Hook"
-                className="w-full font-serif text-[24px] font-semibold tracking-[-0.015em] outline-none placeholder:text-[var(--label-tertiary)] bg-transparent"
-              />
+              <div className="flex items-center justify-between gap-4">
+                <input 
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Title or Hook"
+                  className="w-full font-serif text-[24px] font-semibold tracking-[-0.015em] outline-none placeholder:text-[var(--label-tertiary)] bg-transparent"
+                />
+                <button 
+                  onClick={handleBrainstorm}
+                  className={cn(
+                    "flex-shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-full text-[13px] font-semibold transition-all",
+                    showBrainstorm || isBrainstorming ? "bg-[var(--accent)] text-white" : "bg-[var(--bg-tertiary)] text-[var(--accent)] hover:bg-[var(--accent)] hover:text-white"
+                  )}
+                >
+                  {isBrainstorming ? <Loader2 size={16} className="animate-spin" /> : <Lightbulb size={16} weight={showBrainstorm ? "fill" : "regular"} />}
+                  Ideas
+                </button>
+              </div>
+
+              <AnimatePresence>
+                {showBrainstorm && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, height: 'auto', scale: 1 }}
+                    exit={{ opacity: 0, height: 0, scale: 0.95 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="bg-[var(--bg-tertiary)] rounded-2xl p-4 mt-2 border border-[var(--separator)] shadow-lg space-y-3">
+                      <div className="flex items-center justify-between text-[13px] font-semibold text-[var(--label-secondary)] px-1">
+                        <span className="uppercase tracking-widest">Brand Aligned Ideas</span>
+                        <button onClick={handleBrainstorm} className="text-[var(--accent)] flex items-center gap-1 hover:underline">
+                          <RefreshCw size={14} className={isBrainstorming ? "animate-spin" : ""} /> Regenerate
+                        </button>
+                      </div>
+                      
+                      {isBrainstorming && !brainstormIdeas ? (
+                        <div className="py-6 flex flex-col items-center justify-center gap-3 text-[var(--label-secondary)]">
+                          <Loader2 className="animate-spin text-[var(--accent)]" size={24} />
+                          <span className="text-[13px] font-medium">Analyzing brand vector...</span>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                          {brainstormIdeas?.map((idea, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => {
+                                setTitle(idea.title);
+                                setBody(idea.hook + '\n\n' + idea.description);
+                                setShowBrainstorm(false);
+                              }}
+                              className="text-left bg-[var(--bg-primary)] p-3 rounded-xl border border-[var(--separator)] hover:border-[var(--accent)] transition-all group ios-elevated hover:shadow-md"
+                            >
+                              <h4 className="font-semibold text-[14px] text-[var(--label-primary)] group-hover:text-[var(--accent)] transition-colors line-clamp-1">{idea.title}</h4>
+                              <p className="text-[13px] text-[var(--label-secondary)] mt-1.5 line-clamp-2 leading-relaxed">{idea.hook}</p>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               <textarea 
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
@@ -183,21 +338,58 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
               />
             </div>
 
-            <div className="px-6 py-4 border-t border-[var(--separator)] flex items-center justify-between">
-              <div className="flex gap-5 text-[var(--accent)]">
+            <div className="px-6 py-4 border-t border-[var(--separator)] flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
+              <div className="flex flex-wrap gap-2 sm:gap-5 text-[var(--accent)]">
                 <button className="ios-button ios-button-gray px-3"><Type size={17} strokeWidth={1.5} /></button>
                 <button className="ios-button ios-button-gray px-3"><ImageIcon size={17} strokeWidth={1.5} /></button>
                 <button className="ios-button ios-button-gray px-3"><Hash size={17} strokeWidth={1.5} /></button>
                 <button className="ios-button ios-button-gray px-3"><Mic size={17} strokeWidth={1.5} /></button>
               </div>
               
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="flex items-center bg-[var(--bg-tertiary)] p-1 rounded-xl sm:mr-2">
+                  <button
+                    onClick={() => setVideoAspect('9:16')}
+                    className={cn(
+                      "px-3 py-1.5 rounded-[8px] text-[13px] font-semibold transition-all",
+                      videoAspect === '9:16' 
+                        ? "bg-[var(--bg-primary)] ios-elevated text-[var(--accent)]" 
+                        : "text-[var(--label-secondary)]"
+                    )}
+                  >
+                    9:16
+                  </button>
+                  <button
+                    onClick={() => setVideoAspect('16:9')}
+                    className={cn(
+                      "px-3 py-1.5 rounded-[8px] text-[13px] font-semibold transition-all",
+                      videoAspect === '16:9' 
+                        ? "bg-[var(--bg-primary)] ios-elevated text-[var(--accent)]" 
+                        : "text-[var(--label-secondary)]"
+                    )}
+                  >
+                    16:9
+                  </button>
+                </div>
+                <button 
+                  onClick={handleGenerateVideo}
+                  disabled={isVideoGenerating || !body}
+                  className="ios-button ios-button-tinted"
+                >
+                  {isVideoGenerating ? (
+                    <Loader2 size={17} strokeWidth={1.5} className="mr-2 animate-spin" />
+                  ) : (
+                    <VideoIcon size={17} strokeWidth={1.5} className="mr-2 hidden sm:inline-block" />
+                  )}
+                  <span className="hidden sm:inline">Video Draft</span>
+                  <span className="sm:hidden">Video</span>
+                </button>
                 <button 
                   onClick={handlePublish}
                   disabled={isSaving || !body}
                   className="ios-button ios-button-gray"
                 >
-                  {isSaving ? <Loader2 size={17} strokeWidth={1.5} className="mr-2 animate-spin" /> : <Save size={17} strokeWidth={1.5} className="mr-2" />}
+                  {isSaving ? <Loader2 size={17} strokeWidth={1.5} className="mr-2 animate-spin" /> : <Save size={17} strokeWidth={1.5} className="mr-2 hidden sm:inline-block" />}
                   Save
                 </button>
                 <button 
@@ -206,11 +398,12 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
                   className="ios-button ios-button-tinted"
                 >
                   {isPolishing ? (
-                    <RefreshCw size={17} strokeWidth={1.5} className="mr-2 animate-spin" />
+                    <RefreshCw size={17} strokeWidth={1.5} className="mr-2 animate-spin hidden sm:inline-block" />
                   ) : (
-                    <Sparkles size={17} strokeWidth={1.5} className="mr-2" />
+                    <Sparkles size={17} strokeWidth={1.5} className="mr-2 hidden sm:inline-block" />
                   )}
-                  Polish
+                  <span className="hidden xl:inline">Auto-Polish</span>
+                  <span className="xl:hidden">Polish</span>
                 </button>
                 <button 
                   onClick={handleScore}
@@ -220,7 +413,7 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
                   {isScoring ? (
                     <Loader2 size={17} strokeWidth={1.5} className="mr-2 animate-spin" />
                   ) : (
-                    <BrandIcon size={17} strokeWidth={1.5} className="mr-2" />
+                    <BrandIcon size={17} strokeWidth={1.5} className="mr-2 hidden sm:inline-block" />
                   )}
                   Score
                 </button>
@@ -290,6 +483,74 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
               </motion.section>
             )}
           </AnimatePresence>
+
+          {/* Video Player */}
+          {(videoUrl || isVideoGenerating) && (
+            <AnimatePresence>
+               <motion.section
+                 initial={{ opacity: 0, y: 10 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 className="space-y-4"
+               >
+                 <span className="ios-label">Video Mockup</span>
+                 <div className={cn("bg-[var(--bg-tertiary)] ios-card overflow-hidden w-full flex items-center justify-center relative bg-black/5 max-h-[600px]", videoAspect === '16:9' ? 'aspect-video' : 'aspect-[9/16]')} style={{ minHeight: '300px' }}>
+                   {isVideoGenerating ? (
+                     <div className="flex flex-col items-center gap-5 w-full max-w-[280px] p-6">
+                       <Loader2 className="w-8 h-8 animate-spin text-[var(--accent)]" />
+                       <div className="w-full h-1.5 bg-[var(--separator)] rounded-full overflow-hidden">
+                         <motion.div 
+                           className="h-full bg-[var(--accent)]"
+                           initial={{ width: "0%" }}
+                           animate={{ 
+                             width: videoGenerationProgress === 'Initializing...' ? '15%' : 
+                                    videoGenerationProgress === 'Synthesizing visuals...' ? '45%' : 
+                                    videoGenerationProgress.startsWith('Rendering') ? '90%' : '100%'
+                           }}
+                           transition={{ 
+                             duration: videoGenerationProgress.startsWith('Rendering') ? 45 : 1.5,
+                             ease: videoGenerationProgress.startsWith('Rendering') ? "easeOut" : "easeInOut"
+                           }}
+                         />
+                       </div>
+                       <span className="text-[12px] font-bold tracking-widest text-[var(--label-secondary)] uppercase text-center w-full truncate">
+                         {videoGenerationProgress}
+                       </span>
+                     </div>
+                   ) : videoUrl ? (
+                     <div className="relative w-full h-full group flex items-center justify-center">
+                       <video 
+                         ref={videoRef}
+                         src={videoUrl} 
+                         autoPlay 
+                         loop 
+                         muted={isVideoMuted}
+                         playsInline
+                         onClick={(e) => {
+                            const v = e.currentTarget;
+                            if (v.paused) v.play(); else v.pause();
+                         }}
+                         className="w-full h-full object-cover cursor-pointer"
+                       />
+                       <div className="absolute inset-x-0 bottom-6 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                         <div className="flex items-center gap-6 bg-black/60 backdrop-blur-xl px-6 py-2.5 rounded-full text-white shadow-xl border border-white/10">
+                           <button onClick={handleJumpBack} className="hover:text-white/70 active:scale-95 transition-all outline-none" title="Jump 5s back">
+                             <Rewind size={22} weight="fill" />
+                           </button>
+                           <button onClick={toggleMute} className="hover:text-white/70 active:scale-95 transition-all outline-none" title={isVideoMuted ? "Unmute" : "Mute"}>
+                             {isVideoMuted ? <SpeakerSlash size={22} weight="fill" /> : <Volume2 size={22} weight="fill" />}
+                           </button>
+                           <button onClick={handleJumpForward} className="hover:text-white/70 active:scale-95 transition-all outline-none" title="Jump 5s forward">
+                             <FastForward size={22} weight="fill" />
+                           </button>
+                         </div>
+                       </div>
+                     </div>
+                   ) : null}
+                 </div>
+               </motion.section>
+            </AnimatePresence>
+          )}
+
         </div>
 
         {/* Create Settings / Tools */}

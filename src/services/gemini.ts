@@ -158,24 +158,31 @@ export const transcribeAudio = async (base64Audio: string) => {
 };
 
 export const generateVideo = async (prompt: string, aspectRatio: '16:9' | '9:16' = '16:9') => {
-  // Note: This requires the user to have selected an API key. 
-  // The actual implementation will use the injected API_KEY.
-  const veoAi = new GoogleGenAI({ apiKey: process.env.API_KEY || process.env.GEMINI_API_KEY || '' });
-  
-  let operation = await veoAi.models.generateVideos({
-    model: 'veo-3.1-fast-generate-preview',
-    prompt: prompt,
-    config: {
-      numberOfVideos: 1,
-      resolution: '720p',
-      aspectRatio: aspectRatio
-    }
+  const response = await fetch('/api/gemini/generate-video', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt, aspectRatio })
   });
-
-  return operation;
+  if (!response.ok) throw new Error(await response.text());
+  return await response.json(); // { operationName: string }
 };
 
 export const getOperationStatus = async (operation: any) => {
-  const veoAi = new GoogleGenAI({ apiKey: process.env.API_KEY || process.env.GEMINI_API_KEY || '' });
-  return await veoAi.operations.getVideosOperation({ operation });
+  const response = await fetch('/api/gemini/video-status', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ operationName: operation.operationName || operation.name })
+  });
+  if (!response.ok) throw new Error(await response.text());
+  return await response.json();
+};
+
+export const fetchVideoDownloadResponse = async (uri: string) => {
+  const response = await fetch('/api/gemini/video-download', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ uri })
+  });
+  if (!response.ok) throw new Error('Video download failed');
+  return response.blob();
 };

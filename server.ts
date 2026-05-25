@@ -128,6 +128,71 @@ async function startServer() {
     res.json({ streak, challenge });
   });
 
+  // --- Gemini Video API ---
+  const { GoogleGenAI } = await import('@google/genai');
+  const ai = new GoogleGenAI({ 
+    apiKey: process.env.GEMINI_API_KEY,
+    httpOptions: { headers: { 'User-Agent': 'aistudio-build' } }
+  });
+
+  app.post("/api/gemini/generate-video", async (req: any, res) => {
+    try {
+      const { prompt, aspectRatio } = req.body;
+      const operation = await ai.models.generateVideos({
+        model: 'veo-3.1-lite-generate-preview',
+        prompt: prompt,
+        config: {
+          numberOfVideos: 1,
+          resolution: '720p',
+          aspectRatio: aspectRatio || '16:9'
+        }
+      });
+      res.json({ operationName: operation.name });
+    } catch (error: any) {
+      console.error('Video Generation Error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/gemini/video-status", async (req: any, res) => {
+    try {
+      const { operationName } = req.body;
+      const { GenerateVideosOperation } = await import('@google/genai');
+      const op = new GenerateVideosOperation();
+      op.name = operationName;
+      
+      const updated = await ai.operations.getVideosOperation({ operation: op });
+      res.json({ 
+        done: updated.done, 
+        progressPercentage: (updated as any)?.response?.progressPercentage,
+        uri: updated.done ? updated.response?.generatedVideos?.[0]?.video?.uri : null
+      });
+    } catch (error: any) {
+      console.error('Video Status Error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/gemini/video-download", async (req: any, res) => {
+    try {
+      const { uri } = req.body;
+      if (!uri) return res.status(400).send('No URI');
+      const videoRes = await fetch(uri, {
+        headers: { 'x-goog-api-key': process.env.GEMINI_API_KEY! },
+      });
+      res.setHeader('Content-Type', 'video/mp4');
+      videoRes.body!.pipeTo(
+        new WritableStream({
+          write(chunk) { res.write(chunk); },
+          close() { res.end(); },
+        })
+      );
+    } catch (error: any) {
+      console.error('Video Download Error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // --- OAuth & Social Integration ---
 
   app.get("/api/auth/google/url", authenticateUser, (req: any, res) => {
