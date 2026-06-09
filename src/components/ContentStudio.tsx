@@ -6,6 +6,7 @@ import { cn } from '../lib/utils';
 import { db, serverTimestamp, handleFirestoreError, OperationType } from '../firebase';
 import { doc, setDoc, collection, addDoc } from 'firebase/firestore';
 import BrandIcon from './BrandIcon';
+import CalendarView from './CalendarView';
 
 const PLATFORMS = [
   { id: 'tiktok', label: 'TikTok', distributionLabel: 'Format for TikTok', icon: (
@@ -31,6 +32,7 @@ const PLATFORMS = [
 ];
 
 export default function Create({ brand, setActiveTab, user }: { brand: any, setActiveTab: (tab: string) => void, user: any }) {
+  const [studioTab, setStudioTab] = useState<'editor' | 'calendar'>('editor');
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [platform, setPlatform] = useState('tiktok');
@@ -230,9 +232,34 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
 
   return (
     <div className="space-y-8 pb-20">
-      <h1 className="font-serif text-[36px] font-semibold tracking-[-0.015em] text-[var(--label-primary)] px-1 pt-4">Create</h1>
+      <div className="flex items-center justify-between px-1 pt-4">
+        <h1 className="font-serif text-[36px] font-semibold tracking-[-0.015em] text-[var(--label-primary)]">Create</h1>
+        
+        <div className="flex bg-[var(--bg-secondary)] p-1 rounded-xl w-64">
+          <button
+            onClick={() => setStudioTab('editor')}
+            className={cn(
+              "flex-1 py-1.5 rounded-lg text-[13px] font-semibold transition-all",
+              studioTab === 'editor' ? "bg-[var(--bg-tertiary)] ios-elevated text-[var(--accent)]" : "text-[var(--label-secondary)]"
+            )}
+          >
+            Editor
+          </button>
+          <button
+            onClick={() => setStudioTab('calendar')}
+            className={cn(
+              "flex-1 py-1.5 rounded-lg text-[13px] font-semibold transition-all",
+              studioTab === 'calendar' ? "bg-[var(--bg-tertiary)] ios-elevated text-[var(--accent)]" : "text-[var(--label-secondary)]"
+            )}
+          >
+            Calendar
+          </button>
+        </div>
+      </div>
 
-      {/* Main Content Area */}
+      {studioTab === 'calendar' ? (
+        <CalendarView user={user} setActiveTab={setActiveTab} />
+      ) : (
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         <div className="lg:col-span-8 space-y-6">
           <section className="bg-[var(--bg-tertiary)] ios-card overflow-hidden">
@@ -597,6 +624,7 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
            </section>
         </div>
       </div>
+      )}
 
       <AnimatePresence>
         {saveSuccess && (

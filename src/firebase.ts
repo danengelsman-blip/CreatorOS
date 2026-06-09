@@ -122,7 +122,7 @@ async function testConnection() {
     if (error instanceof Error) {
       if (error.message.includes('the client is offline') || error.message.includes('unavailable')) {
         console.error("Firestore connection failed: The client is offline or the service is unavailable. Please check your Firebase configuration and internet connection.");
-      } else if (error.message.includes('permission-denied')) {
+      } else if (error.message.toLowerCase().includes('permission') || (error as any).code === 'permission-denied') {
         // Permission denied is actually a good sign - it means we reached the server
         console.log("Firestore connection established (Permission Denied as expected).");
       } else {
