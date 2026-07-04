@@ -135,6 +135,148 @@ async function startServer() {
     httpOptions: { headers: { 'User-Agent': 'aistudio-build' } }
   });
 
+
+  app.post("/api/gemini/generate", async (req: any, res) => {
+    try {
+      const { model, contents, config } = req.body;
+      const response = await ai.models.generateContent({
+        model: model || "gemini-3.1-flash-lite",
+        contents,
+        config
+      });
+      res.json({ text: response.text, candidates: response.candidates });
+    } catch (error: any) {
+      console.error('Gemini Generate Error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // --- Onboarding Interview and Channel Style API ---
+  app.post("/api/onboarding/chat", authenticateUser, async (req: any, res) => {
+    try {
+      const { messages } = req.body;
+      
+      const systemInstruction = `You are a friendly, expert brand architect conducting a highly encouraging and conversational 3-question interview for a new creator starting their content creation journey.
+      
+      CRITICAL: You MUST speak in simple, clear, beginner-friendly language with absolutely NO professional jargon. For example:
+      - Use "Channel Style" instead of "Brand Identity" or "Brand Kit"
+      - Use "Dream Viewers" instead of "Target Audience"
+      - Use "Mood" or "Feel" instead of "Brand Archetype"
+      
+      Keep your responses extremely short (max 2-3 sentences per response). Focus on building confidence.
+      
+      Your goal is to guide the user to discover:
+      1. What topic/niche they want to make videos about.
+      2. Who their dream viewer is.
+      3. What the mood or feel of their content should be (e.g. funny, calm, friendly, bold).
+      
+      Based on the previous conversation history:
+      - If this is the start of the interview (messages is empty), warmly ask: "Welcome! Let's build your perfect Creator Profile together. To start, what topic or niche excites you the most for your channel?"
+      - If they have answered the first topic, acknowledge it warmly and ask: "Amazing choice! Now, who is your dream viewer? Who are we creating these videos for?"
+      - If they have answered the second topic, acknowledge it and ask: "Got it! Finally, what should the style and mood of your content feel like? (e.g., friendly and easy to follow, calm and aesthetic, or energetic and bold?)"
+      - If they have answered all three topics, summarize their choices in a neat, exciting paragraph, and say: "Fantastic! I have all the details I need to build your custom Creator Profile. Click 'Build My Brand Kit' below to unlock your custom colors, voice, templates, and video ideas!"
+      
+      Determine if all 3 questions have been answered. If so, return a JSON object with isComplete: true and a brief summary. Otherwise, return a JSON object with isComplete: false.`;
+
+      const contents = (messages || []).map((m: any) => ({
+        role: m.role === 'assistant' ? 'model' : m.role,
+        parts: [{ text: m.content }]
+      }));
+
+      const response = await ai.models.generateContent({
+        model: "gemini-3.1-flash-lite",
+        contents: [
+          { role: "user", parts: [{ text: systemInstruction }] },
+          ...contents
+        ],
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: "OBJECT" as any,
+            properties: {
+              message: { type: "STRING" as any, description: "Your next chat response or final encouraging summary" },
+              isComplete: { type: "BOOLEAN" as any, description: "True if all 3 questions (niche, audience, vibe) have been answered and summarized" },
+              summary: {
+                type: "OBJECT" as any,
+                properties: {
+                  niche: { type: "STRING" as any },
+                  audience: { type: "STRING" as any },
+                  vibe: { type: "STRING" as any }
+                }
+              }
+            },
+            required: ["message", "isComplete"]
+          }
+        }
+      });
+
+      res.json(JSON.parse(response.text));
+    } catch (error: any) {
+      console.error('Onboarding Chat Error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/onboarding/generate-brand", authenticateUser, async (req: any, res) => {
+    try {
+      const { niche, audience, vibe } = req.body;
+      const userInput = `Niche/Topic: ${niche}. Dream Viewers/Audience: ${audience}. Channel Vibe/Style: ${vibe}.`;
+      
+      const response = await ai.models.generateContent({
+        model: "gemini-3.1-flash-lite",
+        contents: `Generate a complete, beautiful Channel Style profile for a content creator based on this description: ${userInput}. Ensure typography options are beautiful classic Google Fonts (e.g., Space Grotesk, Outfit, Inter, Playfair Display, Fira Code, JetBrains Mono) that are clean and professional. Keep all terminology extremely beginner-friendly and simple.`,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: "OBJECT" as any,
+            properties: {
+              name: { type: "STRING" as any, description: "A catchy, humble, and clear name for the channel (do not use complex brand jargon)" },
+              tagline: { type: "STRING" as any, description: "A simple and motivating tagline for the channel" },
+              archetype: { type: "STRING" as any, description: "A friendly label for their creator archetype (e.g. The Enthusiastic Guide, The Aesthetic Chef, The Simple Teacher)" },
+              personality: { type: "STRING" as any, description: "3-4 simple personality descriptors (e.g. friendly, calm, informative)" },
+              colors: {
+                type: "OBJECT" as any,
+                properties: {
+                  primary: { type: "STRING" as any, description: "HEX color code" },
+                  secondary: { type: "STRING" as any, description: "HEX color code" },
+                  accent: { type: "STRING" as any, description: "HEX color code" },
+                  background: { type: "STRING" as any, description: "HEX color code" }
+                },
+                required: ["primary", "secondary", "accent", "background"]
+              },
+              typography: {
+                type: "OBJECT" as any,
+                properties: {
+                  heading: { type: "STRING" as any, description: "Clean Google Font name for titles" },
+                  body: { type: "STRING" as any, description: "Clean Google Font name for text" }
+                },
+                required: ["heading", "body"]
+              },
+              visual_style: { type: "STRING" as any, description: "Simple description of the channel's video style (e.g., clean, high-contrast text, minimal background clutter)" },
+              thumbnail_style: { type: "STRING" as any, description: "Simple and clear thumbnail style description (e.g., bright natural lighting, bold easy-to-read text, close-up face)" },
+              content_hooks: {
+                type: "ARRAY" as any,
+                items: { type: "STRING" as any },
+                description: "3 simple, engaging script opening templates tailored for their niche"
+              },
+              catchphrases: {
+                type: "ARRAY" as any,
+                items: { type: "STRING" as any },
+                description: "2-3 short, catchy sayings or sign-offs to build community connection"
+              }
+            },
+            required: ["name", "tagline", "archetype", "personality", "colors", "typography", "visual_style", "thumbnail_style", "content_hooks", "catchphrases"]
+          }
+        }
+      });
+      
+      res.json(JSON.parse(response.text));
+    } catch (error: any) {
+      console.error('Generate Brand kit Error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   app.post("/api/gemini/generate-video", async (req: any, res) => {
     try {
       const { prompt, aspectRatio } = req.body;

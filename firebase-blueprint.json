@@ -14,7 +14,16 @@
         "createdAt": { "type": "string", "format": "date-time" },
         "lastLogin": { "type": "string", "format": "date-time" },
         "subscriptionTier": { "type": "string", "enum": ["free", "pro", "elite"] },
-        "accountStatus": { "type": "string", "enum": ["active", "suspended"] }
+        "accountStatus": { "type": "string", "enum": ["active", "suspended"] },
+        "onboardingAnswers": {
+          "type": "object",
+          "properties": {
+            "niche": { "type": "string" },
+            "audience": { "type": "string" },
+            "vibe": { "type": "string" },
+            "summary": { "type": "string" }
+          }
+        }
       },
       "required": ["email", "createdAt"]
     },
@@ -63,6 +72,36 @@
       },
       "required": ["userId", "name", "type", "createdAt"]
     },
+    "Prompt": {
+      "title": "Generated Prompt",
+      "description": "A generated perfect prompt history item.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "input": { "type": "string" },
+        "result": { "type": "string" },
+        "rating": { "type": "number" },
+        "tag": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "input", "result", "timestamp"]
+    },
+    "PromptTemplate": {
+      "title": "Generated Prompt Template",
+      "description": "Dynamic prompt templates generated per platform.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "platform": { "type": "string" },
+        "page": { "type": "number" },
+        "templates": {
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "platform", "page", "templates", "timestamp"]
+    },
     "SupportTicket": {
       "title": "Support Ticket",
       "description": "A support request submitted by a user.",
@@ -97,6 +136,14 @@
     "/projects/{projectId}": {
       "schema": "Project",
       "description": "User projects and assets"
+    },
+    "/prompts/{promptId}": {
+      "schema": "Prompt",
+      "description": "Generated prompt histories"
+    },
+    "/prompt_templates/{templateId}": {
+      "schema": "PromptTemplate",
+      "description": "Generated prompt templates"
     },
     "/support_tickets/{ticketId}": {
       "schema": "SupportTicket",

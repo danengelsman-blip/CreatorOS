@@ -40,12 +40,7 @@ export default function Integrations() {
   };
 
   const handleConnect = async (platform: string) => {
-    if (!process.env.GOOGLE_CLIENT_ID && platform === 'youtube') {
-      console.warn('[DEV] OAuth credentials not configured for YouTube integration. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in environment.');
-    }
-    if (!process.env.TIKTOK_CLIENT_KEY && platform === 'tiktok') {
-      console.warn('[DEV] OAuth credentials not configured for TikTok integration. Set TIKTOK_CLIENT_KEY and TIKTOK_CLIENT_SECRET in environment.');
-    }
+    // Environment variables are handled on the server
     setConnecting(platform);
     try {
       const { url } = await authorizedFetch(`/api/auth/${platform === 'youtube' ? 'google' : 'tiktok'}/url`);

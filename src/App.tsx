@@ -35,7 +35,7 @@ import BrandingEngine from './components/BrandingEngine';
 import Roadmap from './components/Roadmap';
 import Community from './components/Community';
 import Reports from './components/Reports';
-import PromptArchitect from './components/PromptArchitect';
+import PerfectPromptCopilot from './components/PerfectPromptCopilot';
 import Profile from './components/Profile';
 import Login from './components/Login';
 import LoadingScreen from './components/LoadingScreen';
@@ -60,7 +60,7 @@ const NAV_ITEMS = [
   { id: 'community', label: 'Community', icon: ChatsCircle, component: Community },
   { id: 'reports', label: 'Reports', icon: ChartLineUp, component: Reports },
   { id: 'help', label: 'Help', icon: BookOpen, component: HelpCenter },
-  { id: 'prompts', label: 'Architect', icon: Sparkle, component: PromptArchitect },
+  { id: 'prompts', label: 'Co-Pilot', icon: Sparkle, component: PerfectPromptCopilot },
   { id: 'profile', label: 'Profile', icon: UserCircle, component: Profile },
   { id: 'support', label: 'Support Hub', icon: ShieldCheck, component: SupportHub, devOnly: true },
 ];
@@ -203,9 +203,73 @@ export default function App() {
     return <TermsOfService onBack={() => navigate('/')} />;
   }
 
+  if (currentPath === '/roadmap') {
+    return (
+      <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--label-primary)] font-sans">
+        <nav className="sticky top-0 z-[100] bg-[var(--bg-material-thick)] backdrop-blur-xl border-b border-[var(--separator)] px-6 h-16 flex items-center justify-between">
+          <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
+              <BrandIcon size={20} className="text-[var(--accent)]" />
+              <span className="font-bold text-[19px] tracking-tight">CreatorOS</span>
+            </div>
+            <button onClick={() => navigate('/')} className="ios-button ios-button-tinted h-9 px-4 text-[14px]">
+              Back to Home
+            </button>
+          </div>
+        </nav>
+        <div className="max-w-4xl mx-auto px-6 py-12">
+          <Roadmap brand={null} user={null} />
+        </div>
+      </div>
+    );
+  }
+
+  if (currentPath === '/help') {
+    return (
+      <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--label-primary)] font-sans">
+        <nav className="sticky top-0 z-[100] bg-[var(--bg-material-thick)] backdrop-blur-xl border-b border-[var(--separator)] px-6 h-16 flex items-center justify-between">
+          <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
+              <BrandIcon size={20} className="text-[var(--accent)]" />
+              <span className="font-bold text-[19px] tracking-tight">CreatorOS</span>
+            </div>
+            <button onClick={() => navigate('/')} className="ios-button ios-button-tinted h-9 px-4 text-[14px]">
+              Back to Home
+            </button>
+          </div>
+        </nav>
+        <div className="max-w-4xl mx-auto px-6 py-12">
+          <HelpCenter user={null} navigate={(path) => navigate(path)} />
+        </div>
+      </div>
+    );
+  }
+
+  if (currentPath.startsWith('/help/')) {
+    const topicId = currentPath.replace('/help/', '');
+    return (
+      <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--label-primary)] font-sans">
+        <nav className="sticky top-0 z-[100] bg-[var(--bg-material-thick)] backdrop-blur-xl border-b border-[var(--separator)] px-6 h-16 flex items-center justify-between">
+          <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
+              <BrandIcon size={20} className="text-[var(--accent)]" />
+              <span className="font-bold text-[19px] tracking-tight">CreatorOS</span>
+            </div>
+            <button onClick={() => navigate('/help')} className="ios-button ios-button-tinted h-9 px-4 text-[14px]">
+              Back to Help
+            </button>
+          </div>
+        </nav>
+        <div className="max-w-3xl mx-auto px-6 py-12">
+          <HelpArticle topic={topicId} onBack={() => navigate('/help')} />
+        </div>
+      </div>
+    );
+  }
+
   if (!user) {
     document.body.classList.remove('is-app');
-    return <LandingPage />;
+    return <LandingPage navigate={navigate} />;
   }
 
   document.body.classList.add('is-app');
@@ -224,7 +288,7 @@ export default function App() {
       <div className="flex h-screen bg-[var(--bg-primary)] text-[var(--label-primary)] font-sans overflow-hidden relative">
         <AnimatePresence>
           {showOnboarding && (
-            <Onboarding onComplete={handleOnboardingComplete} />
+            <Onboarding onComplete={handleOnboardingComplete} user={user} />
           )}
         </AnimatePresence>
         

@@ -1,160 +1,188 @@
-import { GoogleGenAI, Type, Modality } from "@google/genai";
-
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
-
 export const generateBrandKit = async (userInput: string) => {
-  const response = await ai.models.generateContent({
-    model: "gemini-3.1-pro-preview",
-    contents: `Generate a complete brand kit for a creator based on this description: ${userInput}`,
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: Type.OBJECT,
-        properties: {
-          name: { type: Type.STRING },
-          tagline: { type: Type.STRING },
-          archetype: { type: Type.STRING },
-          personality: { type: Type.STRING },
-          colors: {
-            type: Type.OBJECT,
-            properties: {
-              primary: { type: Type.STRING },
-              secondary: { type: Type.STRING },
-              accent: { type: Type.STRING },
-              background: { type: Type.STRING }
+  const response = await fetch('/api/gemini/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: "gemini-3.1-flash-lite",
+      contents: `Generate a complete brand kit for a creator based on this description: ${userInput}`,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: "OBJECT",
+          properties: {
+            name: { type: "STRING" },
+            tagline: { type: "STRING" },
+            archetype: { type: "STRING" },
+            personality: { type: "STRING" },
+            colors: {
+              type: "OBJECT",
+              properties: {
+                primary: { type: "STRING" },
+                secondary: { type: "STRING" },
+                accent: { type: "STRING" },
+                background: { type: "STRING" }
+              }
+            },
+            typography: {
+              type: "OBJECT",
+              properties: {
+                heading: { type: "STRING" },
+                body: { type: "STRING" }
+              }
+            },
+            visual_style: { type: "STRING" },
+            thumbnail_style: { type: "STRING" },
+            content_hooks: {
+              type: "ARRAY",
+              items: { type: "STRING" }
+            },
+            catchphrases: {
+              type: "ARRAY",
+              items: { type: "STRING" }
             }
           },
-          typography: {
-            type: Type.OBJECT,
-            properties: {
-              heading: { type: Type.STRING },
-              body: { type: Type.STRING }
-            }
-          },
-          visual_style: { type: Type.STRING },
-          thumbnail_style: { type: Type.STRING },
-          content_hooks: {
-            type: Type.ARRAY,
-            items: { type: Type.STRING }
-          },
-          catchphrases: {
-            type: Type.ARRAY,
-            items: { type: Type.STRING }
-          }
-        },
-        required: ["name", "tagline", "archetype", "personality", "colors", "typography", "visual_style", "thumbnail_style", "content_hooks", "catchphrases"]
+          required: ["name", "tagline", "archetype", "personality", "colors", "typography", "visual_style", "thumbnail_style", "content_hooks", "catchphrases"]
+        }
       }
-    }
+    })
   });
-
-  return JSON.parse(response.text);
+  if (!response.ok) throw new Error(await response.text());
+  const data = await response.json();
+  return JSON.parse(data.text);
 };
 
 export const generateContentIdeas = async (brandData: any) => {
-  const response = await ai.models.generateContent({
-    model: "gemini-3.1-pro-preview",
-    contents: `Generate 5-10 content ideas for a creator based on this brand identity:
-    Name: ${brandData.name}
-    Tagline: ${brandData.tagline}
-    Archetype: ${brandData.archetype}
-    Visual Style: ${brandData.visual_style}
-    
-    Each idea should include a hook and a brief description.`,
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: Type.OBJECT,
-        properties: {
-          ideas: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                title: { type: Type.STRING, description: "Short, catchy title for the idea" },
-                hook: { type: Type.STRING },
-                description: { type: Type.STRING }
-              },
-              required: ["title", "hook", "description"]
+  const response = await fetch('/api/gemini/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: "gemini-3.1-flash-lite",
+      contents: `Generate 5-10 content ideas for a creator based on this brand identity:
+      Name: ${brandData.name}
+      Tagline: ${brandData.tagline}
+      Archetype: ${brandData.archetype}
+      Visual Style: ${brandData.visual_style}
+      
+      Each idea should include a hook and a brief description.`,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: "OBJECT",
+          properties: {
+            ideas: {
+              type: "ARRAY",
+              items: {
+                type: "OBJECT",
+                properties: {
+                  title: { type: "STRING", description: "Short, catchy title for the idea" },
+                  hook: { type: "STRING" },
+                  description: { type: "STRING" }
+                },
+                required: ["title", "hook", "description"]
+              }
             }
-          }
-        },
-        required: ["ideas"]
+          },
+          required: ["ideas"]
+        }
       }
-    }
+    })
   });
-
-  return JSON.parse(response.text).ideas;
+  if (!response.ok) throw new Error(await response.text());
+  const data = await response.json();
+  return JSON.parse(data.text).ideas;
 };
 
 export const scoreContent = async (content: string, brandVoice: string) => {
-  const response = await ai.models.generateContent({
-    model: "gemini-3.1-pro-preview",
-    contents: `Score this content (0-100) based on hook strength, clarity, engagement potential, and storytelling. 
-    Brand Voice: ${brandVoice}
-    Content: ${content}`,
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: Type.OBJECT,
-        properties: {
-          score: { type: Type.INTEGER },
-          feedback: { type: Type.STRING },
-          suggestions: {
-            type: Type.ARRAY,
-            items: { type: Type.STRING }
-          }
-        },
-        required: ["score", "feedback", "suggestions"]
+  const response = await fetch('/api/gemini/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: "gemini-3.1-flash-lite",
+      contents: `Score this content (0-100) based on hook strength, clarity, engagement potential, and storytelling. 
+      Brand Voice: ${brandVoice}
+      Content: ${content}`,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: "OBJECT",
+          properties: {
+            score: { type: "INTEGER" },
+            feedback: { type: "STRING" },
+            suggestions: {
+              type: "ARRAY",
+              items: { type: "STRING" }
+            }
+          },
+          required: ["score", "feedback", "suggestions"]
+        }
       }
-    }
+    })
   });
-
-  return JSON.parse(response.text);
+  if (!response.ok) throw new Error(await response.text());
+  const data = await response.json();
+  return JSON.parse(data.text);
 };
 
 export const quickPolish = async (content: string) => {
-  const response = await ai.models.generateContent({
-    model: "gemini-3.1-flash-lite-preview",
-    contents: `Briefly polish this content for better flow and impact. Keep it concise.
-    Content: ${content}`,
+  const response = await fetch('/api/gemini/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: "gemini-3.1-flash-lite",
+      contents: `Briefly polish this content for better flow and impact. Keep it concise.
+      Content: ${content}`
+    })
   });
-  return response.text;
+  if (!response.ok) throw new Error(await response.text());
+  const data = await response.json();
+  return data.text;
 };
 
 export const generateSpeech = async (text: string, voice: string = 'Kore') => {
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash-preview-tts",
-    contents: [{ parts: [{ text: `Say naturally: ${text}` }] }],
-    config: {
-      responseModalities: [Modality.AUDIO],
-      speechConfig: {
-        voiceConfig: {
-          prebuiltVoiceConfig: { voiceName: voice as any },
+  const response = await fetch('/api/gemini/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: "gemini-3.1-flash-tts-preview",
+      contents: [{ parts: [{ text: `Say naturally: ${text}` }] }],
+      config: {
+        responseModalities: ["AUDIO"],
+        speechConfig: {
+          voiceConfig: {
+            prebuiltVoiceConfig: { voiceName: voice },
+          },
         },
-      },
-    },
+      }
+    })
   });
-
-  const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+  if (!response.ok) throw new Error(await response.text());
+  const data = await response.json();
+  const base64Audio = data.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
   return base64Audio;
 };
 
 export const transcribeAudio = async (base64Audio: string) => {
-  const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
-    contents: {
-      parts: [
-        {
-          inlineData: {
-            mimeType: "audio/wav",
-            data: base64Audio,
+  const response = await fetch('/api/gemini/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: "gemini-3.1-flash-lite",
+      contents: {
+        parts: [
+          {
+            inlineData: {
+              mimeType: "audio/wav",
+              data: base64Audio,
+            },
           },
-        },
-        { text: "Transcribe this audio exactly." },
-      ],
-    },
+          { text: "Transcribe this audio exactly." },
+        ],
+      }
+    })
   });
-  return response.text;
+  if (!response.ok) throw new Error(await response.text());
+  const data = await response.json();
+  return data.text;
 };
 
 export const generateVideo = async (prompt: string, aspectRatio: '16:9' | '9:16' = '16:9') => {

@@ -60,7 +60,7 @@ export default function Brand({ brand, setBrand, user }: { brand: any, setBrand:
   if (brand) {
     return (
       <div className="space-y-8 pb-20">
-        <h1 className="font-serif text-[36px] font-semibold tracking-[-0.015em] text-[var(--label-primary)] px-1 pt-4">Brand</h1>
+        <h1 className="font-serif text-[36px] font-semibold tracking-[-0.015em] text-[var(--label-primary)] px-1 pt-4">My Channel Style</h1>
 
         {/* Identity Overview */}
         <section className="bg-[var(--bg-tertiary)] ios-card overflow-hidden">
@@ -134,14 +134,14 @@ export default function Brand({ brand, setBrand, user }: { brand: any, setBrand:
           </section>
 
           <section>
-            <span className="ios-label">Voice & Strategy</span>
+            <span className="ios-label">Writing & Video Tone</span>
             <div className="bg-[var(--bg-tertiary)] ios-card overflow-hidden divide-y divide-[var(--separator)]">
                <div className="p-4">
                   <div className="flex items-center gap-3 mb-4">
                      <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background: 'color-mix(in srgb, var(--accent) 12%, transparent)', color: 'var(--accent)'}}>
                        <Target size={18} strokeWidth={1.5} />
                      </div>
-                     <span className="font-semibold text-[17px]">Core Hooks</span>
+                     <span className="font-semibold text-[17px]">Engaging Intro Angles</span>
                   </div>
                   <div className="space-y-2">
                     {brand.content_hooks.slice(0, 2).map((hook: string, i: number) => (
@@ -157,7 +157,7 @@ export default function Brand({ brand, setBrand, user }: { brand: any, setBrand:
                      <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background: 'color-mix(in srgb, var(--accent) 12%, transparent)', color: 'var(--accent)'}}>
                        <Zap size={18} strokeWidth={1.5} />
                      </div>
-                     <span className="font-semibold text-[17px]">Catchphrases</span>
+                     <span className="font-semibold text-[17px]">Signature Phrases</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {brand.catchphrases.map((phrase: string, i: number) => (
@@ -174,13 +174,13 @@ export default function Brand({ brand, setBrand, user }: { brand: any, setBrand:
         {/* Content Ideas */}
         <section className="pt-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="ios-label px-0">Brainstorming & Content Ideas</span>
+            <span className="ios-label px-0">Video Ideas For Your Channel</span>
             {!brand.content_ideas && (
               <a
                 onClick={handleGenerateIdeas}
                 className="text-[14px] font-semibold text-[var(--accent)] active:opacity-40 cursor-pointer"
               >
-                {isGeneratingIdeas ? 'Generating...' : 'Generate Ideas'}
+                {isGeneratingIdeas ? 'Brainstorming...' : 'Brainstorm Ideas'}
               </a>
             )}
           </div>
@@ -218,9 +218,9 @@ export default function Brand({ brand, setBrand, user }: { brand: any, setBrand:
               <div className="w-16 h-16 bg-[var(--bg-secondary)] rounded-full flex items-center justify-center mb-4 shadow-inner">
                 <Lightbulb size={28} className="text-[var(--label-tertiary)]" />
               </div>
-              <h3 className="font-semibold text-[17px] mb-2">Content Idea Generator</h3>
+              <h3 className="font-semibold text-[17px] mb-2">Video Idea Brainstormer</h3>
               <p className="text-[15px] text-[var(--label-secondary)] max-w-sm mx-auto mb-6">
-                Brainstorm 5-10 tailored content concepts that align with your new brand archetype and visual style.
+                Brainstorm 5 to 10 tailored video concepts that match your channel's new style and personality.
               </p>
               <button
                 onClick={handleGenerateIdeas}
@@ -230,12 +230,12 @@ export default function Brand({ brand, setBrand, user }: { brand: any, setBrand:
                 {isGeneratingIdeas ? (
                   <>
                     <RefreshCw size={18} className="animate-spin mr-2" />
-                    Generating...
+                    Brainstorming...
                   </>
                 ) : (
                   <>
                     <Lightbulb size={18} className="mr-2" />
-                    Generate Content Ideas
+                    Brainstorm Video Ideas
                   </>
                 )}
               </button>
@@ -249,7 +249,7 @@ export default function Brand({ brand, setBrand, user }: { brand: any, setBrand:
             className="ios-button ios-button-tinted w-full mt-8"
           >
             <RefreshCw size={17} strokeWidth={1.5} className="mr-2" />
-            Re-generate Brand Identity
+            Start Over / Customize Style
           </button>
         </section>
       </div>
@@ -263,27 +263,27 @@ export default function Brand({ brand, setBrand, user }: { brand: any, setBrand:
           <BrandIcon size={40} className="text-[var(--accent)]" />
         </div>
         <div className="space-y-2">
-          <h1 className="font-serif text-[36px] font-semibold tracking-[-0.015em] text-[var(--label-primary)]">Brand</h1>
+          <h1 className="font-serif text-[36px] font-semibold tracking-[-0.015em] text-[var(--label-primary)]">My Channel Style</h1>
           <p className="text-[17px] text-[var(--label-secondary)] font-medium max-w-sm mx-auto">
-            Define your mission and AI will architect a world-class visual and strategic identity.
+            Tell us about your channel idea in plain English, and we'll create a customized look, tone, and theme for your videos.
           </p>
         </div>
       </div>
 
       <div className="ios-card bg-[var(--bg-tertiary)] p-6 space-y-6">
         <div className="flex justify-between items-center">
-          <span className="ios-label px-0">Mission Description</span>
+          <span className="ios-label px-0">Your Channel Idea</span>
           <a 
-            onClick={() => setInput("Minimalist productivity for busy tech professionals. Calm, professional, but slightly rebellious.")}
+            onClick={() => setInput("Simple, healthy cooking for busy college students on a budget. Friendly, encouraging, and easy to follow.")}
             className="text-[15px] font-semibold text-[var(--accent)] active:opacity-40 cursor-pointer"
           >
-            Example
+            See Example
           </a>
         </div>
         <textarea 
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="What's your core purpose?"
+          placeholder="Describe your channel. Who is it for? What kind of videos do you want to make? What should the vibe be?"
           className="ios-input h-48 py-4 resize-none"
         />
         
@@ -295,10 +295,10 @@ export default function Brand({ brand, setBrand, user }: { brand: any, setBrand:
           {isLoading ? (
             <>
               <RefreshCw size={20} strokeWidth={1.5} className="animate-spin" />
-              Generating...
+              Creating Style...
             </>
           ) : (
-            "Build Brand Identity"
+            "Create My Channel Style"
           )}
         </button>
       </div>

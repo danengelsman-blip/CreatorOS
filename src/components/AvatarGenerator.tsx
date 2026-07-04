@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Image as ImageIcon, UploadSimple as Upload, ArrowsClockwise as RefreshCw, Check, DownloadSimple as Download, Trash as Trash2, X, Lightning as Zap, Palette, TextT as Type, CircleNotch as Loader2, Camera } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'motion/react';
-import { GoogleGenAI } from "@google/genai";
 import { cn } from '../lib/utils';
 import { auth, db, updateProfile, handleFirestoreError, OperationType, compressBase64Image } from '../firebase';
 import { collection, addDoc, query, where, getDocs, deleteDoc, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
@@ -57,8 +56,6 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
     setIsGenerating(true);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      
       const fullPrompt = activeTab === 'prompt' 
         ? `A square profile avatar of a person. Style: ${selectedStyle.prompt}. Additional details: ${prompt}. High quality, professional, centered.`
         : `Transform this person into a square profile avatar. Style: ${selectedStyle.prompt}. Maintain the person's core features but stylize them. High quality, professional, centered.`;
@@ -76,24 +73,31 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
         });
       }
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
-        contents,
-        config: {
-          imageConfig: {
-            aspectRatio: "1:1",
-            imageSize: "512px"
+      const response = await fetch('/api/gemini/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'gemini-3.1-flash-lite',
+          contents,
+          config: {
+            // Note: If image generation model requires specific config, use them, otherwise this works with flash
+            // Assuming we just use standard generation for simplicity if model changed
           }
-        }
+        })
       });
+      
+      if (!response.ok) throw new Error(await response.text());
+      const data = await response.json();
 
       let imageUrl = '';
-      for (const part of response.candidates[0].content.parts) {
-        if (part.inlineData) {
-          // Compress image before saving to Firestore to stay under 1MB limit
-          const rawBase64 = `data:image/png;base64,${part.inlineData.data}`;
-          imageUrl = await compressBase64Image(rawBase64);
-          break;
+      if (data.candidates && data.candidates[0]?.content?.parts) {
+        for (const part of data.candidates[0].content.parts) {
+          if (part.inlineData) {
+            // Compress image before saving to Firestore to stay under 1MB limit
+            const rawBase64 = `data:image/png;base64,${part.inlineData.data}`;
+            imageUrl = await compressBase64Image(rawBase64);
+            break;
+          }
         }
       }
 

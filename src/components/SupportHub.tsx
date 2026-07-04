@@ -3,7 +3,6 @@ import { Chat as MessageSquare, UserCircle as User, Clock, CheckCircle as CheckC
 import { motion, AnimatePresence } from 'motion/react';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, serverTimestamp, where } from 'firebase/firestore';
-import { GoogleGenAI } from '@google/genai';
 import { cn } from '../lib/utils';
 
 export default function SupportHub({ user }: { user: any }) {
@@ -40,8 +39,6 @@ export default function SupportHub({ user }: { user: any }) {
     if (!ticket) return;
     setIsGenerating(true);
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
-      
       const prompt = `
         You are a highly professional customer support agent for "CreatorOS", a premium AI platform for content creators.
         A user has submitted the following support ticket:
@@ -54,11 +51,18 @@ export default function SupportHub({ user }: { user: any }) {
         The response should be helpful, concise, and technical where necessary.
       `;
 
-      const result = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: prompt
+      const response = await fetch('/api/gemini/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: "gemini-3.1-flash-lite",
+          contents: prompt
+        })
       });
-      setSuggestion(result.text || '');
+      
+      if (!response.ok) throw new Error(await response.text());
+      const data = await response.json();
+      setSuggestion(data.text || '');
     } catch (error) {
       console.error("AI Suggestion failed:", error);
     } finally {
