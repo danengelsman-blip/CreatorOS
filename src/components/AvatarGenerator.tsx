@@ -77,7 +77,7 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'gemini-3.1-flash-lite',
+          model: 'gemini-2.5-flash',
           contents,
           config: {
             // Note: If image generation model requires specific config, use them, otherwise this works with flash
@@ -136,9 +136,11 @@ export default function AvatarGenerator({ onClose, onAvatarSet }: { onClose: () 
 
     try {
       // 1. Update all other avatars to inactive
-      const q = query(collection(db, 'avatars'), where('userId', '==', auth.currentUser.uid), where('isActive', '==', true));
+      const q = query(collection(db, 'avatars'), where('userId', '==', auth.currentUser.uid));
       const snapshot = await getDocs(q);
-      const batchPromises = snapshot.docs.map(d => updateDoc(doc(db, 'avatars', d.id), { isActive: false }));
+      const batchPromises = snapshot.docs
+        .filter(d => d.data().isActive === true)
+        .map(d => updateDoc(doc(db, 'avatars', d.id), { isActive: false }));
       await Promise.all(batchPromises);
 
       // 2. Set this avatar as active

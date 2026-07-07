@@ -208,12 +208,8 @@ export default function LandingPage({ navigate }: LandingPageProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleSignIn = async () => {
-    try {
-      await loginWithGoogle();
-    } catch (error) {
-      console.error('Error signing in:', error);
-    }
+  const handleSignIn = () => {
+    navigate('/login');
   };
 
   const handleContactSubmit = (e: React.FormEvent) => {

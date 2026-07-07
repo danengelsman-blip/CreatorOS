@@ -129,18 +129,27 @@ async function startServer() {
   });
 
   // --- Gemini Video API ---
-  const { GoogleGenAI } = await import('@google/genai');
-  const ai = new GoogleGenAI({ 
-    apiKey: process.env.GEMINI_API_KEY,
-    httpOptions: { headers: { 'User-Agent': 'aistudio-build' } }
-  });
+  let _ai = null;
+  const getAI = async () => {
+    if (!_ai) {
+      if (!process.env.GEMINI_API_KEY) {
+        throw new Error('GEMINI_API_KEY is not set in environment variables');
+      }
+      const { GoogleGenAI } = await import('@google/genai');
+      _ai = new GoogleGenAI({ 
+        apiKey: process.env.GEMINI_API_KEY,
+         
+      });
+    }
+    return _ai;
+  };
 
 
   app.post("/api/gemini/generate", async (req: any, res) => {
     try {
       const { model, contents, config } = req.body;
-      const response = await ai.models.generateContent({
-        model: model || "gemini-3.1-flash-lite",
+      const response = await (await getAI()).models.generateContent({
+        model: model || "gemini-2.5-flash",
         contents,
         config
       });
@@ -183,8 +192,8 @@ async function startServer() {
         parts: [{ text: m.content }]
       }));
 
-      const response = await ai.models.generateContent({
-        model: "gemini-3.1-flash-lite",
+      const response = await (await getAI()).models.generateContent({
+        model: "gemini-2.5-flash",
         contents: [
           { role: "user", parts: [{ text: systemInstruction }] },
           ...contents
@@ -222,9 +231,12 @@ async function startServer() {
       const { niche, audience, vibe } = req.body;
       const userInput = `Niche/Topic: ${niche}. Dream Viewers/Audience: ${audience}. Channel Vibe/Style: ${vibe}.`;
       
-      const response = await ai.models.generateContent({
-        model: "gemini-3.1-flash-lite",
-        contents: `Generate a complete, beautiful Channel Style profile for a content creator based on this description: ${userInput}. Ensure typography options are beautiful classic Google Fonts (e.g., Space Grotesk, Outfit, Inter, Playfair Display, Fira Code, JetBrains Mono) that are clean and professional. Keep all terminology extremely beginner-friendly and simple.`,
+      const response = await (await getAI()).models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: `Generate a complete, beautiful Channel Style profile for a content creator based on this description: ${userInput}. 
+Select a specific creator archetype (e.g., 'The Educator', 'The Entertainer', 'The Analyst', 'The Storyteller', 'The Guide', 'The Visionary').
+Provide granular options for visual styles, cohesive color palettes (with hex codes), and specific Google Fonts for typography (e.g., Space Grotesk, Outfit, Inter, Playfair Display, Fira Code, JetBrains Mono). 
+Ensure these elements are cohesive and generate a distinct brand identity. Keep terminology extremely beginner-friendly and simple.`,
         config: {
           responseMimeType: "application/json",
           responseSchema: {
@@ -280,7 +292,7 @@ async function startServer() {
   app.post("/api/gemini/generate-video", async (req: any, res) => {
     try {
       const { prompt, aspectRatio } = req.body;
-      const operation = await ai.models.generateVideos({
+      const operation = await (await getAI()).models.generateVideos({
         model: 'veo-3.1-lite-generate-preview',
         prompt: prompt,
         config: {
@@ -303,7 +315,7 @@ async function startServer() {
       const op = new GenerateVideosOperation();
       op.name = operationName;
       
-      const updated = await ai.operations.getVideosOperation({ operation: op });
+      const updated = await (await getAI()).operations.getVideosOperation({ operation: op });
       res.json({ 
         done: updated.done, 
         progressPercentage: (updated as any)?.response?.progressPercentage,

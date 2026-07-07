@@ -1,18 +1,47 @@
 import React, { useState } from 'react';
-import { loginWithGoogle } from '../firebase';
+import { loginWithGoogle, loginWithEmail, registerWithEmail } from '../firebase';
 import { ShieldCheck, Globe, Lightning as Zap, CircleNotch as Loader2, ArrowRight, Sparkle as Sparkles } from '@phosphor-icons/react';
 import { motion } from 'motion/react';
 import BrandIcon from './BrandIcon';
 
-export default function Login() {
+export default function Login({ navigate }: { navigate?: (path: string) => void }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleLogin = async () => {
+  const handleGoogleLogin = async () => {
     setIsLoading(true);
+    setError('');
     try {
       await loginWithGoogle();
-    } catch (error) {
-      console.error('Login failed:', error);
+    } catch (error: any) {
+      console.error('Google Login failed:', error);
+      setError(error.message || 'Google Login failed');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEmailAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) {
+      setError('Please enter both email and password.');
+      return;
+    }
+    
+    setIsLoading(true);
+    setError('');
+    try {
+      if (isRegistering) {
+        await registerWithEmail(email, password);
+      } else {
+        await loginWithEmail(email, password);
+      }
+    } catch (err: any) {
+      console.error('Auth failed:', err);
+      setError(err.message || 'Authentication failed');
     } finally {
       setIsLoading(false);
     }
@@ -27,13 +56,14 @@ export default function Login() {
           <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-[var(--accent)]/10 rounded-full blur-[120px]" />
           <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-[var(--system-green)]/10 rounded-full blur-[120px]" />
         </div>
-
         <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-16">
+          <div 
+            className="flex items-center gap-3 mb-16 cursor-pointer hover:opacity-80 transition-opacity" 
+            onClick={() => navigate && navigate('/')}
+          >
             <BrandIcon size={32} strokeWidth={1.5} className="text-[var(--accent)]" />
             <span className="text-[24px] font-bold tracking-tight">CreatorOS</span>
           </div>
-
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -45,7 +75,6 @@ export default function Login() {
             <p className="text-[20px] text-[var(--label-secondary)] leading-relaxed max-w-xl mb-12 font-medium">
               Automate your workflow, generate high-quality content, and scale your audience with AI.
             </p>
-
             <div className="flex flex-col gap-6">
               <FeatureItem icon={Sparkles} title="AI-Powered Workflow" desc="Generate scripts & hooks in seconds." />
               <FeatureItem icon={Globe} title="Audience Insights" desc="Understand your niche and track growth." />
@@ -53,7 +82,6 @@ export default function Login() {
             </div>
           </motion.div>
         </div>
-
         <div className="relative z-10 flex items-center gap-4 text-[var(--label-tertiary)] text-[13px] font-bold uppercase tracking-widest">
           <span>Trusted by 50K Creators</span>
           <div className="w-1.5 h-1.5 rounded-full bg-[var(--separator)]" />
@@ -69,22 +97,76 @@ export default function Login() {
           transition={{ duration: 0.6 }}
           className="max-w-md w-full relative z-10"
         >
-          <div className="ios-card bg-[var(--bg-tertiary)] p-10 sm:p-12 ios-elevated text-center border-t border-[var(--separator)]">
+          <div className="ios-card bg-[var(--bg-tertiary)] p-8 sm:p-12 ios-elevated text-center border-t border-[var(--separator)]">
             <div className="sm:hidden mb-10">
-              <div className="w-20 h-20 bg-[var(--bg-secondary)] rounded-[22px] flex items-center justify-center mx-auto mb-6 border border-[var(--separator)] shadow-sm">
+              <div 
+                className="w-20 h-20 bg-[var(--bg-secondary)] rounded-[22px] flex items-center justify-center mx-auto mb-6 border border-[var(--separator)] shadow-sm cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={() => navigate && navigate('/')}
+              >
                 <BrandIcon size={40} strokeWidth={1.5} className="text-[var(--accent)]" />
               </div>
               <h1 className="font-serif text-[36px] font-semibold tracking-[-0.015em] mb-1">CreatorOS</h1>
               <p className="text-[17px] text-[var(--label-secondary)] font-medium">Your AI Creator Workspace</p>
             </div>
+            
+            <div className="hidden sm:block mb-8">
+              <h2 className="font-serif text-[30px] font-semibold tracking-[-0.015em] mb-1">{isRegistering ? 'Create an Account' : 'Welcome Back'}</h2>
+              <p className="text-[17px] text-[var(--label-secondary)] font-medium">
+                {isRegistering ? 'Sign up to build your brand' : 'Sign in to access your workspace'}
+              </p>
+            </div>
 
-            <div className="hidden sm:block mb-10">
-              <h2 className="font-serif text-[30px] font-semibold tracking-[-0.015em] mb-1">Welcome</h2>
-              <p className="text-[17px] text-[var(--label-secondary)] font-medium">Sign in to access your workspace</p>
+            {error && (
+              <div className="mb-6 p-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl text-sm">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleEmailAuth} className="space-y-4 mb-6">
+              <div>
+                <input
+                  type="email"
+                  placeholder="Email Address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="ios-input w-full px-4 py-3 bg-[var(--bg-secondary)]"
+                  disabled={isLoading}
+                  required
+                />
+              </div>
+              <div>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="ios-input w-full px-4 py-3 bg-[var(--bg-secondary)]"
+                  disabled={isLoading}
+                  required
+                />
+              </div>
+              <button 
+                type="submit"
+                disabled={isLoading}
+                className="ios-button bg-[var(--label-primary)] text-[var(--bg-primary)] w-full py-4 text-[17px] group flex justify-center"
+              >
+                {isLoading ? (
+                  <Loader2 size={24} strokeWidth={1.5} className="animate-spin" />
+                ) : (
+                  <span>{isRegistering ? 'Sign Up' : 'Sign In'}</span>
+                )}
+              </button>
+            </form>
+            
+            <div className="flex items-center gap-4 mb-6">
+              <div className="flex-1 h-px bg-[var(--separator)]"></div>
+              <span className="text-[13px] text-[var(--label-tertiary)] uppercase tracking-wider font-semibold">Or</span>
+              <div className="flex-1 h-px bg-[var(--separator)]"></div>
             </div>
 
             <button 
-              onClick={handleLogin}
+              type="button"
+              onClick={handleGoogleLogin}
               disabled={isLoading}
               className="ios-button ios-button-filled w-full py-4 text-[17px] group"
             >
@@ -103,8 +185,19 @@ export default function Login() {
                 </>
               )}
             </button>
+            
+            <div className="mt-8 text-sm text-[var(--label-secondary)]">
+              {isRegistering ? 'Already have an account?' : "Don't have an account?"}{' '}
+              <button 
+                type="button"
+                onClick={() => setIsRegistering(!isRegistering)}
+                className="text-[var(--accent)] font-semibold hover:underline"
+              >
+                {isRegistering ? 'Sign In' : 'Sign Up'}
+              </button>
+            </div>
 
-            <div className="mt-10 pt-8 border-t border-[var(--separator)]">
+            <div className="mt-8 pt-8 border-t border-[var(--separator)]">
               <p className="text-[12px] text-[var(--label-tertiary)] leading-relaxed font-medium">
                 By continuing, you agree to our{' '}
                 <a href="/terms" className="text-[var(--label-secondary)] hover:text-[var(--accent)] underline underline-offset-4 transition-colors">Terms</a>

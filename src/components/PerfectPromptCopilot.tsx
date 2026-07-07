@@ -93,7 +93,14 @@ function GeneratorView({ user, input, setInput }: { user: any, input: string, se
         })
       });
       
-      if (!response.ok) throw new Error(await response.text());
+      if (!response.ok) {
+        const errText = await response.text();
+        try {
+          throw new Error(JSON.parse(errText).error || 'API Error');
+        } catch(e) {
+          throw new Error(errText);
+        }
+      }
       const data = await response.json();
       const generatedText = data.text || '';
       setResult(generatedText);
@@ -110,7 +117,7 @@ function GeneratorView({ user, input, setInput }: { user: any, input: string, se
       
     } catch (err) {
       console.error(err);
-      setResult("Error generating prompt. Please try again.");
+      setResult(err.message || "Error generating prompt. Please try again.");
     } finally {
       setIsGenerating(false);
     }
@@ -202,14 +209,14 @@ function TemplatesView({ user, onSelect }: { user: any, onSelect: (t: string) =>
     try {
       const q = query(
         collection(db, 'prompt_templates'),
-        where('userId', '==', user.uid),
-        where('platform', '==', platId),
-        where('page', '==', pageNum)
+        where('userId', '==', user.uid)
       );
       const snap = await getDocs(q);
       
-      if (!snap.empty) {
-        setTemplates(snap.docs[0].data().templates);
+      const match = snap.docs.find(d => d.data().platform === platId && d.data().page === pageNum);
+      
+      if (match) {
+        setTemplates(match.data().templates);
       } else {
         await generateAndSaveTemplates(platId, pageNum);
       }
@@ -235,6 +242,14 @@ function TemplatesView({ user, onSelect }: { user: any, onSelect: (t: string) =>
         })
       });
       
+      if (!response.ok) {
+        const errText = await response.text();
+        try {
+          throw new Error(JSON.parse(errText).error || 'API Error');
+        } catch(e) {
+          throw new Error(errText);
+        }
+      }
       const data = await response.json();
       const newTemplates = JSON.parse(data.text).templates;
       setTemplates(newTemplates);
@@ -333,11 +348,12 @@ function HistoryView({ user }: { user: any }) {
     try {
       const q = query(
         collection(db, 'prompts'), 
-        where('userId', '==', user.uid),
-        orderBy('timestamp', 'desc')
+        where('userId', '==', user.uid)
       );
       const snap = await getDocs(q);
-      setHistory(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      docs.sort((a: any, b: any) => (b.timestamp?.toMillis?.() || 0) - (a.timestamp?.toMillis?.() || 0));
+      setHistory(docs);
     } catch (err) {
       console.error(err);
     } finally {

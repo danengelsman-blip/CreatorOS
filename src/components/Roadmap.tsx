@@ -79,7 +79,7 @@ export default function Roadmap({ brand, user }: { brand: any, user: any }) {
       {/* Roadmap List */}
       <div className="space-y-10">
         {STAGES.map((stage, idx) => {
-          const isUnlocked = idx === 0;
+          const isUnlocked = idx === 0 || (user?.email === 'danengelsman@gmail.com');
           
           return (
             <section key={stage.id}>

@@ -23,14 +23,16 @@ export default function SupportHub({ user }: { user: any }) {
     
     if (isDeveloper) {
       // Admins see all tickets
-      q = query(ticketsRef, orderBy('createdAt', 'desc'));
+      q = query(ticketsRef);
     } else {
       // Regular users only see their own (though SupportHub is technically dev only)
-      q = query(ticketsRef, where('userId', '==', user.uid), orderBy('createdAt', 'desc'));
+      q = query(ticketsRef, where('userId', '==', user.uid));
     }
 
     const unsubscribe = onSnapshot(q, (snap) => {
-      setTickets(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      const docs = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      docs.sort((a: any, b: any) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
+      setTickets(docs);
     }, (err) => handleFirestoreError(err, OperationType.LIST, 'support_tickets'));
     return () => unsubscribe();
   }, [user]);
@@ -55,7 +57,7 @@ export default function SupportHub({ user }: { user: any }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: "gemini-3.1-flash-lite",
+          model: "gemini-2.5-flash",
           contents: prompt
         })
       });

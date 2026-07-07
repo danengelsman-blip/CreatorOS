@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { PaperPlaneRight as Send, CheckCircle as CheckCircle2, ArrowsClockwise as RefreshCw, TextT as Type, Hash, Image as ImageIcon, CaretRight as ChevronRight, DownloadSimple as Download, Microphone as Mic, SpeakerHigh as Volume2, SpeakerSlash, Rewind, FastForward, VideoCamera as VideoIcon, Play, CircleNotch as Loader2, FloppyDisk as Save, Sparkle as Sparkles, MagnifyingGlass as Search, GearSix as Settings, DotsThree as MoreHorizontal, Lightbulb } from '@phosphor-icons/react';
+import { PaperPlaneRight as Send, CheckCircle as CheckCircle2, ArrowsClockwise as RefreshCw, TextT as Type, Hash, Image as ImageIcon, CaretRight as ChevronRight, DownloadSimple as Download, Microphone as Mic, SpeakerHigh as Volume2, SpeakerSlash, Rewind, FastForward, VideoCamera as VideoIcon, Play, CircleNotch as Loader2, FloppyDisk as Save, Sparkle as Sparkles, MagnifyingGlass as Search, GearSix as Settings, DotsThree as MoreHorizontal, Lightbulb, Article, FilmScript } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'motion/react';
 import { scoreContent, quickPolish, generateSpeech, transcribeAudio, generateVideo, getOperationStatus, generateContentIdeas } from '../services/gemini';
 import { cn } from '../lib/utils';
@@ -93,6 +93,7 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
       setScoreData(result);
     } catch (error) {
       console.error(error);
+      showToast(error.message || 'Scoring failed');
     } finally {
       setIsScoring(false);
     }
@@ -106,8 +107,186 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
       setBody(polished);
     } catch (error) {
       console.error('Polish failed:', error);
+      showToast(error.message || 'Polish failed');
     } finally {
       setIsPolishing(false);
+    }
+  };
+
+
+  const handleFormat = async (targetPlatformId: string, label: string) => {
+    setPlatform(targetPlatformId);
+    if (!body) return;
+    setIsPolishing(true);
+    showToast(`Formatting for ${label}...`);
+    try {
+      const response = await fetch('/api/gemini/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: "gemini-2.5-flash",
+          contents: `Rewrite the following content to be formatted specifically for ${label}. Adapt the tone, length, and style appropriately. Keep it high quality.\n\nContent:\n${body}`
+        })
+      });
+      if (!response.ok) throw new Error('Format failed');
+      const data = await response.json();
+      setBody(data.text);
+      showToast(`Formatted for ${label}`);
+    } catch (error) {
+      console.error('Format error:', error);
+      showToast('Failed to format content');
+    } finally {
+      setIsPolishing(false);
+    }
+  };
+
+  const handleHashtags = async () => {
+    if (!body) return;
+    setIsPolishing(true);
+    showToast('Generating hashtags...');
+    try {
+      const response = await fetch('/api/gemini/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: "gemini-2.5-flash",
+          contents: `Generate 5 relevant hashtags for the following content. Output ONLY the hashtags separated by spaces, nothing else.\n\nContent:\n${body}`
+        })
+      });
+      if (!response.ok) throw new Error('Hashtags failed');
+      const data = await response.json();
+      setBody(prev => prev + '\n\n' + data.text.trim());
+      showToast('Hashtags added');
+    } catch (error) {
+      console.error('Hashtags error:', error);
+      showToast('Failed to generate hashtags');
+    } finally {
+      setIsPolishing(false);
+    }
+  };
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsPolishing(true);
+    showToast('Analyzing image...');
+    
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = async () => {
+      const base64Image = (reader.result as string).split(',')[1];
+      try {
+        const response = await fetch('/api/gemini/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: "gemini-2.5-flash",
+            contents: {
+              parts: [
+                {
+                  inlineData: {
+                    mimeType: file.type,
+                    data: base64Image,
+                  },
+                },
+                { text: "Describe this image in detail so I can use it as context for content creation." },
+              ],
+            }
+          })
+        });
+        if (!response.ok) throw new Error('Image analysis failed');
+        const data = await response.json();
+        setBody(prev => prev + '\n\n[Image Details: ' + data.text.trim() + ']');
+        showToast('Image details added');
+      } catch (err) {
+        console.error(err);
+        showToast('Failed to analyze image');
+      } finally {
+        setIsPolishing(false);
+      }
+    };
+  };
+
+  const handleGenerateScript = async () => {
+    if (!body || !brand) return;
+    setIsPolishing(true);
+    showToast('Generating detailed video script...');
+    try {
+      const response = await fetch('/api/gemini/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: "gemini-2.5-flash",
+          contents: `Rewrite the following content as a detailed video script. Include time markers (e.g., [0:00 - 0:05]), settings, and AI Avatar look/sound based on the brand: ${JSON.stringify(brand.avatar || brand.visual_style)}. Ensure it is highly engaging and formatted well.
+
+Content:
+${body}`
+        })
+      });
+      if (!response.ok) throw new Error('Failed to generate script');
+      const data = await response.json();
+      setBody(data.text);
+      showToast('Video script generated');
+    } catch (err) {
+      console.error(err);
+      showToast('Failed to generate video script');
+    } finally {
+      setIsPolishing(false);
+    }
+  };
+
+  const handleMicrophone = async () => {
+    if (isRecording) {
+      mediaRecorder.current?.stop();
+      setIsRecording(false);
+    } else {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder.current = new MediaRecorder(stream);
+        audioChunks.current = [];
+        
+        mediaRecorder.current.ondataavailable = (e) => {
+          if (e.data.size > 0) audioChunks.current.push(e.data);
+        };
+        
+        mediaRecorder.current.onstop = async () => {
+          setIsTranscribing(true);
+          try {
+            const audioBlob = new Blob(audioChunks.current, { type: mediaRecorder.current?.mimeType || 'audio/webm' });
+            const reader = new FileReader();
+            reader.readAsDataURL(audioBlob);
+            reader.onloadend = async () => {
+              const base64Audio = (reader.result as string).split(',')[1];
+              try {
+                const transcribedText = await transcribeAudio(base64Audio, mediaRecorder.current?.mimeType || 'audio/webm');
+                setBody(prev => prev + (prev ? '\n' : '') + transcribedText);
+                showToast('Audio transcribed');
+              } catch (err) {
+                console.error(err);
+                showToast('Failed to transcribe audio');
+              } finally {
+                setIsTranscribing(false);
+              }
+            };
+          } catch (err) {
+            console.error(err);
+            setIsTranscribing(false);
+          }
+          stream.getTracks().forEach(track => track.stop());
+        };
+        
+        mediaRecorder.current.start();
+        setIsRecording(true);
+        showToast('Recording... click again to stop');
+      } catch (err) {
+        console.error('Microphone access denied:', err);
+        showToast('Microphone access denied');
+      }
     }
   };
 
@@ -200,7 +379,7 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
                 {PLATFORMS.map((p) => (
                   <div
                     key={p.id}
-                    onClick={() => setPlatform(p.id)}
+                    onClick={() => handleFormat(p.id, p.label)}
                     role="button"
                     className={cn(
                       "flex-1 py-1.5 rounded-[8px] text-[13px] font-semibold transition-all",
@@ -298,10 +477,12 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
 
             <div className="px-6 py-4 border-t border-[var(--separator)] flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
               <div className="flex flex-wrap gap-2 sm:gap-5 text-[var(--accent)]">
-                <button className="ios-button ios-button-gray px-3"><Type size={17} strokeWidth={1.5} /></button>
-                <button className="ios-button ios-button-gray px-3"><ImageIcon size={17} strokeWidth={1.5} /></button>
-                <button className="ios-button ios-button-gray px-3"><Hash size={17} strokeWidth={1.5} /></button>
-                <button className="ios-button ios-button-gray px-3"><Mic size={17} strokeWidth={1.5} /></button>
+                <button onClick={handlePolish} className="ios-button ios-button-gray px-3" title="Polish Text"><Type size={17} strokeWidth={1.5} /></button>
+                <button onClick={handleImageClick} className="ios-button ios-button-gray px-3" title="Upload Image"><ImageIcon size={17} strokeWidth={1.5} /></button>
+                <input type="file" ref={fileInputRef} onChange={handleImageUpload} accept="image/*" className="hidden" />
+                <button onClick={handleHashtags} className="ios-button ios-button-gray px-3" title="Generate Hashtags"><Hash size={17} strokeWidth={1.5} /></button>
+                <button onClick={handleMicrophone} className={cn("ios-button ios-button-gray px-3", isRecording && "text-red-500")} title="Voice Dictation"><Mic size={17} strokeWidth={1.5} /></button>
+                <button onClick={handleGenerateScript} className="ios-button ios-button-gray px-3" title="Generate Video Script with Time Markers"><FilmScript size={17} strokeWidth={1.5} /></button>
               </div>
               
               <div className="flex flex-wrap items-center gap-2 mt-4 sm:mt-0 border-t border-[var(--separator)] sm:border-0 pt-4 sm:pt-0">
@@ -444,7 +625,7 @@ export default function Create({ brand, setActiveTab, user }: { brand: any, setA
               <span className="ios-label">Distribution</span>
               <div className="bg-[var(--bg-tertiary)] ios-card overflow-hidden divide-y divide-[var(--separator)]">
                  {PLATFORMS.map(p => (
-                   <div key={p.id} onClick={() => setPlatform(p.id)} className={cn("p-4 flex items-center justify-between active:bg-[var(--separator)] cursor-pointer transition-colors", p.id === platform && "bg-[var(--bg-primary)]")}>
+                   <div key={p.id} onClick={() => handleFormat(p.id, p.label)} className={cn("p-4 flex items-center justify-between active:bg-[var(--separator)] cursor-pointer transition-colors", p.id === platform && "bg-[var(--bg-primary)]")}>
                       <div className="flex items-center gap-3">
                          <div className="flex items-center justify-center w-[22px] h-[22px] text-xl">
                            {p.icon}

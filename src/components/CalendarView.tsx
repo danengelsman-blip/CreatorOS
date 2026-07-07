@@ -23,11 +23,12 @@ export default function CalendarView({ user, setActiveTab }: { user: any, setAct
       try {
         const q = query(
           collection(db, 'projects'),
-          where('userId', '==', user.uid),
-          where('type', '==', 'content')
+          where('userId', '==', user.uid)
         );
         const snapshot = await getDocs(q);
-        const fetchedEvents = snapshot.docs.map(doc => {
+        const fetchedEvents = snapshot.docs
+          .filter(doc => doc.data().type === 'content')
+          .map(doc => {
             const data = doc.data();
             return {
                 id: doc.id,

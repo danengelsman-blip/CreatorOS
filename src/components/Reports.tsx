@@ -148,11 +148,12 @@ export default function Intelligence({ user }: { user: any }) {
       try {
         const q = query(
           collection(db, 'projects'),
-          where('userId', '==', user.uid),
-          where('type', '==', 'content')
+          where('userId', '==', user.uid)
         );
         const snapshot = await getDocs(q);
-        const fetched = snapshot.docs.map(doc => {
+        const fetched = snapshot.docs
+          .filter(doc => doc.data().type === 'content')
+          .map(doc => {
           const data = doc.data();
           return {
             id: doc.id,
