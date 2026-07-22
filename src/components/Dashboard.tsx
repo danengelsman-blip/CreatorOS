@@ -1,10 +1,52 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Target, CaretRight as ChevronRight, PenNib as PenTool, CheckCircle as CheckCircle2 } from '@phosphor-icons/react';
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
+import { authorizedFetch } from '../firebase';
+
+const formatNumber = (num: number) => {
+  if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+  if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+  return num.toLocaleString();
+};
 
 export default function Dashboard({ brand, setActiveTab, user, projects = [] }: { brand: any, setActiveTab: (tab: string) => void, user: any, projects?: any[] }) {
   const firstName = user?.displayName?.split(' ')?.[0] || 'Creator';
+  const [summary, setSummary] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadSummary = async () => {
+      try {
+        const res = await authorizedFetch('/api/analytics/summary');
+        if (res && res.success) {
+          setSummary(res.summary);
+        }
+      } catch (err) {
+        console.error('Failed to load analytics summary:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadSummary();
+  }, []);
+
+  const hasFollowers = summary && summary.totalFollowers > 0;
+  const totalFollowers = summary ? summary.totalFollowers : 0;
+  const totalViews = summary ? summary.totalViews : 0;
+  const engagementRate = summary ? summary.engagementRate : 0;
+  const totalRevenue = summary ? summary.totalRevenue : 0;
+
+  const milestoneBrandKit = !!brand || (summary?.milestones?.brandKit);
+  const milestonePostsPublished = projects.length >= 5 || (summary?.milestones?.postsPublished);
+  const milestoneFollowersReached = totalFollowers >= 100 || (summary?.milestones?.followersReached);
+
+  let completedMilestones = 0;
+  if (milestoneBrandKit) completedMilestones++;
+  if (milestonePostsPublished) completedMilestones++;
+  if (milestoneFollowersReached) completedMilestones++;
+
+  const goalsCompletionPercentage = Math.round((completedMilestones / 3) * 100);
 
   return (
     <div className="space-y-8 pb-20">
@@ -20,21 +62,29 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
           
           <div className="mb-6">
             <div className="text-[28px] font-bold tracking-tight leading-tight mb-2 text-[var(--label-primary)]">
-              Your audience is growing <span className="font-serif italic font-normal">24% faster</span>.
+              {hasFollowers ? (
+                <>Your real audience stands at <span className="font-serif italic font-normal">{formatNumber(totalFollowers)} creators</span>.</>
+              ) : (
+                <>Connect your channels to track <span className="font-serif italic font-normal">real metrics</span>.</>
+              )}
             </div>
             <p className="text-[var(--label-secondary)] text-[17px] leading-snug">
-              You're on track to hit your 5,000 follower milestone this month.
+              {hasFollowers ? (
+                `You have accumulated ${totalViews.toLocaleString()} views across your connected platforms.`
+              ) : (
+                "Go to your Profile tab to securely link YouTube, TikTok, or other networks via OAuth and start tracking your actual growth."
+              )}
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-4 py-6 border-t border-[var(--separator)]">
             <div className="flex flex-col">
-              <span className="ios-label px-0">Weekly Growth</span>
-              <span className="text-[22px] font-bold">+1,240</span>
+              <span className="ios-label px-0">Total Reach</span>
+              <span className="text-[22px] font-bold">{formatNumber(totalViews)}</span>
             </div>
             <div className="flex flex-col">
-              <span className="ios-label px-0">Engagement</span>
-              <span className="text-[22px] font-bold">4.82%</span>
+              <span className="ios-label px-0">Engagement Rate</span>
+              <span className="text-[22px] font-bold">{engagementRate}%</span>
             </div>
           </div>
         </div>
@@ -51,7 +101,7 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
                 </div>
                 <div className="flex flex-col">
                   <span className="font-semibold text-[17px]">First Dollar Goal</span>
-                  <span className="text-[13px] text-[var(--label-secondary)]">65% Completed</span>
+                  <span className="text-[13px] text-[var(--label-secondary)]">{goalsCompletionPercentage}% Completed</span>
                 </div>
               </div>
               <ChevronRight size={18} strokeWidth={1.5} className="text-[var(--label-tertiary)]" />
@@ -61,14 +111,14 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
               <div className="w-full h-1.5 bg-[var(--bg-secondary)] rounded-full overflow-hidden">
                 <motion.div 
                   initial={{ width: 0 }}
-                  animate={{ width: '65%' }}
+                  animate={{ width: `${goalsCompletionPercentage}%` }}
                   className="h-full bg-[var(--accent)]"
                 />
               </div>
               <div className="space-y-4">
-                <MilestoneItem label="Brand Kit Complete" completed={!!brand} />
-                <MilestoneItem label="5 Posts Published" completed={projects.length >= 5} />
-                <MilestoneItem label="100 Followers Reached" completed={false} />
+                <MilestoneItem label="Brand Kit Complete" completed={milestoneBrandKit} />
+                <MilestoneItem label="5 Posts Published" completed={milestonePostsPublished} />
+                <MilestoneItem label="100 Followers Reached" completed={milestoneFollowersReached} />
               </div>
            </div>
         </div>
@@ -128,26 +178,26 @@ export default function Dashboard({ brand, setActiveTab, user, projects = [] }: 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <AnalyticsCard 
             title="Audience" 
-            value="12.8K" 
-            change="+12.4%" 
+            value={formatNumber(totalFollowers)} 
+            change={hasFollowers ? "+100%" : "0%"} 
             trend="up"
           />
           <AnalyticsCard 
             title="Reach" 
-            value="842K" 
-            change="+8.2%" 
+            value={formatNumber(totalViews)} 
+            change={totalViews > 0 ? "+100%" : "0%"} 
             trend="up"
           />
           <AnalyticsCard 
             title="Engagement" 
-            value="4.8%" 
-            change="-1.2%" 
-            trend="down"
+            value={`${engagementRate}%`} 
+            change={engagementRate > 0 ? "+100%" : "0%"} 
+            trend="up"
           />
           <AnalyticsCard 
             title="Revenue" 
-            value="$1.2K" 
-            change="+24%" 
+            value={`$${totalRevenue}`} 
+            change={totalRevenue > 0 ? "+100%" : "0%"} 
             trend="up"
           />
         </div>

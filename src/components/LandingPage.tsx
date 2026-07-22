@@ -129,33 +129,6 @@ const SANDBOX_PRESETS: Record<string, Record<string, any>> = {
   }
 };
 
-const TESTIMONIALS = [
-  {
-    quote: "CreatorOS saved me at least 15 hours a week. The AI design helper matched my writing style perfectly, and my audience immediately noticed how beautiful my videos looked.",
-    author: "Elena Rostov",
-    handle: "@elenacodes",
-    niche: "Technology Educator",
-    followers: "185K subscribers",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&h=120&q=80"
-  },
-  {
-    quote: "I went from zero structure to publishing a video every day for three weeks. The 30-day challenge made writing fun and took the stress out of brainstorming.",
-    author: "Marcus Chen",
-    handle: "@marcus_eats",
-    niche: "Baking & Cooking Educator",
-    followers: "94K followers",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&h=120&q=80"
-  },
-  {
-    quote: "The script checklist is like having an expert editor reviewing my videos before I hit record. My average watch times rose by 14% in one month.",
-    author: "Devon Reynolds",
-    handle: "@devoninvests",
-    niche: "Finance Teacher",
-    followers: "310K subscribers",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&h=120&q=80"
-  }
-];
-
 const FAQS = [
   {
     q: "Do I need any design or coding experience to use CreatorOS?",
@@ -783,51 +756,6 @@ export default function LandingPage({ navigate }: LandingPageProps) {
               </div>
             </div>
 
-          </div>
-        </div>
-      </section>
-
-      {/* Social Proof & Creator Testimonials */}
-      <section className="py-24 px-6 bg-[var(--bg-secondary)]/20 border-t border-[var(--separator)]">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
-            <span className="inline-block px-3 py-1 bg-yellow-500/10 text-yellow-600 text-xs font-bold rounded-full uppercase tracking-widest">
-              Success Stories
-            </span>
-            <h2 className="font-serif text-[34px] sm:text-[44px] font-bold tracking-tight text-[var(--label-primary)]">
-              Loved by modern creators.
-            </h2>
-            <p className="text-[16px] sm:text-[18px] text-[var(--label-secondary)] font-medium leading-relaxed">
-              Read how vloggers, engineers, and educators use CreatorOS to maintain consistency and upgrade their visual brand kit.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {TESTIMONIALS.map((item, idx) => (
-              <div key={idx} className="bg-[var(--bg-tertiary)] p-8 rounded-3xl border border-[var(--separator)] flex flex-col justify-between space-y-8 shadow-sm">
-                <div className="space-y-4">
-                  <div className="flex gap-1 text-amber-500">
-                    {[...Array(5)].map((_, i) => <Star key={i} size={16} weight="fill" />)}
-                  </div>
-                  <p className="text-[15px] leading-relaxed text-[var(--label-secondary)] font-medium italic">
-                    "{item.quote}"
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <img 
-                    src={item.avatar} 
-                    alt={item.author} 
-                    className="w-12 h-12 rounded-full object-cover border border-[var(--separator)] bg-[var(--bg-secondary)]" 
-                  />
-                  <div>
-                    <h4 className="text-[15px] font-bold text-[var(--label-primary)]">{item.author}</h4>
-                    <span className="text-xs text-[var(--accent)] font-semibold block">{item.handle}</span>
-                    <span className="text-[11px] text-[var(--label-tertiary)] font-medium">{item.niche} • {item.followers}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </section>

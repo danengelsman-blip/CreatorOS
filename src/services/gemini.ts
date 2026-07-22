@@ -158,6 +158,48 @@ export const scoreContent = async (content: string, brandVoice: string) => {
   return JSON.parse(data.text);
 };
 
+export const remixContent = async (content: string, instruction: string) => {
+  const response = await fetch('/api/gemini/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: "gemini-2.5-flash",
+      contents: `Remix and refine the following content according to these instructions: "${instruction}".
+      Maintain the original core message but adapt it as requested. Return only the revised content.
+      
+      Content: ${content}`
+    })
+  });
+  if (!response.ok) {
+    throw new Error('Failed to remix content');
+  }
+  const data = await response.json();
+  return data.text;
+};
+
+export const optimizeSearchTerms = async (content: string, tone: string, audience: string, goal: string) => {
+  const response = await fetch('/api/gemini/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: "gemini-2.5-flash",
+      contents: `Generate optimized SEO keywords and hashtags for the following content.
+      Tone: ${tone}
+      Audience: ${audience}
+      Goal: ${goal}
+      
+      Return a comma-separated list of 5-7 highly relevant keywords and 3-5 hashtags (including the # symbol). Just the terms, no other text.
+      
+      Content: ${content}`
+    })
+  });
+  if (!response.ok) {
+    throw new Error('Failed to optimize search terms');
+  }
+  const data = await response.json();
+  return data.text;
+};
+
 export const quickPolish = async (content: string) => {
   const response = await fetch('/api/gemini/generate', {
     method: 'POST',
@@ -306,11 +348,15 @@ export const transcribeAudio = async (base64Audio: string, mimeType: string = "a
   return data.text;
 };
 
-export const generateVideo = async (prompt: string, aspectRatio: '16:9' | '9:16' = '16:9') => {
+export const generateVideo = async (prompt: string, aspectRatio: '16:9' | '9:16' = '16:9', videoLength: string = 'Short (5s)') => {
+  let durationSeconds = 5;
+  if (videoLength.includes('10s')) durationSeconds = 10;
+  if (videoLength.includes('5s')) durationSeconds = 5;
+
   const response = await fetch('/api/gemini/generate-video', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt, aspectRatio })
+    body: JSON.stringify({ prompt, aspectRatio, durationSeconds })
   });
   if (!response.ok) throw new Error(await response.text());
   return await response.json(); // { operationName: string }
@@ -335,3 +381,84 @@ export const fetchVideoDownloadResponse = async (uri: string) => {
   if (!response.ok) throw new Error('Video download failed');
   return response.blob();
 };
+
+export const generateSmartSuggestions = async (brandData: any, existingContent: any[]) => {
+  const contentSummary = existingContent && existingContent.length > 0 
+    ? existingContent.map(c => `Title: ${c.title || c.data?.title || 'Untitled'} | Platform: ${c.platform || c.data?.platform || 'N/A'} | Score: ${c.score || c.data?.score || 0}`).join('\n')
+    : "No previous content created yet.";
+
+  const response = await fetch('/api/gemini/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: "gemini-2.5-flash",
+      contents: `You are an expert Content Strategy Consultant. Analyze the creator's niche based on their Brand Identity and their existing content history. Then suggest trending topics and new unique angles.
+
+      CREATOR BRAND IDENTITY:
+      Name: ${brandData.name}
+      Tagline: ${brandData.tagline}
+      Archetype: ${brandData.archetype}
+      Personality: ${brandData.personality}
+      Visual Style: ${brandData.visual_style}
+
+      CREATOR CONTENT HISTORY & PERFORMANCE SCORING:
+      ${contentSummary}
+
+      Tasks:
+      1. Provide a brief analysis (1-2 sentences) of the creator's current content footprint and style strengths.
+      2. Suggest 3 trending topic ideas that perfectly align with their brand.
+      3. Suggest 3 new angles or counter-intuitive hooks for existing concepts.
+
+      Provide the response in the specified JSON schema.`,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: "OBJECT",
+          properties: {
+            analysis: { type: "STRING" },
+            trendingTopics: {
+              type: "ARRAY",
+              items: {
+                type: "OBJECT",
+                properties: {
+                  topic: { type: "STRING" },
+                  angle: { type: "STRING" },
+                  platform: { type: "STRING" },
+                  justification: { type: "STRING" }
+                },
+                required: ["topic", "angle", "platform", "justification"]
+              }
+            },
+            newAngles: {
+              type: "ARRAY",
+              items: {
+                type: "OBJECT",
+                properties: {
+                  originalConcept: { type: "STRING" },
+                  suggestedAngle: { type: "STRING" },
+                  hook: { type: "STRING" }
+                },
+                required: ["originalConcept", "suggestedAngle", "hook"]
+              }
+            }
+          },
+          required: ["analysis", "trendingTopics", "newAngles"]
+        }
+      }
+    })
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    try {
+      const errJson = JSON.parse(errText);
+      throw new Error(errJson.error || 'API Error');
+    } catch (e) {
+      throw new Error(errText);
+    }
+  }
+
+  const data = await response.json();
+  return JSON.parse(data.text);
+};
+

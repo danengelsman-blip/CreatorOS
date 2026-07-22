@@ -1,5 +1,6 @@
 import React from 'react';
 import { WarningCircle as AlertCircle, ArrowsClockwise as RefreshCcw } from '@phosphor-icons/react';
+import { logErrorToFirestore } from '../lib/logger';
 
 interface Props {
   children: React.ReactNode;
@@ -22,6 +23,10 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
+    logErrorToFirestore(error, {
+      componentStack: errorInfo.componentStack,
+      source: 'ErrorBoundary'
+    });
   }
 
   render() {

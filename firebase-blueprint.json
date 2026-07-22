@@ -118,6 +118,21 @@
         "resolvedBy": { "type": "string" }
       },
       "required": ["userId", "subject", "message", "status", "createdAt"]
+    },
+    "AppLog": {
+      "title": "Application Log",
+      "description": "Captured client-side runtime error logs for production debugging.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "message": { "type": "string" },
+        "stack": { "type": "string" },
+        "url": { "type": "string" },
+        "userAgent": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "metadata": { "type": "object" }
+      },
+      "required": ["message", "timestamp"]
     }
   },
   "firestore": {
@@ -148,6 +163,10 @@
     "/support_tickets/{ticketId}": {
       "schema": "SupportTicket",
       "description": "Support tickets for user assistance"
+    },
+    "/app_logs/{logId}": {
+      "schema": "AppLog",
+      "description": "Captured client-side error and diagnostic logs"
     }
   }
 }

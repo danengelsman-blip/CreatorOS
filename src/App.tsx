@@ -53,10 +53,12 @@ import HelpCenter from './components/HelpCenter';
 import HelpArticle from './components/HelpArticle';
 import CreatorHub from './components/CreatorHub';
 import SupportHub from './components/SupportHub';
+import FirstDollarDashboard from './components/FirstDollarDashboard';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 const NAV_ITEMS = [
   { id: 'home', label: 'Home', icon: House, component: Dashboard },
+  { id: 'first_dollar', label: 'First Dollar', icon: DollarSign, component: FirstDollarDashboard },
   { id: 'create', label: 'Create', icon: PenNib, component: ContentStudio },
   { id: 'repurpose', label: 'Repurpose', icon: Recycle, component: ContentRepurposer },
   { id: 'brand', label: 'Brand', icon: Hexagon, component: BrandingEngine },
@@ -81,7 +83,7 @@ const NAV_GROUPS = [
   },
   {
     title: 'Growth',
-    items: ['hub', 'reports', 'roadmap', 'community']
+    items: ['first_dollar', 'hub', 'reports', 'roadmap', 'community']
   },
   {
     title: 'Settings',
@@ -93,6 +95,7 @@ const DEVELOPER_EMAILS = ['danengelsman@gmail.com'];
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
+  const [selectedIdea, setSelectedIdea] = useState<any>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [brand, setBrand] = useState<any>(null);
   const [projects, setProjects] = useState<any[]>([]);
@@ -462,7 +465,7 @@ export default function App() {
                       }} />;
                     }
                     
-                    return <Component brand={brand} setBrand={setBrand} setActiveTab={setActiveTab} navigate={navigate} user={user} userData={userData} projects={projects} />;
+                    return <Component brand={brand} setBrand={setBrand} setActiveTab={setActiveTab} navigate={navigate} user={user} userData={userData} projects={projects} selectedIdea={selectedIdea} setSelectedIdea={setSelectedIdea} />;
                   })()}
                 </motion.div>
               </AnimatePresence>

@@ -5,7 +5,7 @@ import { cn } from '../lib/utils';
 import { generateVideo, getOperationStatus } from '../services/gemini';
 import CustomVideoPlayer from './CustomVideoPlayer';
 import { db, serverTimestamp, handleFirestoreError, OperationType } from '../firebase';
-import { collection, addDoc, query, where, orderBy, getDocs } from 'firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 
 interface VideoStudioProps {
   body: string;
@@ -14,9 +14,10 @@ interface VideoStudioProps {
   brand: any;
   showToast: (msg: string) => void;
   user?: any;
+  onVideoSaved?: () => void;
 }
 
-export default function VideoStudio({ body, title, platform, brand, showToast, user }: VideoStudioProps) {
+export default function VideoStudio({ body, title, platform, brand, showToast, user, onVideoSaved }: VideoStudioProps) {
   const [videoStyle, setVideoStyle] = useState<'faceless' | 'avatar' | 'upload'>('faceless');
   const [isVideoGenerating, setIsVideoGenerating] = useState(false);
   const [videoAspect, setVideoAspect] = useState<'9:16' | '16:9'>('9:16');
@@ -25,17 +26,51 @@ export default function VideoStudio({ body, title, platform, brand, showToast, u
   const [showSettings, setShowSettings] = useState(false);
   
   // Customization Settings
-  const [videoLength, setVideoLength] = useState('Short (15s)');
+  const [videoLength, setVideoLength] = useState('Short (5s)');
   const [avatarGender, setAvatarGender] = useState(brand?.avatar?.gender || 'Female');
   const [avatarClothing, setAvatarClothing] = useState(brand?.avatar?.clothing || 'Professional business attire');
   const [backgroundStyle, setBackgroundStyle] = useState(brand?.avatar?.background || 'Modern office with soft lighting');
   const [textOverlay, setTextOverlay] = useState('');
   const [ttsScript, setTtsScript] = useState('');
   
-  // History
-  const [showHistory, setShowHistory] = useState(false);
-  const [videoHistory, setVideoHistory] = useState<any[]>([]);
+  const [editedPrompt, setEditedPrompt] = useState('');
+  const [isPromptCustomized, setIsPromptCustomized] = useState(false);
 
+  const getAutoPrompt = () => {
+    let promptStr = `Create a ${videoLength} ${videoStyle === 'avatar' ? 'AI Avatar led' : 'faceless'} promotional video targeting ${platform}. `;
+    promptStr += `Title: ${title || 'Untitled'}. `;
+    promptStr += `Visual style: ${brand?.visual_style || 'modern and clean'}. `;
+    
+    if (videoStyle === 'avatar') {
+      promptStr += `Subject details: A ${avatarGender} avatar wearing ${avatarClothing}. `;
+    }
+    if (backgroundStyle) promptStr += `Background: ${backgroundStyle}. `;
+    if (textOverlay) promptStr += `Overlay text or subtitles should include: "${textOverlay}". `;
+    
+    promptStr += `Narrative/Script: ${ttsScript || body}. `;
+    promptStr += `Make it highly engaging.`;
+    return promptStr;
+  };
+
+  useEffect(() => {
+    if (!isPromptCustomized) {
+      setEditedPrompt(getAutoPrompt());
+    }
+  }, [
+    videoLength,
+    videoStyle,
+    platform,
+    title,
+    brand?.visual_style,
+    avatarGender,
+    avatarClothing,
+    backgroundStyle,
+    textOverlay,
+    ttsScript,
+    body,
+    isPromptCustomized
+  ]);
+  
   useEffect(() => {
     if (body && !ttsScript) {
       setTtsScript(body);
@@ -52,28 +87,6 @@ export default function VideoStudio({ body, title, platform, brand, showToast, u
     }
   };
 
-  const loadHistory = async () => {
-    if (!user) return;
-    try {
-      const q = query(
-        collection(db, 'videos'),
-        where('userId', '==', user.uid),
-        orderBy('createdAt', 'desc')
-      );
-      const snapshot = await getDocs(q);
-      const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setVideoHistory(docs);
-    } catch (error) {
-      console.error('Failed to load history', error);
-    }
-  };
-
-  useEffect(() => {
-    if (showHistory && user) {
-      loadHistory();
-    }
-  }, [showHistory, user]);
-
   const saveVideoToHistory = async (url: string, finalPrompt: string) => {
     if (!user) return;
     try {
@@ -84,7 +97,7 @@ export default function VideoStudio({ body, title, platform, brand, showToast, u
         title: title || 'Untitled Video',
         createdAt: serverTimestamp()
       });
-      loadHistory();
+      if (onVideoSaved) onVideoSaved();
     } catch (error) {
       console.error('Failed to save video to history', error);
     }
@@ -100,27 +113,15 @@ export default function VideoStudio({ body, title, platform, brand, showToast, u
       return;
     }
     setIsVideoGenerating(true);
-    setVideoGenerationProgress('Initializing Nano Banana Engine...');
+    setVideoGenerationProgress('Initializing Gemini Engine...');
     setVideoUrl(null);
-    setShowHistory(false);
     
     try {
-      // Build the comprehensive prompt
-      let promptStr = `Create a ${videoLength} ${videoStyle === 'avatar' ? 'AI Avatar led' : 'faceless'} promotional video targeting ${platform}. `;
-      promptStr += `Title: ${title || 'Untitled'}. `;
-      promptStr += `Visual style: ${brand?.visual_style || 'modern and clean'}. `;
-      
-      if (videoStyle === 'avatar') {
-        promptStr += `Subject details: A ${avatarGender} avatar wearing ${avatarClothing}. `;
-      }
-      if (backgroundStyle) promptStr += `Background: ${backgroundStyle}. `;
-      if (textOverlay) promptStr += `Overlay text or subtitles should include: "${textOverlay}". `;
-      
-      promptStr += `Narrative/Script: ${ttsScript || body}. `;
-      promptStr += `Make it highly engaging.`;
+      // Use the edited/customizable prompt
+      const promptStr = editedPrompt || getAutoPrompt();
 
-      const operation = await generateVideo(promptStr, videoAspect);
-      setVideoGenerationProgress('Synthesizing Nano Banana visuals...');
+      const operation = await generateVideo(promptStr, videoAspect, videoLength);
+      setVideoGenerationProgress('Synthesizing Gemini visuals...');
       
       let done = false;
       let finalOp = operation;
@@ -135,7 +136,25 @@ export default function VideoStudio({ body, title, platform, brand, showToast, u
           if (status.error) {
              throw new Error(status.error.message || 'Video generation failed');
           }
-          if (status.uri) {
+          if (status.data) {
+            setVideoGenerationProgress('Processing video...');
+            
+            let localUrl = status.data;
+            if (status.data.startsWith('data:')) {
+               // Convert data URI to Blob to avoid huge Firestore documents (though blob URLs don't persist well, this matches prior behavior)
+               const res = await fetch(status.data);
+               const blob = await res.blob();
+               localUrl = URL.createObjectURL(blob);
+            } else if (status.data.startsWith('gs://') || status.data.startsWith('http')) {
+               // Fallback if it returns a URI
+               const { fetchVideoDownloadResponse } = await import('../services/gemini');
+               const blob = await fetchVideoDownloadResponse(status.data);
+               localUrl = URL.createObjectURL(blob);
+            }
+
+            setVideoUrl(localUrl);
+            await saveVideoToHistory(localUrl, promptStr);
+          } else if (status.uri) {
             setVideoGenerationProgress('Downloading video...');
             const { fetchVideoDownloadResponse } = await import('../services/gemini');
             const blob = await fetchVideoDownloadResponse(status.uri);
@@ -145,7 +164,7 @@ export default function VideoStudio({ body, title, platform, brand, showToast, u
           }
           break;
         } else {
-          setVideoGenerationProgress(status.progressPercentage ? `Nano Banana rendering... ${Math.round(status.progressPercentage)}%` : 'Nano Banana rendering... this may take a minute');
+          setVideoGenerationProgress(status.progressPercentage ? `Generating video... ${Math.round(status.progressPercentage)}%` : 'Generating video... this may take a minute');
         }
       }
       
@@ -164,16 +183,9 @@ export default function VideoStudio({ body, title, platform, brand, showToast, u
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--separator)] pb-4">
           <div className="flex items-center gap-3">
             <VideoCamera size={24} className="text-[var(--accent)]" weight="fill" />
-            <h3 className="font-semibold text-[17px]">Nano Banana Studio</h3>
+            <h3 className="font-semibold text-[17px]">Gemini Studio</h3>
           </div>
           <div className="flex items-center gap-2">
-            <button 
-              onClick={() => setShowHistory(!showHistory)} 
-              className={cn("p-2 rounded-full transition-colors", showHistory ? "bg-[var(--accent)] text-white" : "bg-[var(--bg-secondary)] text-[var(--label-secondary)] hover:text-[var(--label-primary)]")}
-              title="Video History"
-            >
-              <ClockCounterClockwise size={18} weight="bold" />
-            </button>
             <button 
               onClick={() => setShowSettings(!showSettings)} 
               className={cn("p-2 rounded-full transition-colors", showSettings ? "bg-[var(--accent)] text-white" : "bg-[var(--bg-secondary)] text-[var(--label-secondary)] hover:text-[var(--label-primary)]")}
@@ -213,9 +225,8 @@ export default function VideoStudio({ body, title, platform, brand, showToast, u
                       </label>
                       <div className="flex gap-2">
                         <select value={videoLength} onChange={e => setVideoLength(e.target.value)} className="flex-1 bg-[var(--bg-secondary)] border-none rounded-xl text-[13px] font-medium p-2 outline-none">
-                          <option>Short (15s)</option>
-                          <option>Standard (30s)</option>
-                          <option>Long (60s)</option>
+                          <option>Short (5s)</option>
+                          <option>Long (10s)</option>
                         </select>
                         <select value={videoAspect} onChange={e => setVideoAspect(e.target.value as any)} className="w-24 bg-[var(--bg-secondary)] border-none rounded-xl text-[13px] font-medium p-2 outline-none">
                           <option value="9:16">9:16</option>
@@ -283,6 +294,49 @@ export default function VideoStudio({ body, title, platform, brand, showToast, u
           )}
         </AnimatePresence>
 
+        {videoStyle !== 'upload' && (
+          <div className="space-y-2 border-t border-[var(--separator)]/60 pt-4">
+            <div className="flex items-center justify-between">
+              <label className="text-[13px] font-semibold text-[var(--label-secondary)] flex items-center gap-2">
+                <Sparkle size={16} className="text-[var(--accent)]" weight="fill" />
+                Video Generation Prompt
+              </label>
+              <div className="flex items-center gap-2">
+                {isPromptCustomized ? (
+                  <button
+                    type="button"
+                    onClick={() => setIsPromptCustomized(false)}
+                    className="text-[11px] font-bold text-[var(--accent)] hover:underline flex items-center gap-1 cursor-pointer"
+                    title="Revert to auto-generated prompt from settings above"
+                  >
+                    <ClockCounterClockwise size={12} />
+                    Reset to Auto
+                  </button>
+                ) : (
+                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] font-medium">
+                    ⚡ Auto-Generated
+                  </span>
+                )}
+              </div>
+            </div>
+            <p className="text-[11px] text-[var(--label-tertiary)]">
+              Directly edit this prompt to refine precise imagery details, flow, setting descriptors, or specific cues.
+            </p>
+            <textarea
+              value={editedPrompt}
+              onChange={(e) => {
+                setEditedPrompt(e.target.value);
+                setIsPromptCustomized(true);
+              }}
+              className={cn(
+                "w-full h-24 bg-[var(--bg-secondary)] border border-[var(--separator)] rounded-xl text-[13px] font-medium p-3 outline-none placeholder:text-[var(--label-tertiary)] resize-none transition-all",
+                isPromptCustomized ? "ring-2 ring-[var(--accent)]/40 border-transparent bg-[var(--bg-primary)] text-[var(--label-primary)]" : "focus:border-[var(--accent)]/50 text-[var(--label-secondary)]"
+              )}
+              placeholder="Enter custom visual directions and script parameters..."
+            />
+          </div>
+        )}
+
         <div className="flex justify-end pt-2">
           <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="video/*" className="hidden" />
           <button 
@@ -295,43 +349,13 @@ export default function VideoStudio({ body, title, platform, brand, showToast, u
             ) : (
               <VideoCamera size={17} strokeWidth={1.5} className="mr-2 inline-block" />
             )}
-            <span>{videoStyle === 'upload' ? 'Upload Video' : 'Generate Nano Banana'}</span>
+            <span>{videoStyle === 'upload' ? 'Upload Video' : 'Generate Gemini'}</span>
           </button>
         </div>
       </div>
 
       <AnimatePresence mode="wait">
-        {showHistory ? (
-           <motion.section
-            key="history"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="space-y-4"
-           >
-             <span className="ios-label">Generation History</span>
-             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-               {videoHistory.length === 0 ? (
-                 <div className="col-span-full py-12 text-center text-[var(--label-tertiary)] text-[15px] bg-[var(--bg-tertiary)] rounded-2xl border border-[var(--separator)] border-dashed">
-                   No previous videos found.
-                 </div>
-               ) : (
-                 videoHistory.map(item => (
-                   <div key={item.id} className="relative group cursor-pointer bg-[var(--bg-tertiary)] rounded-xl overflow-hidden aspect-[9/16] ios-card" onClick={() => setVideoUrl(item.url)}>
-                      <video src={item.url} className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <VideoCamera size={32} weight="fill" className="text-white" />
-                      </div>
-                      <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
-                        <p className="text-white text-xs font-semibold truncate">{item.title}</p>
-                        <p className="text-white/70 text-[10px] truncate">{new Date(item.createdAt?.toDate?.() || Date.now()).toLocaleDateString()}</p>
-                      </div>
-                   </div>
-                 ))
-               )}
-             </div>
-           </motion.section>
-        ) : (videoUrl || isVideoGenerating) ? (
+        {(videoUrl || isVideoGenerating) ? (
           <motion.section
             key="player"
             initial={{ opacity: 0, y: 10 }}
@@ -339,7 +363,7 @@ export default function VideoStudio({ body, title, platform, brand, showToast, u
             exit={{ opacity: 0, y: -10 }}
             className="space-y-4"
           >
-            <span className="ios-label">Nano Banana Preview</span>
+            <span className="ios-label">Gemini Preview</span>
             <div className={cn("bg-[var(--bg-tertiary)] rounded-2xl overflow-hidden w-full flex items-center justify-center relative bg-black/5 shadow-xl max-h-[600px]", videoAspect === '16:9' ? 'aspect-video' : 'aspect-[9/16]')} style={{ minHeight: '300px' }}>
                 {isVideoGenerating ? (
                 <div className="flex flex-col items-center gap-5 w-full max-w-[280px] p-6">
@@ -349,13 +373,13 @@ export default function VideoStudio({ body, title, platform, brand, showToast, u
                         className="h-full bg-[var(--accent)]"
                         initial={{ width: "0%" }}
                         animate={{
-                            width: videoGenerationProgress === 'Initializing Nano Banana Engine...' ? '15%' :
-                                    videoGenerationProgress === 'Synthesizing Nano Banana visuals...' ? '45%' :
-                                    videoGenerationProgress.startsWith('Nano Banana rendering') ? '90%' : '100%'
+                            width: videoGenerationProgress === 'Initializing Gemini Engine...' ? '15%' :
+                                    videoGenerationProgress === 'Synthesizing Gemini visuals...' ? '45%' :
+                                    videoGenerationProgress.startsWith('Gemini rendering') ? '90%' : '100%'
                         }}
                         transition={{
-                            duration: videoGenerationProgress.startsWith('Nano Banana rendering') ? 45 : 1.5,
-                            ease: videoGenerationProgress.startsWith('Nano Banana rendering') ? "easeOut" : "easeInOut"
+                            duration: videoGenerationProgress.startsWith('Gemini rendering') ? 45 : 1.5,
+                            ease: videoGenerationProgress.startsWith('Gemini rendering') ? "easeOut" : "easeInOut"
                         }}
                     />
                     </div>

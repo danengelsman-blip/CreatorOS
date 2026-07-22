@@ -117,24 +117,27 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 export default function Intelligence({ user }: { user: any }) {
   const [youtubeStats, setYoutubeStats] = useState<any>(null);
   const [tiktokStats, setTiktokStats] = useState<any>(null);
+  const [summary, setSummary] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   
   const [projects, setProjects] = useState<any[]>([]);
   const [isProjectsLoading, setIsProjectsLoading] = useState(true);
-  const [useDemoData, setUseDemoData] = useState(false);
 
   useEffect(() => {
     const fetchAllStats = async () => {
       try {
-        const [yt, tt] = await Promise.all([
-          authorizedFetch('/api/analytics/youtube').catch(() => null),
-          authorizedFetch('/api/analytics/tiktok').catch(() => null)
-        ]);
-        
-        if (yt && (yt.views > 0 || yt.subscribers > 0)) setYoutubeStats(yt);
-        if (tt && (tt.views > 0 || tt.followers > 0)) setTiktokStats(tt);
+        const res = await authorizedFetch('/api/analytics/summary');
+        if (res && res.success) {
+          setSummary(res.summary);
+          if (res.summary.youtube && (res.summary.youtube.views > 0 || res.summary.youtube.subscribers > 0)) {
+            setYoutubeStats(res.summary.youtube);
+          }
+          if (res.summary.tiktok && (res.summary.tiktok.views > 0 || res.summary.tiktok.followers > 0)) {
+            setTiktokStats(res.summary.tiktok);
+          }
+        }
       } catch (error) {
-        console.error('Failed to fetch analytics:', error);
+        console.error('Failed to fetch summary analytics:', error);
       } finally {
         setIsLoading(false);
       }
@@ -163,14 +166,8 @@ export default function Intelligence({ user }: { user: any }) {
           };
         });
         setProjects(fetched);
-        if (fetched.length === 0) {
-          setUseDemoData(true);
-        } else {
-          setUseDemoData(false);
-        }
       } catch (error) {
         console.error('Failed to fetch projects for reports:', error);
-        setUseDemoData(true);
       } finally {
         setIsProjectsLoading(false);
       }
@@ -178,7 +175,7 @@ export default function Intelligence({ user }: { user: any }) {
     fetchProjects();
   }, [user]);
 
-  const currentProjectsList = useDemoData ? DEMO_PROJECTS : projects;
+  const currentProjectsList = projects;
   const chartData = getWeeklyGrowthData(currentProjectsList);
   
   const totalPublished = currentProjectsList.filter(p => p.status === 'Published').length;
@@ -235,14 +232,18 @@ export default function Intelligence({ user }: { user: any }) {
           <div className="space-y-4">
              <div className="h-[200px] w-full bg-[var(--bg-secondary)] rounded-xl p-4">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={[
-                    { name: 'M', value: 400 },
-                    { name: 'T', value: 300 },
-                    { name: 'W', value: 500 },
-                    { name: 'T', value: 450 },
-                    { name: 'F', value: 700 },
-                    { name: 'S', value: 600 },
-                    { name: 'S', value: 900 },
+                  <BarChart data={youtubeStats ? [
+                    { name: 'Views', value: youtubeStats.views },
+                    { name: 'Subscribers', value: youtubeStats.subscribers },
+                    { name: 'Videos', value: youtubeStats.videos * 10 }
+                  ] : [
+                    { name: 'M', value: 0 },
+                    { name: 'T', value: 0 },
+                    { name: 'W', value: 0 },
+                    { name: 'T', value: 0 },
+                    { name: 'F', value: 0 },
+                    { name: 'S', value: 0 },
+                    { name: 'S', value: 0 },
                   ]} barGap={8} barCategoryGap="20%">
                     <defs>
                       <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
@@ -284,25 +285,10 @@ export default function Intelligence({ user }: { user: any }) {
             </div>
             
             <div className="flex items-center gap-2 self-start sm:self-center">
-              {useDemoData ? (
-                <div className="bg-amber-500/10 text-amber-500 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 animate-pulse">
-                  <WarningCircle size={14} weight="fill" />
-                  Showing Demo Trajectory
-                </div>
-              ) : (
-                <div className="bg-green-500/10 text-green-500 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5">
-                  <CalendarCheck size={14} weight="fill" />
-                  Live Velocity
-                </div>
-              )}
-              {projects.length > 0 && (
-                <button 
-                  onClick={() => setUseDemoData(!useDemoData)} 
-                  className="text-xs bg-[var(--bg-secondary)] hover:bg-[var(--separator)] text-[var(--label-secondary)] px-3 py-1 rounded-lg border border-[var(--separator)] transition-colors cursor-pointer"
-                >
-                  {useDemoData ? "Show My Data" : "Show Demo"}
-                </button>
-              )}
+              <div className="bg-green-500/10 text-green-500 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5">
+                <CalendarCheck size={14} weight="fill" />
+                Live Velocity
+              </div>
             </div>
           </div>
 
@@ -328,32 +314,32 @@ export default function Intelligence({ user }: { user: any }) {
 
           <div className="h-[280px] w-full bg-[var(--bg-secondary)] rounded-xl p-4 relative">
             {isProjectsLoading ? (
-              <div className="absolute inset-0 flex items-center justify-center text-xs text-[var(--label-secondary)]">
-                Loading production metrics...
-              </div>
+               <div className="absolute inset-0 flex items-center justify-center text-xs text-[var(--label-secondary)]">
+                 Loading production metrics...
+               </div>
             ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart data={chartData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
-                  <CartesianGrid vertical={false} stroke="var(--label-tertiary)" strokeOpacity={0.08} />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: 'var(--label-secondary)' }} dy={10} />
-                  <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: 'var(--label-secondary)' }} dx={-5} />
-                  <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: 'var(--label-secondary)' }} dx={5} />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend verticalAlign="top" height={36} iconType="circle" wrapperStyle={{ fontSize: 11, fill: 'var(--label-secondary)' }} />
-                  
-                  {/* Stacked Bars representing weekly publication metrics */}
-                  <Bar yAxisId="left" dataKey="Published" name="Published" stackId="a" fill="#0FA968" radius={[0, 0, 0, 0]} barSize={24} />
-                  <Bar yAxisId="left" dataKey="Scheduled" name="Scheduled" stackId="a" fill="var(--accent)" radius={[0, 0, 0, 0]} barSize={24} />
-                  <Bar yAxisId="left" dataKey="Draft" name="Draft" stackId="a" fill="#8A8175" radius={[4, 4, 0, 0]} barSize={24} />
-                  
-                  {/* Composed Line representing cumulative content growth trajectory */}
-                  <Line yAxisId="right" type="monotone" dataKey="Cumulative" name="Library Growth (Cumulative)" stroke="var(--accent)" strokeWidth={2.5} dot={{ r: 3, strokeWidth: 1.5, fill: 'var(--bg-tertiary)' }} activeDot={{ r: 5 }} />
-                </ComposedChart>
-              </ResponsiveContainer>
+               <ResponsiveContainer width="100%" height="100%">
+                 <ComposedChart data={chartData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
+                   <CartesianGrid vertical={false} stroke="var(--label-tertiary)" strokeOpacity={0.08} />
+                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: 'var(--label-secondary)' }} dy={10} />
+                   <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: 'var(--label-secondary)' }} dx={-5} />
+                   <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: 'var(--label-secondary)' }} dx={5} />
+                   <Tooltip content={<CustomTooltip />} />
+                   <Legend verticalAlign="top" height={36} iconType="circle" wrapperStyle={{ fontSize: 11, fill: 'var(--label-secondary)' }} />
+                   
+                   {/* Stacked Bars representing weekly publication metrics */}
+                   <Bar yAxisId="left" dataKey="Published" name="Published" stackId="a" fill="#0FA968" radius={[0, 0, 0, 0]} barSize={24} />
+                   <Bar yAxisId="left" dataKey="Scheduled" name="Scheduled" stackId="a" fill="var(--accent)" radius={[0, 0, 0, 0]} barSize={24} />
+                   <Bar yAxisId="left" dataKey="Draft" name="Draft" stackId="a" fill="#8A8175" radius={[4, 4, 0, 0]} barSize={24} />
+                   
+                   {/* Composed Line representing cumulative content growth trajectory */}
+                   <Line yAxisId="right" type="monotone" dataKey="Cumulative" name="Library Growth (Cumulative)" stroke="var(--accent)" strokeWidth={2.5} dot={{ r: 3, strokeWidth: 1.5, fill: 'var(--bg-tertiary)' }} activeDot={{ r: 5 }} />
+                 </ComposedChart>
+               </ResponsiveContainer>
             )}
           </div>
 
-          {useDemoData && projects.length === 0 && (
+          {projects.length === 0 && (
             <div className="mt-4 p-3 bg-amber-500/5 rounded-xl border border-amber-500/10 flex items-start gap-2.5">
               <WarningCircle size={16} className="text-amber-500 flex-shrink-0 mt-0.5" />
               <div className="space-y-1">
@@ -378,8 +364,8 @@ export default function Intelligence({ user }: { user: any }) {
                       <Brain size={18} strokeWidth={1.5} />
                    </div>
                    <div className="flex flex-col">
-                      <span className="font-semibold text-[17px]">Engagement Drop</span>
-                      <span className="text-[13px] text-[var(--label-secondary)]">Cliff detected at 0:15 in short-form.</span>
+                      <span className="font-semibold text-[17px]">Engagement Optimization</span>
+                      <span className="text-[13px] text-[var(--label-secondary)]">Create more short-form videos to scale.</span>
                    </div>
                 </div>
                 <ChevronRight size={18} strokeWidth={1.5} className="text-[var(--label-tertiary)]" />
@@ -407,9 +393,11 @@ export default function Intelligence({ user }: { user: any }) {
                  <TrendingUp size={24} strokeWidth={1.5} />
               </div>
               <div className="space-y-1">
-                 <span className="text-[34px] font-bold tracking-tight text-[var(--accent)]">$2.1K</span>
+                 <span className="text-[34px] font-bold tracking-tight text-[var(--accent)]">
+                   ${summary ? summary.totalRevenue : 0}
+                 </span>
                  <p className="text-[13px] text-[var(--label-secondary)] font-medium leading-tight">
-                    Projected revenue for July based on current growth velocity.
+                    Projected monthly revenue based on current actual connected channel audience metrics.
                  </p>
               </div>
               <button className="ios-button ios-button-tinted w-full mt-4">
